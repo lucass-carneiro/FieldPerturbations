@@ -1,0 +1,7 @@
+# Main make.code.defn file for thorn ADMScalarWave
+
+# Source files in this directory
+SRCS = Boundary.c CheckParameters.c Evolve.c ExcisionMask.c Initialize.c Register.c Startup.c
+
+# Subdirectories containing source files
+SUBDIRS = 

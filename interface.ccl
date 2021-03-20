@@ -1,0 +1,31 @@
+# Interface definition for thorn ADMScalarWave
+implements: ADMScalarWave
+inherits: ADMBase Grid
+
+public:
+
+CCTK_REAL evolved_group TYPE=GF TIMELEVELS=3 TAGS='tensortypealias="Scalar"'
+{
+  Phi, K_Phi
+} "The scalar and momemtum fields"
+
+CCTK_REAL rhs_group TYPE=GF TIMELEVELS=1 TAGS='tensortypealias="Scalar" Prolongation="None"'
+{
+  Phi_rhs, K_Phi_rhs
+} "Right hand side of the evolutoin equations"
+
+################################
+#  ALIASED FUNCTIONS FROM MOL  #
+################################
+
+CCTK_INT FUNCTION MoLRegisterEvolvedGroup(CCTK_INT IN EvolvedIndex, CCTK_INT IN RHSIndex)
+
+REQUIRES FUNCTION MoLRegisterEvolvedGroup
+
+###################################
+#  ALIASED FUNCTIONS FROM NewRad  #
+###################################
+
+CCTK_INT FUNCTION NewRad_Apply(CCTK_POINTER_TO_CONST IN cctkGH, CCTK_REAL ARRAY IN var, CCTK_REAL ARRAY INOUT rhs, CCTK_REAL IN var0, CCTK_REAL IN v0, CCTK_INT IN radpower)  
+
+USES FUNCTION NewRad_Apply 

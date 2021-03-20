@@ -1,0 +1,235 @@
+#######################################################################
+# General settings                                                    #
+#######################################################################
+
+Cactus::cctk_run_title = "ADMScalarWave test"
+
+Cactus::cctk_full_warnings         = yes
+Cactus::highlight_warning_messages = yes
+
+#######################################################################
+# Grid setup                                                          #
+#######################################################################
+
+ActiveThorns = "Boundary CartGrid3D CoordBase SymBase"
+
+CoordBase::domainsize = "minmax"
+CoordBase::spacing    = "numcells"
+
+CoordBase::xmin = -10.0
+CoordBase::xmax = +10.0
+
+CoordBase::ymin = -10.0
+CoordBase::ymax = +10.0
+
+CoordBase::zmin = -10.0
+CoordBase::zmax = +10.0
+
+CoordBase::ncells_x = 640
+CoordBase::ncells_y = 640
+CoordBase::ncells_z = 640
+
+CoordBase::boundary_size_x_lower = 4
+CoordBase::boundary_size_y_lower = 4
+CoordBase::boundary_size_z_lower = 4
+CoordBase::boundary_size_x_upper = 4
+CoordBase::boundary_size_y_upper = 4
+CoordBase::boundary_size_z_upper = 4
+
+CoordBase::boundary_internal_x_lower = no
+CoordBase::boundary_internal_y_lower = no
+CoordBase::boundary_internal_z_lower = no
+CoordBase::boundary_internal_x_upper = no
+CoordBase::boundary_internal_y_upper = no
+CoordBase::boundary_internal_z_upper = no
+
+CoordBase::boundary_staggered_x_lower = yes
+CoordBase::boundary_staggered_y_lower = yes
+CoordBase::boundary_staggered_z_lower = yes
+CoordBase::boundary_staggered_x_upper = yes
+CoordBase::boundary_staggered_y_upper = yes
+CoordBase::boundary_staggered_z_upper = yes
+
+CoordBase::boundary_shiftout_x_lower = 0
+CoordBase::boundary_shiftout_y_lower = 0
+CoordBase::boundary_shiftout_z_lower = 0
+CoordBase::boundary_shiftout_x_upper = 0
+CoordBase::boundary_shiftout_y_upper = 0
+CoordBase::boundary_shiftout_z_upper = 0
+
+CartGrid3D::type = "coordbase"
+
+#######################################################################
+# Carpet setup                                                        #
+#######################################################################
+
+ActiveThorns = "Carpet CarpetLib CarpetInterp CarpetInterp2 CarpetReduce CarpetSlab CarpetRegrid"
+
+Carpet::ghost_size              = 4
+
+Carpet::domain_from_coordbase   = yes
+Carpet::poison_new_timelevels   = no
+
+Carpet::verbose                 = no
+Carpet::veryverbose             = no
+Carpet::storage_verbose         = no
+
+Carpet::schedule_barriers       = no
+CarpetLib::output_bboxes        = no
+
+Carpet::max_refinement_levels   = 1
+CarpetRegrid::refinement_levels = 1
+
+#######################################################################
+# Background spacetime                                                #
+#######################################################################
+
+ActiveThorns = "InitBase ADMBase KerrSchild"
+
+KerrSchild::M = 1.0
+KerrSchild::a = 0.0
+
+ADMBase::initial_data     = "KerrSchild"
+ADMBase::evolution_method = "KerrSchild"
+ADMBase::initial_lapse    = "KerrSchild"
+ADMBase::initial_shift    = "KerrSchild"
+ADMBase::initial_dtlapse  = "KerrSchild"
+ADMBase::initial_dtshift  = "KerrSchild"
+
+Carpet::init_fill_timelevels        = yes
+InitBase::initial_data_setup_method = "init_single_level"
+
+################################################################################
+# Apparent Horizons
+################################################################################
+ActiveThorns = "AHFinderDirect StaticConformal AEILocalInterp"
+
+AHFinderDirect::N_horizons                               = 1
+AHFinderDirect::find_every                               = 1000000000
+AHFinderDirect::output_h_every                           = 0
+AHFinderDirect::max_Newton_iterations__initial           = 50
+AHFinderDirect::max_Newton_iterations__subsequent        = 50
+AHFinderDirect::max_allowable_Theta_growth_iterations    = 10
+AHFinderDirect::max_allowable_Theta_nonshrink_iterations = 10
+AHFinderDirect::geometry_interpolator_name               = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars               = "order=4"
+AHFinderDirect::surface_interpolator_name                = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars                = "order=4"
+AHFinderDirect::verbose_level                            = "physics details"
+AHFinderDirect::move_origins                             = yes
+
+AHFinderDirect::origin_x                             [1] = 0
+AHFinderDirect::origin_y                             [1] = 0
+AHFinderDirect::origin_z                             [1] = 0
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 0
+AHFinderDirect::initial_guess__coord_sphere__radius  [1] = 3
+#AHFinderDirect::which_surface_to_store_info          [1] = 2
+#AHFinderDirect::set_mask_for_individual_horizon      [1] = no
+#AHFinderDirect::reset_horizon_after_not_finding      [1] = no
+#AHFinderDirect::track_origin_from_grid_scalar        [1] = yes
+#AHFinderDirect::track_origin_source_x                [1] = "PunctureTracker::pt_loc_x[0]"
+#AHFinderDirect::track_origin_source_y                [1] = "PunctureTracker::pt_loc_y[0]"
+#AHFinderDirect::track_origin_source_z                [1] = "PunctureTracker::pt_loc_z[0]"
+AHFinderDirect::max_allowable_horizon_radius         [1] = 3
+
+#######################################################################
+# Scalar Wave Equation Evolution and initial data                     #
+#######################################################################
+
+ActiveThorns = "ADMScalarWave"
+
+ADMScalarWave::gaussian_sigma = 1.0
+ADMScalarWave::gaussian_R0    = 0.0
+
+ADMScalarWave::gaussian_x0    = 5.0
+ADMScalarWave::gaussian_y0    = 5.0
+ADMScalarWave::gaussian_z0    = 0.0
+
+ADMScalarWave::gaussian_c0    = 1.0
+ADMScalarWave::gaussian_c1    = 0.0
+ADMScalarWave::gaussian_c2    = 0.0
+
+ADMScalarWave::excision_mask       = yes
+ADMScalarWave::mask_type           = "hermite_smooth_step"
+ADMScalarWave::excision_min_radius = 0.5
+ADMScalarWave::excision_max_radius = 1.5
+
+#######################################################################
+# Physical Boundaries                                                 #
+#######################################################################
+
+ActiveThorns = "NewRad"
+
+ADMScalarWave::bc_type  = "new_rad"
+ADMScalarWave::radpower = 3
+
+#######################################################################
+# Dissipation                                                         #
+#######################################################################
+
+ActiveThorns = "Dissipation SpaceMask SphericalSurface"
+
+Dissipation::order                           = 5
+Dissipation::epsdis                          = 0.15
+Dissipation::vars                            = "ADMScalarWave::Phi ADMScalarWave::K_Phi"
+Dissipation::extra_dissipation_at_outerbound = yes
+Dissipation::outer_boundary_max_epsdis       = 0.6
+Dissipation::outer_bound_npoints             = 4
+
+#######################################################################
+# Time integration                                                    #
+#######################################################################
+
+ActiveThorns = "MoL Time"
+
+MoL::ode_method              = "RK4"
+MoL::mol_intermediate_steps  = 4
+MoL::mol_num_scratch_levels  = 3
+MoL::initial_data_is_crap    = true
+
+Time::dtfac = 0.25
+
+#######################################################################
+# Termination and final time                                          #
+#######################################################################
+
+Cactus::terminate       = "time"
+Cactus::cctk_final_time = 50.0
+
+#######################################################################
+# Debugging checks                                                    #
+#######################################################################
+
+ActiveThorns = "NaNChecker"
+
+NaNChecker::check_every     = 1
+NaNChecker::action_if_found = "terminate"
+NaNChecker::check_vars      = "ADMScalarWave::evolved_group ADMScalarWave::rhs_group"
+
+#######################################################################
+# Output                                                              #
+#######################################################################
+
+ActiveThorns = "IOUtil CarpetIOBasic CarpetIOScalar CarpetIOHDF5"
+
+IO::out_dir                         = "wave_c0"
+#IO::checkpoint_dir                  = "wave_c0"
+#IO::checkpoint_ID                   = yes
+#IO::checkpoint_every_walltime_hours = 6.0
+#IO::checkpoint_on_terminate         = yes
+#IO::recover                         = "autoprobe"
+#IO::recover_dir                     = "wave_c0"
+
+CarpetIOBasic::outInfo_every    = 1
+CarpetIOBasic::outInfo_vars     = "ADMScalarWave::evolved_group"
+
+CarpetIOHDF5::out_every              = 1
+#CarpetIOHDF5::output_buffer_points   = yes
+#CarpetIOHDF5::output_symmetry_points = no
+CarpetIOHDF5::compression_level      = 9
+#CarpetIOHDF5::use_checksums          = yes
+#CarpetIOHDF5::out_vars               = "ADMScalarWave::Phi Grid::coordinates{out_every=1000000000}
+CarpetIOHDF5::out_vars               = "ADMScalarWave::Phi"
+#CarpetIOHDF5::checkpoint             = no

@@ -1,0 +1,73 @@
+# Schedule definitions for thorn ADMScalarWave
+
+STORAGE:evolved_group[2]
+STORAGE:rhs_group
+
+schedule ADMScalarWave_Startup at STARTUP
+{
+  LANG: C
+} "Register banner"
+
+schedule ADMScalarWave_CheckParameters at CCTK_PARAMCHECK
+{
+  LANG: C
+} "Check parameters"
+
+SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
+{
+  LANG: C
+  OPTIONS: GLOBAL
+} "Register ADMScalarWave variables"
+
+SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
+{
+  LANG: C
+  READS: Grid::coordinates(Everywhere)
+  WRITES: evolved_group(Everywhere)
+} "Initialize ADMScalarWave evolved variables"
+
+SCHEDULE ADMScalarWave_RHS IN MoL_CalcRHS
+{
+  LANG: C
+  READS: evolved_group(Everywhere)
+  READS: Grid::coordinates(Everywhere)
+  READS: ADMBase::alp(Everywhere)
+  READS: ADMBase::betax(Everywhere)
+  READS: ADMBase::betay(Everywhere)
+  READS: ADMBase::betaz(Everywhere)
+  READS: ADMBase::gxx(Everywhere)
+  READS: ADMBase::gxy(Everywhere)
+  READS: ADMBase::gxz(Everywhere)
+  READS: ADMBase::gyy(Everywhere)
+  READS: ADMBase::gyz(Everywhere)
+  READS: ADMBase::gzz(Everywhere)
+  READS: ADMBase::kxx(Everywhere)
+  READS: ADMBase::kxy(Everywhere)
+  READS: ADMBase::kxz(Everywhere)
+  READS: ADMBase::kyy(Everywhere)
+  READS: ADMBase::kyz(Everywhere)
+  READS: ADMBase::kzz(Everywhere)
+  WRITES: rhs_group(Interior)
+  SYNC: rhs_group
+} "Evolve ADMScalarWave"
+
+SCHEDULE ADMScalarWave_Boundary IN MoL_CalcRHS AFTER ADMScalarWave_RHS
+{
+  LANG: C
+  READS: evolved_group(Boundary)
+  READS: rhs_group(Everywhere)
+  WRITES: rhs_group(Boundary)
+  SYNC: rhs_group
+} "Boundary conditions to apply to ADMScalarWave"
+
+if(excision_mask)
+{
+  SCHEDULE ADMScalarWave_ExcisionMask IN MoL_PostStep AFTER ADMScalarWave_Boundary
+  {
+    LANG: C
+    READS: Grid::coordinates(Everywhere)
+    READS: evolved_group(Everywhere)
+    WRITES: evolved_group(Everywhere)
+    SYNC: evolved_group
+  } "Apply excision masks"
+}

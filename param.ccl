@@ -1,0 +1,79 @@
+# Parameter definitions for thorn ADMScalarWave
+
+CCTK_KEYWORD bc_type "Type of boundary condition to apply"
+{
+  "reflecting" :: "Traditional totally reflecting boundary condition."
+  "new_rad"    :: "Radiating boundary condition implemented in thorn NewRad"
+} "new_rad"
+
+CCTK_INT radpower "The power parameter of the NewRad boundary condition"
+{
+  0:* :: "Positive"
+} 3
+
+CCTK_KEYWORD initial_data "Types of initial data to evolve"
+{
+  "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
+} "multipolar_gaussian"
+
+CCTK_REAL gaussian_sigma "The width of the gaussian"
+{
+  0:* :: "Positive"
+} 1.0
+
+CCTK_REAL gaussian_R0 "The position of the peak of the gaussian"
+{
+  0:* :: "Positive"
+} 0.0
+
+CCTK_REAL gaussian_x0 "The x posititon of the center of the gaussian"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_REAL gaussian_y0 "The y posititon of the center of the gaussian"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_REAL gaussian_z0 "The z posititon of the center of the gaussian"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_REAL gaussian_c0 "The monopole momentum of the gaussian"
+{
+  0:* :: "Positive"
+} 1.0
+
+CCTK_REAL gaussian_c1 " The dipole momentum of the gaussian"
+{
+  0:* :: "Positive"
+} 0.0
+
+CCTK_REAL gaussian_c2 "The quadrupole momentum of the gaussian"
+{
+  0:* :: "Positive"
+} 0.0
+
+BOOLEAN excision_mask "Apply single black hole excision mask"
+{
+} false
+
+CCTK_REAL excision_max_radius "The maximun radius of the excision mask"
+{
+  0:* :: "Positive"
+} 1.0
+
+CCTK_REAL excision_min_radius "The minimum radius of the excision mask"
+{
+  0:* :: "Positive"
+} 0.0
+
+CCTK_KEYWORD mask_type "Types excision masks to apply"
+{
+  "exp_smooth_step"     :: "A smooth step function based on exponential functions."
+  "cos_smooth_step"     :: "A smooth step function based on the cossine function."
+  "hermite_smooth_step" :: "A smooth step function based on the cubic Hermite polynomial."
+  "cubic_step"          :: "Non-smooth cubic polynomial."
+} "hermite_smooth_step"
