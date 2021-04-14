@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  *
- * Startup.c
- * Code executed at Cactus startup.
+ *  Startup.c
+ *  Code executed at Cactus startup.
  */
 
 /*******************

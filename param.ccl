@@ -16,6 +16,11 @@ CCTK_KEYWORD initial_data "Types of initial data to evolve"
   "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
 } "multipolar_gaussian"
 
+CCTK_REAL field_mass "The mass of the scalar field"
+{
+  0:* :: "Positive"
+} 1.0
+
 CCTK_REAL gaussian_sigma "The width of the gaussian"
 {
   0:* :: "Positive"

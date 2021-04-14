@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  *
- * Register.c
- * Register vriables to be evolved with the MoL thorn.
+ *  Register.c
+ *  Register vriables to be evolved with the MoL thorn.
  */
 
 /*******************

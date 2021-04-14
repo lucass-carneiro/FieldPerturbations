@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  *
- * ExcisionMask.c
- * Implements simple excision mask functions
+ *  ExcisionMask.c
+ *  Implements simple excision mask functions
  */
 
 /*******************
@@ -176,7 +176,7 @@ void ADMScalarWave_ExcisionMask(CCTK_ARGUMENTS) {
  * CCTK_REAL rh: The final excision radius                  *
  * from interface.ccl                                       *
  *                                                          *
- * Output: Nothing                                          *
+ * Output: A real value in the [0,1] domain                 *
  ************************************************************/
 inline CCTK_REAL exp_smooth_step(CCTK_REAL r, CCTK_REAL r0, CCTK_REAL rh) {
   const CCTK_REAL y = (r - r0) / (rh - r0);
@@ -200,7 +200,7 @@ inline CCTK_REAL exp_smooth_step(CCTK_REAL r, CCTK_REAL r0, CCTK_REAL rh) {
  * CCTK_REAL rh: The final excision radius                  *
  * from interface.ccl                                       *
  *                                                          *
- * Output: Nothing                                          *
+ * Output: A real value in the [0,1] domain                 *
  ************************************************************/
 inline CCTK_REAL cos_smooth_step(CCTK_REAL r, CCTK_REAL r0, CCTK_REAL rh) {
   if (r < r0)
@@ -224,7 +224,7 @@ inline CCTK_REAL cos_smooth_step(CCTK_REAL r, CCTK_REAL r0, CCTK_REAL rh) {
  * CCTK_REAL rh: The final excision radius   *
  * from interface.ccl                        *
  *                                           *
- * Output: Nothing                           *
+ * Output: A real value in the [0,1] domain  *
  *********************************************/
 inline CCTK_REAL cubic_step(CCTK_REAL r, CCTK_REAL rh) {
   return (r < rh) ? (r / rh) * (r / rh) * (r / rh) : 1.0;
@@ -242,7 +242,7 @@ inline CCTK_REAL cubic_step(CCTK_REAL r, CCTK_REAL rh) {
  * CCTK_REAL rh: The final excision radius                      *
  * from interface.ccl                                           *
  *                                                              *
- * Output: Nothing                                              *
+ * Output: A real value in the [0,1] domain                     *
  ****************************************************************/
 inline CCTK_REAL hermite_smooth_step(CCTK_REAL r, CCTK_REAL r0, CCTK_REAL rh) {
   if (r > rh)

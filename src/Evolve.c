@@ -19,8 +19,9 @@
  *
  * Evolve.c
  * Implements the evolution equations for the ADM-decomposed scalar wave
- * equation as presented in Eq. (19) of https://arxiv.org/abs/1806.07909.
- * Tensorial quantities and C code produced in Wolfram Mathematica.
+ * equation as presented in Eqs. (A3c) and (A3d) of 
+ * https://arxiv.org/pdf/1709.06118.pdf.
+ * Tensorial quantities produced in Wolfram Mathematica.
  */
 
 /*******************
@@ -61,9 +62,17 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
   const int gz = cctk_nghostzones[2];
 
   /* Quantities required for the derivative macros to work */
-  const CCTK_REAL dx = CCTK_DELTA_SPACE(0);
-  const CCTK_REAL dy = CCTK_DELTA_SPACE(1);
-  const CCTK_REAL dz = CCTK_DELTA_SPACE(2);
+  const CCTK_REAL dx12 = 12.0 * CCTK_DELTA_SPACE(0);
+  const CCTK_REAL dy12 = 12.0 * CCTK_DELTA_SPACE(1);
+  const CCTK_REAL dz12 = 12.0 * CCTK_DELTA_SPACE(2);
+
+  const CCTK_REAL dxsq12 = 12.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(0);
+  const CCTK_REAL dysq12 = 12.0 * CCTK_DELTA_SPACE(1) * CCTK_DELTA_SPACE(1);
+  const CCTK_REAL dzsq12 = 12.0 * CCTK_DELTA_SPACE(2) * CCTK_DELTA_SPACE(2);
+
+  const CCTK_REAL dxdy144 = 144.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(1);
+  const CCTK_REAL dxdz144 = 144.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(2);
+  const CCTK_REAL dydz144 = 144.0 * CCTK_DELTA_SPACE(1) * CCTK_DELTA_SPACE(2);
 
   /* Loop indexes */
   int i = 0;
@@ -96,9 +105,6 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
   CCTK_REAL PhiL = 0.0;
   CCTK_REAL K_PhiL = 0.0;
 
-  /* Local value of r */
-  CCTK_REAL rL = 0.0;
-
   /* Local Trace of extrinsic curvature */
   CCTK_REAL KTraceL = 0.0;
 
@@ -118,6 +124,7 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
   CCTK_REAL K_Phi_rhs_p2 = 0.0;
   CCTK_REAL K_Phi_rhs_p3 = 0.0;
   CCTK_REAL K_Phi_rhs_p4 = 0.0;
+  CCTK_REAL K_Phi_rhs_p5 = 0.0;
 
   /* Derivatives of Phi */
   CCTK_REAL d_x_Phi = 0.0;
@@ -169,26 +176,26 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
   CCTK_REAL d_z_K_Phi = 0.0;
 
   /* Christoffell symbols */
-  CCTK_REAL Gamma_111 = 0;
-  CCTK_REAL Gamma_112 = 0;
-  CCTK_REAL Gamma_113 = 0;
-  CCTK_REAL Gamma_122 = 0;
-  CCTK_REAL Gamma_123 = 0;
-  CCTK_REAL Gamma_133 = 0;
+  CCTK_REAL Gamma_xxx = 0.0;
+  CCTK_REAL Gamma_xxy = 0.0;
+  CCTK_REAL Gamma_xxz = 0.0;
+  CCTK_REAL Gamma_xyy = 0.0;
+  CCTK_REAL Gamma_xyz = 0.0;
+  CCTK_REAL Gamma_xzz = 0.0;
 
-  CCTK_REAL Gamma_211 = 0;
-  CCTK_REAL Gamma_212 = 0;
-  CCTK_REAL Gamma_213 = 0;
-  CCTK_REAL Gamma_222 = 0;
-  CCTK_REAL Gamma_223 = 0;
-  CCTK_REAL Gamma_233 = 0;
+  CCTK_REAL Gamma_yxx = 0.0;
+  CCTK_REAL Gamma_yxy = 0.0;
+  CCTK_REAL Gamma_yxz = 0.0;
+  CCTK_REAL Gamma_yyy = 0.0;
+  CCTK_REAL Gamma_yyz = 0.0;
+  CCTK_REAL Gamma_yzz = 0.0;
 
-  CCTK_REAL Gamma_311 = 0;
-  CCTK_REAL Gamma_312 = 0;
-  CCTK_REAL Gamma_313 = 0;
-  CCTK_REAL Gamma_322 = 0;
-  CCTK_REAL Gamma_323 = 0;
-  CCTK_REAL Gamma_333 = 0;
+  CCTK_REAL Gamma_zxx = 0.0;
+  CCTK_REAL Gamma_zxy = 0.0;
+  CCTK_REAL Gamma_zxz = 0.0;
+  CCTK_REAL Gamma_zyy = 0.0;
+  CCTK_REAL Gamma_zyz = 0.0;
+  CCTK_REAL Gamma_zzz = 0.0;
 
 #pragma omp parallel for
   for (k = gz; k < cctk_lsh[2] - gz; k++) {
@@ -221,7 +228,6 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
         /* Assing wave eq. local variables */
         PhiL = Phi[ijk];
         K_PhiL = K_Phi[ijk];
-        rL = r[ijk];
 
         /* Computing the inverse metric */
         gdetL = -(gxzL * gxzL * gyyL) + 2 * gxyL * gxzL * gyzL -
@@ -234,8 +240,8 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
         igzzL = (-gxyL * gxyL + gxxL * gyyL) / gdetL;
 
         /* Computing the trace of extrinsic curvature */
-        KTraceL = igxxL * kxxL + 2 * igxyL * kxyL + 2 * igxzL * kxzL +
-                  igyyL * kyyL + 2 * igyzL * kyzL + igzzL * kzzL;
+        KTraceL = igxxL * kxxL + igyyL * kyyL + igzzL * kzzL +
+                  2 * igxyL * kxyL + 2 * igxzL * kxzL + 2 * igyzL * kyzL;
 
         /* Derivatives of Phi */
         d_x_Phi = D4x(Phi);
@@ -287,91 +293,93 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
         d_z_K_Phi = D4z(K_Phi);
 
         /* Christoffell symbols */
-        Gamma_111 = 0.5 * (igxxL * d_x_gxx - igxyL * d_y_gxx - igxzL * d_z_gxx +
+        Gamma_xxx = 0.5 * (igxxL * d_x_gxx - igxyL * d_y_gxx - igxzL * d_z_gxx +
                            2 * igxyL * d_x_gxy + 2 * igxzL * d_x_gxz);
-        Gamma_112 = 0.5 * (igxxL * d_y_gxx + igxyL * d_x_gyy +
+        Gamma_xxy = 0.5 * (igxxL * d_y_gxx + igxyL * d_x_gyy +
                            igxzL * (-d_z_gxy + d_y_gxz + d_x_gyz));
-        Gamma_113 =
+        Gamma_xxz =
             0.5 * (igxxL * d_z_gxx + igxyL * (d_z_gxy - d_y_gxz + d_x_gyz) +
                    igxzL * d_x_gzz);
-        Gamma_122 =
+        Gamma_xyy =
             0.5 * (2 * igxxL * d_y_gxy - igxxL * d_x_gyy + igxyL * d_y_gyy -
                    igxzL * d_z_gyy + 2 * igxzL * d_y_gyz);
-        Gamma_123 =
+        Gamma_xyz =
             0.5 * (igxyL * d_z_gyy + igxxL * (d_z_gxy + d_y_gxz - d_x_gyz) +
                    igxzL * d_y_gzz);
-        Gamma_133 = 0.5 * (2 * igxxL * d_z_gxz + 2 * igxyL * d_z_gyz -
+        Gamma_xzz = 0.5 * (2 * igxxL * d_z_gxz + 2 * igxyL * d_z_gyz -
                            igxxL * d_x_gzz - igxyL * d_y_gzz + igxzL * d_z_gzz);
 
-        Gamma_211 = 0.5 * (igxyL * d_x_gxx - igyyL * d_y_gxx - igyzL * d_z_gxx +
+        Gamma_yxx = 0.5 * (igxyL * d_x_gxx - igyyL * d_y_gxx - igyzL * d_z_gxx +
                            2 * igyyL * d_x_gxy + 2 * igyzL * d_x_gxz);
-        Gamma_212 = 0.5 * (igxyL * d_y_gxx + igyyL * d_x_gyy +
+        Gamma_yxy = 0.5 * (igxyL * d_y_gxx + igyyL * d_x_gyy +
                            igyzL * (-d_z_gxy + d_y_gxz + d_x_gyz));
-        Gamma_213 =
+        Gamma_yxz =
             0.5 * (igxyL * d_z_gxx + igyyL * (d_z_gxy - d_y_gxz + d_x_gyz) +
                    igyzL * d_x_gzz);
-        Gamma_222 =
+        Gamma_yyy =
             0.5 * (2 * igxyL * d_y_gxy - igxyL * d_x_gyy + igyyL * d_y_gyy -
                    igyzL * d_z_gyy + 2 * igyzL * d_y_gyz);
-        Gamma_223 =
+        Gamma_yyz =
             0.5 * (igyyL * d_z_gyy + igxyL * (d_z_gxy + d_y_gxz - d_x_gyz) +
                    igyzL * d_y_gzz);
-        Gamma_233 = 0.5 * (2 * igxyL * d_z_gxz + 2 * igyyL * d_z_gyz -
+        Gamma_yzz = 0.5 * (2 * igxyL * d_z_gxz + 2 * igyyL * d_z_gyz -
                            igxyL * d_x_gzz - igyyL * d_y_gzz + igyzL * d_z_gzz);
 
-        Gamma_311 = 0.5 * (igxzL * d_x_gxx - igyzL * d_y_gxx - igzzL * d_z_gxx +
+        Gamma_zxx = 0.5 * (igxzL * d_x_gxx - igyzL * d_y_gxx - igzzL * d_z_gxx +
                            2 * igyzL * d_x_gxy + 2 * igzzL * d_x_gxz);
-        Gamma_312 = 0.5 * (igxzL * d_y_gxx + igyzL * d_x_gyy +
+        Gamma_zxy = 0.5 * (igxzL * d_y_gxx + igyzL * d_x_gyy +
                            igzzL * (-d_z_gxy + d_y_gxz + d_x_gyz));
-        Gamma_313 =
+        Gamma_zxz =
             0.5 * (igxzL * d_z_gxx + igyzL * (d_z_gxy - d_y_gxz + d_x_gyz) +
                    igzzL * d_x_gzz);
-        Gamma_322 =
+        Gamma_zyy =
             0.5 * (2 * igxzL * d_y_gxy - igxzL * d_x_gyy + igyzL * d_y_gyy -
                    igzzL * d_z_gyy + 2 * igzzL * d_y_gyz);
-        Gamma_323 =
+        Gamma_zyz =
             0.5 * (igyzL * d_z_gyy + igxzL * (d_z_gxy + d_y_gxz - d_x_gyz) +
                    igzzL * d_y_gzz);
-        Gamma_333 = 0.5 * (2 * igxzL * d_z_gxz + 2 * igyzL * d_z_gyz -
+        Gamma_zzz = 0.5 * (2 * igxzL * d_z_gxz + 2 * igyzL * d_z_gyz -
                            igxzL * d_x_gzz - igyzL * d_y_gzz + igzzL * d_z_gzz);
 
         /* Part 1 of K_Phi_rhs */
-        K_Phi_rhs_p1 = alpL * K_PhiL * KTraceL;
+        K_Phi_rhs_p1 = KTraceL * K_PhiL;
 
         /* Part 2 of K_Phi_rhs */
-        K_Phi_rhs_p2 = alpL * igxxL * d_xx_Phi + 2 * alpL * igxyL * d_xy_Phi +
-                       2 * alpL * igxzL * d_xz_Phi + alpL * igyyL * d_yy_Phi +
-                       2 * alpL * igyzL * d_yz_Phi + alpL * igzzL * d_zz_Phi -
-                       alpL * d_x_Phi *
-                           (igxxL * Gamma_111 + 2 * igxyL * Gamma_112 +
-                            2 * igxzL * Gamma_113 + igyyL * Gamma_122 +
-                            2 * igyzL * Gamma_123 + igzzL * Gamma_133) -
-                       alpL * d_y_Phi *
-                           (igxxL * Gamma_211 + 2 * igxyL * Gamma_212 +
-                            2 * igxzL * Gamma_213 + igyyL * Gamma_222 +
-                            2 * igyzL * Gamma_223 + igzzL * Gamma_233) -
-                       alpL * d_z_Phi *
-                           (igxxL * Gamma_311 + 2 * igxyL * Gamma_312 +
-                            2 * igxzL * Gamma_313 + igyyL * Gamma_322 +
-                            2 * igyzL * Gamma_323 + igzzL * Gamma_333);
+        K_Phi_rhs_p2 =
+            igxxL * d_xx_Phi + igxyL * (d_xy_Phi + d_xy_Phi) +
+            igyyL * d_yy_Phi + igxzL * (d_xz_Phi + d_xz_Phi) +
+            igyzL * (d_yz_Phi + d_yz_Phi) + igzzL * d_zz_Phi -
+            d_x_Phi * (igxxL * Gamma_xxx + 2 * igxyL * Gamma_xxy +
+                       2 * igxzL * Gamma_xxz + igyyL * Gamma_xyy +
+                       2 * igyzL * Gamma_xyz + igzzL * Gamma_xzz) -
+            igxxL * d_y_Phi * Gamma_yxx - 2 * igxyL * d_y_Phi * Gamma_yxy -
+            2 * igxzL * d_y_Phi * Gamma_yxz - igyyL * d_y_Phi * Gamma_yyy -
+            2 * igyzL * d_y_Phi * Gamma_yyz - igzzL * d_y_Phi * Gamma_yzz -
+            igxxL * d_z_Phi * Gamma_zxx - 2 * igxyL * d_z_Phi * Gamma_zxy -
+            2 * igxzL * d_z_Phi * Gamma_zxz - igyyL * d_z_Phi * Gamma_zyy -
+            2 * igyzL * d_z_Phi * Gamma_zyz - igzzL * d_z_Phi * Gamma_zzz;
 
         /* Part 3 of K_Phi_rhs */
-        K_Phi_rhs_p3 =
+        K_Phi_rhs_p3 = field_mass * field_mass * PhiL;
+
+        /* Part 4 of K_Phi_rhs */
+        K_Phi_rhs_p4 =
             d_x_alp * (igxxL * d_x_Phi + igxyL * d_y_Phi + igxzL * d_z_Phi) +
             d_y_alp * (igxyL * d_x_Phi + igyyL * d_y_Phi + igyzL * d_z_Phi) +
             d_z_alp * (igxzL * d_x_Phi + igyzL * d_y_Phi + igzzL * d_z_Phi);
 
-        /* Part 4 of K_Phi_rhs */
-        K_Phi_rhs_p4 =
+        /* Part 5 of K_Phi_rhs */
+        K_Phi_rhs_p5 =
             betaxL * d_x_K_Phi + betayL * d_y_K_Phi + betazL * d_z_K_Phi;
 
         /* Phi_rhs */
-        Phi_rhs[ijk] = -2 * alpL * K_PhiL + betaxL * d_x_Phi +
+        Phi_rhs[ijk] = -2.0 * alpL * K_PhiL + betaxL * d_x_Phi +
                        betayL * d_y_Phi + betazL * d_z_Phi;
 
         /* K_Phi_rhs */
-        K_Phi_rhs[ijk] = K_Phi_rhs_p1 - 0.5 * K_Phi_rhs_p2 -
-                         0.5 * K_Phi_rhs_p3 + K_Phi_rhs_p4;
+        K_Phi_rhs[ijk] =
+            alpL * (K_Phi_rhs_p1 - 0.5 * K_Phi_rhs_p2 + 0.5 * K_Phi_rhs_p3) -
+            0.5 * K_Phi_rhs_p4 + K_Phi_rhs_p5;
       }
     }
   }
