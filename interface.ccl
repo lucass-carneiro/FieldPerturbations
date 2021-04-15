@@ -4,12 +4,12 @@ inherits: ADMBase Grid
 
 public:
 
-CCTK_REAL evolved_group TYPE=GF TIMELEVELS=3 TAGS='tensortypealias="Scalar"'
+CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tensorweight=0 prolongation="none" Checkpoint="no"'
 {
   Phi, K_Phi
 } "The scalar and momemtum fields"
 
-CCTK_REAL rhs_group TYPE=GF TIMELEVELS=1 TAGS='tensortypealias="Scalar" Prolongation="None"'
+CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" tensorweight=0 prolongation="none" Checkpoint="no"'
 {
   Phi_rhs, K_Phi_rhs
 } "Right hand side of the evolutoin equations"

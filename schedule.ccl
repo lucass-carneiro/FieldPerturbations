@@ -1,6 +1,6 @@
 # Schedule definitions for thorn ADMScalarWave
 
-STORAGE:evolved_group[2]
+STORAGE:evolved_group[3]
 STORAGE:rhs_group
 
 schedule ADMScalarWave_Startup at STARTUP
@@ -13,10 +13,15 @@ schedule ADMScalarWave_CheckParameters at CCTK_PARAMCHECK
   LANG: C
 } "Check parameters"
 
+schedule ADMScalarWave_ZeroRHS at BASEGRID
+{
+  LANG: C
+} "Set all rhs functions to zero to prevent spurious nans"
+
 SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
 {
   LANG: C
-  OPTIONS: GLOBAL
+  OPTIONS: META
 } "Register ADMScalarWave variables"
 
 SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
