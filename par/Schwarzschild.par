@@ -2,7 +2,7 @@
 # General settings                                                    #
 #######################################################################
 
-Cactus::cctk_run_title = "ADMScalarWave Minkowski scattering test"
+Cactus::cctk_run_title = "ADMScalarWave Schwarzschild scattering test"
 
 Cactus::cctk_full_warnings         = yes
 Cactus::highlight_warning_messages = yes
@@ -18,18 +18,18 @@ CartGrid3D::type = "coordbase"
 CoordBase::domainsize = "minmax"
 CoordBase::spacing    = "numcells"
 
-CoordBase::xmin = -10.0
-CoordBase::xmax = +10.0
+CoordBase::xmin = -20.0
+CoordBase::xmax = +20.0
 
-CoordBase::ymin = -10.0
-CoordBase::ymax = +10.0
+CoordBase::ymin = -20.0
+CoordBase::ymax = +20.0
 
-CoordBase::zmin = -10.0
-CoordBase::zmax = +10.0
+CoordBase::zmin = -20.0
+CoordBase::zmax = +20.0
 
-CoordBase::ncells_x = 40
-CoordBase::ncells_y = 40
-CoordBase::ncells_z = 40
+CoordBase::ncells_x = 500
+CoordBase::ncells_y = 500
+CoordBase::ncells_z = 500
 
 CoordBase::boundary_size_x_lower = 3
 CoordBase::boundary_size_y_lower = 3
@@ -45,12 +45,12 @@ CoordBase::boundary_internal_y_upper = no
 CoordBase::boundary_internal_z_lower = no
 CoordBase::boundary_internal_z_upper = no
 
-CoordBase::boundary_staggered_x_lower = no
-CoordBase::boundary_staggered_x_upper = no
-CoordBase::boundary_staggered_y_lower = no
-CoordBase::boundary_staggered_y_upper = no
-CoordBase::boundary_staggered_z_lower = no
-CoordBase::boundary_staggered_z_upper = no
+CoordBase::boundary_staggered_x_lower = yes
+CoordBase::boundary_staggered_x_upper = yes
+CoordBase::boundary_staggered_y_lower = yes
+CoordBase::boundary_staggered_y_upper = yes
+CoordBase::boundary_staggered_z_lower = yes
+CoordBase::boundary_staggered_z_upper = yes
 
 CoordBase::boundary_shiftout_x_lower = 0
 CoordBase::boundary_shiftout_y_lower = 0
@@ -69,13 +69,13 @@ Carpet::domain_from_coordbase           = yes
 
 Carpet::ghost_size                      = 3 # Carpet demands 3 GZs for order 5 space prolongation
 
-Carpet::max_refinement_levels           = 2
+Carpet::max_refinement_levels           = 1
 
-CarpetRegrid2::num_centres              = 1
+# DISABLED CarpetRegrid2::num_centres              = 1
 
-CarpetRegrid2::num_levels_1             = 2
+# DISABLED CarpetRegrid2::num_levels_1             = 1
 # DISABLED CarpetRegrid2::position_x_1             = 0.0
-CarpetRegrid2::radius_1[1]              = 3.0
+# DISABLED CarpetRegrid2::radius_1[1]              = 3.0
 # DISABLED CarpetRegrid2::radius_1[2]              = 4.0
 # DISABLED CarpetRegrid2::radius_1[3]              = 2.0
 # DISABLED CarpetRegrid2::radius_1[4]              = 1.0
@@ -100,14 +100,17 @@ Carpet::grid_coordinates_filename       = "carpet-grid-coordinates"
 # Background spacetime                                                #
 #######################################################################
 
-ActiveThorns = "InitBase ADMBase Minkowski"
+ActiveThorns = "InitBase ADMBase KerrSchild"
 
-ADMBase::initial_data     = "Minkowski"
-ADMBase::evolution_method = "Minkowski"
-ADMBase::initial_lapse    = "Minkowski"
-ADMBase::initial_shift    = "Minkowski"
-ADMBase::initial_dtlapse  = "Minkowski"
-ADMBase::initial_dtshift  = "Minkowski"
+ADMBase::initial_data     = "KerrSchild"
+ADMBase::evolution_method = "KerrSchild"
+ADMBase::initial_lapse    = "KerrSchild"
+ADMBase::initial_shift    = "KerrSchild"
+ADMBase::initial_dtlapse  = "KerrSchild"
+ADMBase::initial_dtshift  = "KerrSchild"
+
+KerrSchild::m = 1.0
+KerrSchild::a = 0.0
 
 ADMBase::lapse_timelevels  = 3
 ADMBase::shift_timelevels  = 3
@@ -125,18 +128,37 @@ ActiveThorns = "ADMScalarWave"
 
 ADMScalarWave::field_mass     = 0.0
 
-ADMScalarWave::gaussian_sigma = 1.0
+ADMScalarWave::gaussian_sigma = 0.25
 ADMScalarWave::gaussian_R0    = 0.0
 
-ADMScalarWave::gaussian_x0    = 0.0
-ADMScalarWave::gaussian_y0    = 0.0
+ADMScalarWave::gaussian_x0    = 3.0
+ADMScalarWave::gaussian_y0    = 3.0
 ADMScalarWave::gaussian_z0    = 0.0
 
 ADMScalarWave::gaussian_c0    = 1.0
 ADMScalarWave::gaussian_c1    = 0.0
 ADMScalarWave::gaussian_c2    = 0.0
 
-ADMScalarWave::excision_mask = no
+ADMScalarWave::excision_mask       = yes
+ADMScalarWave::mask_type           = "hermite_smooth_step"
+ADMScalarWave::excision_min_radius = 0.5
+ADMScalarWave::excision_max_radius = 1.0
+
+#######################################################################
+# Scalar fild extraction                                              #
+#######################################################################
+
+ActiveThorns = "AEILocalInterp Multipole"
+
+Multipole::nradii    = 7
+Multipole::radius[0] = 3.0
+Multipole::radius[1] = 5.0
+Multipole::radius[2] = 7.0
+Multipole::radius[3] = 9.0
+Multipole::radius[4] = 11.0
+Multipole::radius[5] = 13.0
+Multipole::radius[6] = 15.0
+Multipole::variables = "ADMScalarWave::Phi"
 
 #######################################################################
 # Physical Boundaries                                                 #
@@ -151,14 +173,14 @@ ADMScalarWave::radpower = 3
 # Dissipation                                                         #
 #######################################################################
 
-#ActiveThorns = "Dissipation SpaceMask SphericalSurface"
+ActiveThorns = "Dissipation SpaceMask SphericalSurface"
 
-#Dissipation::order                           = 5
-#Dissipation::epsdis                          = 0.2
-#Dissipation::vars                            = "ADMScalarWave::Phi ADMScalarWave::K_Phi"
-#Dissipation::extra_dissipation_at_outerbound = yes
-#Dissipation::outer_boundary_max_epsdis       = 0.5
-#Dissipation::outer_bound_npoints             = 4
+Dissipation::order                           = 5
+Dissipation::epsdis                          = 0.2
+Dissipation::vars                            = "ADMScalarWave::evolved_group"
+Dissipation::extra_dissipation_at_outerbound = yes
+Dissipation::outer_boundary_max_epsdis       = 0.5
+Dissipation::outer_bound_npoints             = 3
 
 #######################################################################
 # Time integration                                                    #
@@ -180,7 +202,7 @@ Time::dtfac                  = 0.25
 #######################################################################
 
 Cactus::terminate       = "time"
-Cactus::cctk_final_time = 20.0
+Cactus::cctk_final_time = 40.0
 
 #######################################################################
 # Debugging checks                                                    #
@@ -203,6 +225,6 @@ IO::out_dir                     = "ScalarWave_Minkowski"
 CarpetIOBasic::outInfo_every    = 1
 CarpetIOBasic::outInfo_vars     = "ADMScalarWave::evolved_group"
 
-CarpetIOHDF5::out_every         = 1
+CarpetIOHDF5::out_every         = 4
 CarpetIOHDF5::compression_level = 9
 CarpetIOHDF5::out_vars          = "ADMScalarWave::Phi"
