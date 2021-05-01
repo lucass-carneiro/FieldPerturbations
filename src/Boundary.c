@@ -18,7 +18,7 @@
  *  along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  *
  * Boundary.c
- * Implements the boundary conditions for the ADM-decomposed scalar wave
+ * Implements outer boundary conditions for the ADM-decomposed scalar wave
  * equation.
  */
 
@@ -32,27 +32,31 @@
 /**************
  * Prototypes *
  **************/
+void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS);
 void ADMScalarWave_Boundary(CCTK_ARGUMENTS);
 
-/**********************************************
- * ADMScalarWave_Boundary(CCTK_ARGUMENTS)     *
- *                                            *
- * This function updates the grid functions   *
- * at the boundary points with boundary       *
- * conditions.                                *
- *                                            *
- * Input: CCTK_ARGUMENTS (the grid functions  *
- * from interface.ccl                         *
- *                                            *
- * Output: Nothing                            *
- **********************************************/
-void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {
+/***********************************************
+ * ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) *
+ *                                             *
+ * This function updates the grid functions    *
+ * at the outer boundary points with boundary  *
+ * conditions.                                 *
+ *                                             *
+ * Users can choose radiating or reflecting    *
+ * boundary conditions                         *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
 
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
   if (CCTK_EQUALS(bc_type, "new_rad")) {
-    int ierr = 0;
+    CCTK_INT ierr = 0;
 
     ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, 0.0, 1.0, radpower);
     ierr += NewRad_Apply(cctkGH, K_Phi, K_Phi_rhs, 0.0, 1.0, radpower);
@@ -154,3 +158,21 @@ void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {
     }
   }
 }
+
+/***********************************************
+ * ADMScalarWave_Boundary(void)                *
+ *                                             *
+ * This function is a no-op (it does nothing). *
+ * After taking a time step Carpet might apply *
+ * wrong boundary conditions in the refinament *
+ * boundaries.                                 *
+ *                                             *
+ * Scheduling this function in MoL_PostStep,   *
+ * postrestrict and postregrid solves this.    *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *
+ * Output: Nothing                             *
+ ***********************************************/
+void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {}

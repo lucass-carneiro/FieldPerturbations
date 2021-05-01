@@ -19,7 +19,7 @@
  *
  * Evolve.c
  * Implements the evolution equations for the ADM-decomposed scalar wave
- * equation as presented in Eqs. (A3c) and (A3d) of 
+ * equation as presented in Eqs. (A3c) and (A3d) of
  * https://arxiv.org/pdf/1709.06118.pdf.
  * Tensorial quantities produced in Wolfram Mathematica.
  */

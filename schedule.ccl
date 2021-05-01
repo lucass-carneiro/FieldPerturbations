@@ -13,57 +13,71 @@ schedule ADMScalarWave_CheckParameters at CCTK_PARAMCHECK
   LANG: C
 } "Check parameters"
 
-schedule ADMScalarWave_ZeroRHS at BASEGRID
-{
-  LANG: C
-} "Set all rhs functions to zero to prevent spurious nans"
-
 SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
 {
   LANG: C
   OPTIONS: META
-} "Register ADMScalarWave variables"
+} "Register variables"
 
 SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
 {
   LANG: C
   READS: Grid::coordinates(Everywhere)
   WRITES: evolved_group(Everywhere)
-} "Initialize ADMScalarWave evolved variables"
+  WRITES: rhs_group(Everywhere)
+  SYNC: rhs_group
+  SYNC: evolved_group
+} "Initialize evolved variables and RHS to zero"
+
+schedule ADMScalarWave_ZeroRHS IN MoL_CalcRHS BEFORE ADMScalarWave_RHS
+{
+  LANG: C
+  READS: Grid::coordinates(Everywhere)
+  WRITES: rhs_group(Everywhere)
+  SYNC: rhs_group
+} "Set all right hand side functions to zero to prevent spurious nans"
 
 SCHEDULE ADMScalarWave_RHS IN MoL_CalcRHS
 {
   LANG: C
   READS: evolved_group(Everywhere)
   READS: Grid::coordinates(Everywhere)
-  READS: ADMBase::alp(Everywhere)
-  READS: ADMBase::betax(Everywhere)
-  READS: ADMBase::betay(Everywhere)
-  READS: ADMBase::betaz(Everywhere)
-  READS: ADMBase::gxx(Everywhere)
-  READS: ADMBase::gxy(Everywhere)
-  READS: ADMBase::gxz(Everywhere)
-  READS: ADMBase::gyy(Everywhere)
-  READS: ADMBase::gyz(Everywhere)
-  READS: ADMBase::gzz(Everywhere)
-  READS: ADMBase::kxx(Everywhere)
-  READS: ADMBase::kxy(Everywhere)
-  READS: ADMBase::kxz(Everywhere)
-  READS: ADMBase::kyy(Everywhere)
-  READS: ADMBase::kyz(Everywhere)
-  READS: ADMBase::kzz(Everywhere)
+  READS: ADMBase::lapse(Everywhere)
+  READS: ADMBase::shift(Everywhere)
+  READS: ADMBase::metric(Everywhere)
+  READS: ADMBase::curv(Everywhere)
   WRITES: rhs_group(Interior)
   SYNC: rhs_group
 } "Evolve ADMScalarWave"
 
-SCHEDULE ADMScalarWave_Boundary IN MoL_CalcRHS AFTER ADMScalarWave_RHS
+SCHEDULE ADMScalarWave_OuterBoundary IN MoL_CalcRHS AFTER ADMScalarWave_RHS
 {
   LANG: C
   READS: evolved_group(Boundary)
   READS: rhs_group(Everywhere)
   WRITES: rhs_group(Boundary)
   SYNC: rhs_group
-} "Boundary conditions to apply to ADMScalarWave"
+  SYNC: evolved_group
+} "Apply outer boundary conditions"
+
+SCHEDULE ADMScalarWave_Boundary IN MoL_PostStep
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: evolved_group
+} "Prevent carpet intergrid boundary reflections"
+
+SCHEDULE ADMScalarWave_Boundary AT postrestrict
+{
+  LANG: C
+  SYNC: evolved_group
+} "Prevent carpet intergrid boundary reflections"
+
+SCHEDULE ADMScalarWave_Boundary AT postregrid
+{
+  LANG: C
+  SYNC: evolved_group
+} "Prevent carpet intergrid boundary reflections"
 
 if(excision_mask)
 {

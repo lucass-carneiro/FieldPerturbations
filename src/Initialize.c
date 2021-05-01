@@ -123,6 +123,9 @@ void ADMScalarWave_Initialize(CCTK_ARGUMENTS) {
 
           Phi[ijk] = amplitude * expo;
           K_Phi[ijk] = 0.0;
+
+          Phi_rhs[ijk] = 0.0;
+          K_Phi_rhs[ijk] = 0.0;
         }
       }
     }

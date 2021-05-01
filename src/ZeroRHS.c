@@ -58,12 +58,11 @@ void ADMScalarWave_ZeroRHS(CCTK_ARGUMENTS) {
   for (k = 0; k < cctk_lsh[2]; k++) {
     for (j = 0; j < cctk_lsh[1]; j++) {
       for (i = 0; i < cctk_lsh[0]; i++) {
-	ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-	
-	Phi_rhs[ijk] = 0.0;
+        ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+        Phi_rhs[ijk] = 0.0;
         K_Phi_rhs[ijk] = 0.0;
       }
     }
   }
 }
-
