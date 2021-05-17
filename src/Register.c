@@ -48,23 +48,34 @@ void ADMScalarWave_MoLRegister(CCTK_ARGUMENTS);
  * Output: Nothing                                *
  **************************************************/
 void ADMScalarWave_MoLRegister(CCTK_ARGUMENTS) {
-
   DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
   CCTK_INT ierr = 0;
 
-  const int evolved_idx = CCTK_GroupIndex("ADMScalarWave::evolved_group");
-  const int rhs_idx = CCTK_GroupIndex("ADMScalarWave::rhs_group");
+  /* 
+   * The ADM variables must be set as "Save and restore" within MoL.
+   * These are the variables that the Thorn sets but doesn't evolve.
+   */
+  const CCTK_INT lapse_idx = CCTK_GroupIndex("ADMBase::lapse");
+  const CCTK_INT shift_idx = CCTK_GroupIndex("ADMBase::shift");
+  const CCTK_INT metric_idx = CCTK_GroupIndex("ADMBase::metric");
+  const CCTK_INT curv_idx = CCTK_GroupIndex("ADMBase::curv");
 
-  if (CCTK_IsFunctionAliased("MoLRegisterEvolvedGroup")) {
-    ierr += MoLRegisterEvolvedGroup(evolved_idx, rhs_idx);
-  } else {
-    CCTK_WARN(CCTK_WARN_ABORT, "MoLRegisterEvolvedGroup not aliased !");
-    ++ierr;
-  }
+  ierr += MoLRegisterSaveAndRestoreGroup(lapse_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(shift_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(metric_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(curv_idx);
 
-  if (ierr != 0) {
-    CCTK_WARN(CCTK_WARN_ABORT,
-              "Error registering the ADM wave equation with MoL. Aborting.");
-  }
+  /*
+   * Here we register the evolved variables, the field and it's
+   * conjugate momentum
+   */
+  const CCTK_INT evolved_idx = CCTK_GroupIndex("ADMScalarWave::evolved_group");
+  const CCTK_INT rhs_idx = CCTK_GroupIndex("ADMScalarWave::rhs_group");
+
+  ierr += MoLRegisterEvolvedGroup(evolved_idx, rhs_idx);
+
+  if (ierr != 0)
+    CCTK_WARN(CCTK_WARN_ABORT, "Error registering variables within MoL. Aborting.");
 }

@@ -51,15 +51,14 @@ void ADMScalarWave_Boundary(CCTK_ARGUMENTS);
  * Output: Nothing                             *
  ***********************************************/
 void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
-
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
   if (CCTK_EQUALS(bc_type, "new_rad")) {
     CCTK_INT ierr = 0;
 
-    ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, 0.0, 1.0, radpower);
-    ierr += NewRad_Apply(cctkGH, K_Phi, K_Phi_rhs, 0.0, 1.0, radpower);
+    ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, Phi0, 1.0, nPhi);
+    ierr += NewRad_Apply(cctkGH, K_Phi, K_Phi_rhs, K_Phi0, 1.0, nK_Phi);
 
     if (ierr < 0)
       CCTK_ERROR("Failed to register NewRad boundary conditions");
@@ -170,9 +169,27 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
  * Scheduling this function in MoL_PostStep,   *
  * postrestrict and postregrid solves this.    *
  *                                             *
+ * Fuerthermore, we register all BCs as 'none' *
+ * to enforces the possible symmetry BCs       *
+ *                                             *
  * Input: CCTK_ARGUMENTS (the grid functions   *
  * from interface.ccl                          *
  *
  * Output: Nothing                             *
  ***********************************************/
-void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {}
+void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
+  CCTK_INT ierr = 0;
+
+  if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
+    ierr += Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1, "ADMScalarWave::evolved_group", "none");
+  } else {
+    CCTK_WARN(CCTK_WARN_ABORT, "Boundary_SelectGroupForBC not aliased !");
+    ++ierr;
+  }
+
+  if(ierr < 0)
+	CCTK_WARN(0, "Failed to register BC for ADMScalarWave::rhs_group");
+}

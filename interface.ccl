@@ -1,31 +1,57 @@
 # Interface definition for thorn ADMScalarWave
 implements: ADMScalarWave
-inherits: ADMBase Grid
+inherits: ADMBase Grid Boundary
+
+USES INCLUDE: Symmetry.h
 
 public:
 
-CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tensorweight=0 prolongation="none" Checkpoint="no"'
+CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tensorweight=0 Checkpoint="no"'
 {
   Phi, K_Phi
 } "The scalar and momemtum fields"
 
-CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" tensorweight=0 prolongation="none" Checkpoint="no"'
+CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" tensorweight=0 Checkpoint="no"'
 {
   Phi_rhs, K_Phi_rhs
 } "Right hand side of the evolutoin equations"
 
 ################################
-#  ALIASED FUNCTIONS FROM MOL  #
+#  ALIASED FUNCTIONS FROM MoL  #
 ################################
 
 CCTK_INT FUNCTION MoLRegisterEvolvedGroup(CCTK_INT IN EvolvedIndex, CCTK_INT IN RHSIndex)
+CCTK_INT FUNCTION MoLRegisterSaveAndRestoreGroup(CCTK_INT IN SandRIndex)
 
-REQUIRES FUNCTION MoLRegisterEvolvedGroup
+USES FUNCTION MoLRegisterEvolvedGroup
+USES FUNCTION MoLRegisterSaveAndRestoreGroup
 
 ###################################
 #  ALIASED FUNCTIONS FROM NewRad  #
 ###################################
 
-CCTK_INT FUNCTION NewRad_Apply(CCTK_POINTER_TO_CONST IN cctkGH, CCTK_REAL ARRAY IN var, CCTK_REAL ARRAY INOUT rhs, CCTK_REAL IN var0, CCTK_REAL IN v0, CCTK_INT IN radpower)  
+CCTK_INT FUNCTION                         \
+    NewRad_Apply                          \
+        (CCTK_POINTER_TO_CONST IN cctkGH, \
+         CCTK_REAL ARRAY IN var,          \
+         CCTK_REAL ARRAY INOUT rhs,       \
+         CCTK_REAL IN var0,               \
+         CCTK_REAL IN v0,                 \
+         CCTK_INT IN radpower)
 
-USES FUNCTION NewRad_Apply
+REQUIRES FUNCTION NewRad_Apply
+
+#####################################
+#  ALIASED FUNCTIONS FROM Boundary  #
+#####################################
+
+CCTK_INT FUNCTION                        \
+    Boundary_SelectGroupForBC            \
+        (CCTK_POINTER_TO_CONST IN GH,    \
+         CCTK_INT IN faces,              \
+         CCTK_INT IN boundary_width,     \
+         CCTK_INT IN table_handle,       \
+         CCTK_STRING IN group_name,      \
+         CCTK_STRING IN bc_name)
+
+REQUIRES FUNCTION Boundary_SelectGroupForBC

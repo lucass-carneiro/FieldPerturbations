@@ -3,15 +3,40 @@
 STORAGE:evolved_group[3]
 STORAGE:rhs_group
 
-schedule ADMScalarWave_Startup at STARTUP
+schedule ADMScalarWave_Startup AT STARTUP
 {
   LANG: C
 } "Register banner"
 
-schedule ADMScalarWave_CheckParameters at CCTK_PARAMCHECK
+schedule ADMScalarWave_CheckParameters AT CCTK_PARAMCHECK
 {
   LANG: C
 } "Check parameters"
+
+schedule ADMScalarWave_Symmetries AT CCTK_WRAGH
+{
+  LANG: C
+  OPTIONS: Global
+} "Register symmetries of the grid functions"
+
+schedule ADMScalarWave_RHSSymmetries AT BASEGRID
+{
+  LANG: C
+  OPTIONS: META
+} "Register symmetries of the grid functions"
+
+schedule ADMScalarWave_ZeroRHS AT BASEGRID AFTER ADMScalarWave_RHSSymmetries
+{
+  LANG:C
+} "Set all right hand side functions to zero to prevent spurious nans"
+
+SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
+{
+  LANG: C
+  READS: Grid::coordinates(Everywhere)
+  WRITES: evolved_group(Everywhere)
+  SYNC: evolved_group
+} "Initialize evolved variables and RHS to zero"
 
 SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
 {
@@ -19,65 +44,20 @@ SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
   OPTIONS: META
 } "Register variables"
 
-SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
-{
-  LANG: C
-  READS: Grid::coordinates(Everywhere)
-  WRITES: evolved_group(Everywhere)
-  WRITES: rhs_group(Everywhere)
-  SYNC: rhs_group
-  SYNC: evolved_group
-} "Initialize evolved variables and RHS to zero"
-
 schedule ADMScalarWave_ZeroRHS IN MoL_CalcRHS BEFORE ADMScalarWave_RHS
 {
   LANG: C
-  READS: Grid::coordinates(Everywhere)
-  WRITES: rhs_group(Everywhere)
-  SYNC: rhs_group
 } "Set all right hand side functions to zero to prevent spurious nans"
 
 SCHEDULE ADMScalarWave_RHS IN MoL_CalcRHS
 {
   LANG: C
-  READS: evolved_group(Everywhere)
-  READS: Grid::coordinates(Everywhere)
-  READS: ADMBase::lapse(Everywhere)
-  READS: ADMBase::shift(Everywhere)
-  READS: ADMBase::metric(Everywhere)
-  READS: ADMBase::curv(Everywhere)
-  WRITES: rhs_group(Interior)
-  SYNC: rhs_group
-} "Evolve ADMScalarWave"
+} "Compute the RHS of the field equations"
 
 SCHEDULE ADMScalarWave_OuterBoundary IN MoL_CalcRHS AFTER ADMScalarWave_RHS
 {
   LANG: C
-  READS: evolved_group(Boundary)
-  READS: rhs_group(Everywhere)
-  WRITES: rhs_group(Boundary)
-  SYNC: rhs_group
-  SYNC: evolved_group
 } "Apply outer boundary conditions"
-
-SCHEDULE ADMScalarWave_Boundary IN MoL_PostStep
-{
-  LANG: C
-  OPTIONS: LEVEL
-  SYNC: evolved_group
-} "Prevent carpet intergrid boundary reflections"
-
-SCHEDULE ADMScalarWave_Boundary AT postrestrict
-{
-  LANG: C
-  SYNC: evolved_group
-} "Prevent carpet intergrid boundary reflections"
-
-SCHEDULE ADMScalarWave_Boundary AT postregrid
-{
-  LANG: C
-  SYNC: evolved_group
-} "Prevent carpet intergrid boundary reflections"
 
 if(excision_mask)
 {
@@ -90,3 +70,58 @@ if(excision_mask)
     SYNC: evolved_group
   } "Apply excision masks"
 }
+
+SCHEDULE ADMScalarWave_Boundary IN MoL_PostStep
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: evolved_group
+} "Boundary enforcment"
+
+schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs in MoL_PostStep AFTER ADMScalarWave_Boundary
+{
+} "Apply boundary conditions"
+
+SCHEDULE ADMScalarWave_Boundary AT postrestrict
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: evolved_group
+} "Boundary enforcment"
+
+schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrict AFTER ADMScalarWave_Boundary
+{
+} "Apply boundary conditions"
+
+SCHEDULE ADMScalarWave_Boundary AT postrestrictinitial
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: evolved_group
+} "Boundary enforcment"
+
+schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrictinitial AFTER ADMScalarWave_Boundary
+{
+} "Apply boundary conditions"
+
+SCHEDULE ADMScalarWave_Boundary AT post_recover_variables
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: evolved_group
+} "Boundary enforcment"
+
+schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT post_recover_variables AFTER ADMScalarWave_Boundary
+{
+} "Apply boundary conditions"
+
+SCHEDULE ADMScalarWave_Boundary AT postregrid
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: evolved_group
+} "Boundary enforcment"
+
+schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postregrid AFTER ADMScalarWave_Boundary
+{
+} "Apply boundary conditions"

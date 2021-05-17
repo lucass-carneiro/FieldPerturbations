@@ -57,7 +57,6 @@ void ADMScalarWave_Initialize(CCTK_ARGUMENTS);
  * Output: Nothing                                *
  **************************************************/
 void ADMScalarWave_Initialize(CCTK_ARGUMENTS) {
-
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -123,9 +122,6 @@ void ADMScalarWave_Initialize(CCTK_ARGUMENTS) {
 
           Phi[ijk] = amplitude * expo;
           K_Phi[ijk] = 0.0;
-
-          Phi_rhs[ijk] = 0.0;
-          K_Phi_rhs[ijk] = 0.0;
         }
       }
     }

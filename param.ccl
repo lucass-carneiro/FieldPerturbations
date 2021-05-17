@@ -6,9 +6,24 @@ CCTK_KEYWORD bc_type "Type of boundary condition to apply"
   "new_rad"    :: "Radiating boundary condition implemented in thorn NewRad"
 } "new_rad"
 
-CCTK_INT radpower "The power parameter of the NewRad boundary condition"
+CCTK_REAL Phi0 "The field's asymptotic value"
 {
-  0:* :: "Positive"
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_INT nPhi "The field's fall of rate"
+{
+  0:4 :: "Positive in (0,4)"
+} 3
+
+CCTK_REAL K_Phi0 "The field's conjugate momentum asymptotic value"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_INT nK_Phi "The field's conjugate momentum fall of rate"
+{
+  0:4 :: "Positive in (0,4)"
 } 3
 
 CCTK_KEYWORD initial_data "Types of initial data to evolve"
