@@ -11,7 +11,7 @@ CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tens
   Phi, K_Phi
 } "The scalar and momemtum fields"
 
-CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" tensorweight=0 Checkpoint="no"'
+CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 Checkpoint="no"'
 {
   Phi_rhs, K_Phi_rhs
 } "Right hand side of the evolutoin equations"
