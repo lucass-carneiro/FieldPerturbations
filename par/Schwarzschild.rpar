@@ -52,9 +52,20 @@ sim_title = "ADMScalarWave Schwarzschild Carpet full domain test"
 # Domain setup                                                        #
 #######################################################################
 
-abs_corner = 10.0
-cells = 20
+abs_corner = 100.0
+cells = 100
 ghosts = 3
+
+z_reflection_symmetry = True
+
+if z_reflection_symmetry:
+    lower_z_corner = 0.0
+    lower_z_shiftout = 1
+    z_reflection_symmetry_string = "yes"
+else:
+    lower_z_corner = -1.0 * abs_corner
+    lower_z_shiftout = 0
+    z_reflection_symmetry_string = "no"
 
 #######################################################################
 # Spherical surfaces setup                                            #
@@ -66,19 +77,6 @@ ntheta = 41
 nphi = 78
 
 #######################################################################
-# Carpet setup                                                        #
-#######################################################################
-
-# Format: x, y, z, [radii]
-refinament_centers = [
-    (0.0, 0.0, 0.0, [10.0, 5.0, 2.50, 1.25, 0.625])
-]
-
-num_centers = len(refinament_centers)
-max_ref_levels = num_reflevels(refinament_centers)
-centers_string = centers_string(refinament_centers)
-
-#######################################################################
 # Kerr Black hole position, mass and spin                             #
 #######################################################################
 
@@ -88,6 +86,22 @@ bh_pos_z = 0.1
 bh_m = 1.0
 bh_a = 0.0
 bh_radius = bh_m + math.sqrt(bh_m**2 - bh_a**2)
+
+if z_reflection_symmetry:
+    bh_pos_z = 0.0
+
+#######################################################################
+# Carpet setup                                                        #
+#######################################################################
+
+# Format: x, y, z, [radii]
+refinament_centers = [
+    (bh_pos_x, bh_pos_y, bh_pos_z, [((2.0**i)*bh_radius) for i in range(5, 0, -1)])
+]
+
+num_centers = len(refinament_centers)
+max_ref_levels = num_reflevels(refinament_centers)
+centers_string = centers_string(refinament_centers)
 
 #######################################################################
 # Scalar field initial data                                           #
@@ -110,6 +124,9 @@ gaussian_c2 = 0.0
 gaussian_c0 = gaussian_c0/max(gaussian_c0, gaussian_c1, gaussian_c2)
 gaussian_c1 = gaussian_c1/max(gaussian_c0, gaussian_c1, gaussian_c2)
 gaussian_c2 = gaussian_c2/max(gaussian_c0, gaussian_c1, gaussian_c2)
+
+if z_reflection_symmetry:
+    gaussian_z0 = 0.0
 
 #######################################################################
 # Apparent horizons                                                   #
@@ -145,19 +162,6 @@ extra_eps = 0.30
 slope = 0.1
 
 #######################################################################
-# Multipole decomposition                                             #
-#######################################################################
-
-multipole_radii = [3.0, 5.0, 7.0, 9.0]
-lmax = 2
-extract_every = 1
-
-nradii = len(multipole_radii)
-multipoles_string = multipoles_string(multipole_radii)
-
-multipole_par_string = "{sw=0 name='Phi'}"
-
-#######################################################################
 # Time integration                                                    #
 #######################################################################
 
@@ -176,6 +180,19 @@ nan_check_every = 1
 
 info_every = 1
 out_every = math.floor(1.0/courant_factor)
+
+#######################################################################
+# Multipole decomposition                                             #
+#######################################################################
+
+multipole_radii = [3.0, 5.0, 7.0, 9.0]
+lmax = 2
+extract_every = out_every
+
+nradii = len(multipole_radii)
+multipoles_string = multipoles_string(multipole_radii)
+
+multipole_par_string = "{sw=0 name='Phi'}"
 
 parfile =f"""#######################################################################
 # Schwarzschild.par                                                   #
@@ -240,7 +257,6 @@ $courant_factor = {courant_factor}
 
 $lmax = {lmax}
 $extract_every = {extract_every}
-$nradii = {nradii}
 
 $final_time = {final_time}
 
@@ -274,7 +290,7 @@ CoordBase::xmax = $max_length
 CoordBase::ymin = $min_length
 CoordBase::ymax = $max_length
 
-CoordBase::zmin = $min_length
+CoordBase::zmin = {lower_z_corner}
 CoordBase::zmax = $max_length
 
 CoordBase::ncells_x = $cells
@@ -304,10 +320,19 @@ CoordBase::boundary_staggered_z_upper = no
 
 CoordBase::boundary_shiftout_x_lower = 0
 CoordBase::boundary_shiftout_y_lower = 0
-CoordBase::boundary_shiftout_z_lower = 0
+CoordBase::boundary_shiftout_z_lower = {lower_z_shiftout}
 CoordBase::boundary_shiftout_x_upper = 0
 CoordBase::boundary_shiftout_y_upper = 0
 CoordBase::boundary_shiftout_z_upper = 0
+
+#######################################################################
+# Reflection Symmetry                                                 #
+#######################################################################
+
+ActiveThorns = "ReflectionSymmetry SymBase"
+
+ReflectionSymmetry::reflection_z   = {z_reflection_symmetry_string}
+ReflectionSymmetry::avoid_origin_z = no
 
 #######################################################################
 # Carpet setup                                                        #
@@ -503,7 +528,7 @@ Time::dtfac           = $courant_factor
 
 ActiveThorns = "Multipole"
 
-Multipole::nradii       = $nradii
+Multipole::nradii       = {nradii}
 Multipole::ntheta       = $ntheta
 Multipole::nphi         = $nphi
 Multipole::variables    = "ADMScalarWave::Phi{multipole_par_string}"
