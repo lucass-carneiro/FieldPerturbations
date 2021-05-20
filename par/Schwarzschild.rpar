@@ -179,7 +179,8 @@ nan_check_every = 1
 #######################################################################
 
 info_every = 1
-out_every = math.floor(1.0/courant_factor)
+out3d_every = 0
+out2d_every = math.floor(1.0/courant_factor)
 
 #######################################################################
 # Multipole decomposition                                             #
@@ -187,7 +188,7 @@ out_every = math.floor(1.0/courant_factor)
 
 multipole_radii = [3.0, 5.0, 7.0, 9.0]
 lmax = 2
-extract_every = out_every
+extract_every = out2d_every
 
 nradii = len(multipole_radii)
 multipoles_string = multipoles_string(multipole_radii)
@@ -262,7 +263,8 @@ $final_time = {final_time}
 
 $nan_check_every = {nan_check_every}
 $info_every = {info_every}
-$out_every = {out_every}
+$out3d_every = {out3d_every}
+$out2d_every = {out2d_every}
 
 #######################################################################
 # General settings                                                    #
@@ -568,12 +570,19 @@ IO::out_dir                     = $parfile
 CarpetIOBasic::outInfo_every    = $info_every
 CarpetIOBasic::outInfo_vars     = "ADMScalarWave::evolved_group"
 
-CarpetIOHDF5::out_every         = $out_every
-CarpetIOHDF5::compression_level = 9
-CarpetIOHDF5::out_vars          = "ADMScalarWave::Phi"
+IOHDF5::out_every         = $out3d_every
+IOHDF5::compression_level = 9
+IOHDF5::out_vars          = "ADMScalarWave::Phi"
 
 IOASCII::out0D_every = $horizon_every
 IOASCII::out0D_vars  = "QuasiLocalMeasures::qlm_scalars{qlm_par_string}"
+
+IOHDF5::out2D_every     = $out2d_every
+IOHDF5::out2d_xy        = yes
+IOHDF5::out2d_xz        = no
+IOHDF5::out2d_yz        = no
+IOHDF5::out2d_xyplane_z = 0.0
+IOHDF5::out2D_vars      = "ADMScalarWave::Phi"
 """
 
 makepar(parfile)
