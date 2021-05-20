@@ -215,7 +215,6 @@ $courant_factor = {courant_factor}
 
 $lmax = {lmax}
 $extract_every = {extract_every}
-$nradii = {nradii}
 
 $final_time = {final_time}
 
@@ -413,7 +412,7 @@ Time::dtfac           = $courant_factor
 
 ActiveThorns = "Multipole"
 
-Multipole::nradii       = $nradii
+Multipole::nradii       = {nradii}
 Multipole::ntheta       = $ntheta
 Multipole::nphi         = $nphi
 Multipole::variables    = "ADMScalarWave::Phi{multipole_par_string}"
