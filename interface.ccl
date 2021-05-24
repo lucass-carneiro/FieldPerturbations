@@ -2,7 +2,7 @@
 implements: ADMScalarWave
 inherits: ADMBase Grid Boundary
 
-USES INCLUDE: Symmetry.h
+USES INCLUDE: Derivatives.h
 
 public:
 
