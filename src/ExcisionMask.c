@@ -74,7 +74,7 @@ void ADMScalarWave_ExcisionMask(CCTK_ARGUMENTS) {
   CCTK_REAL PhiL = 0.0;
   CCTK_REAL K_PhiL = 0.0;
 
-  int i = 0, j = 0, k = 0, ijk = 0;
+  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
 
   if (CCTK_EQUALS(mask_type, "exp_smooth_step")) {
 /* Loop over all points (ghostzones included) */

@@ -57,28 +57,15 @@ void ADMScalarWave_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   /* Ghost zone indexes */
-  const int gx = cctk_nghostzones[0];
-  const int gy = cctk_nghostzones[1];
-  const int gz = cctk_nghostzones[2];
+  const CCTK_INT gx = cctk_nghostzones[0];
+  const CCTK_INT gy = cctk_nghostzones[1];
+  const CCTK_INT gz = cctk_nghostzones[2];
 
   /* Quantities required for the derivative macros to work */
-  const CCTK_REAL dx12 = 12.0 * CCTK_DELTA_SPACE(0);
-  const CCTK_REAL dy12 = 12.0 * CCTK_DELTA_SPACE(1);
-  const CCTK_REAL dz12 = 12.0 * CCTK_DELTA_SPACE(2);
-
-  const CCTK_REAL dxsq12 = 12.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(0);
-  const CCTK_REAL dysq12 = 12.0 * CCTK_DELTA_SPACE(1) * CCTK_DELTA_SPACE(1);
-  const CCTK_REAL dzsq12 = 12.0 * CCTK_DELTA_SPACE(2) * CCTK_DELTA_SPACE(2);
-
-  const CCTK_REAL dxdy144 = 144.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(1);
-  const CCTK_REAL dxdz144 = 144.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(2);
-  const CCTK_REAL dydz144 = 144.0 * CCTK_DELTA_SPACE(1) * CCTK_DELTA_SPACE(2);
+  DECLARE_DERIVATIVE_FACTORS;
 
   /* Loop indexes */
-  int i = 0;
-  int j = 0;
-  int k = 0;
-  int ijk = 0;
+  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
 
   /* Local ADM variables */
   CCTK_REAL alpL = 0.0;

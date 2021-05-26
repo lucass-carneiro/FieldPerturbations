@@ -64,13 +64,11 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       CCTK_ERROR("Failed to register NewRad boundary conditions");
   } else if (CCTK_EQUALS(bc_type, "reflecting")) {
 
-    const int gz = cctk_nghostzones[2];
-    const int gy = cctk_nghostzones[1];
-    const int gx = cctk_nghostzones[0];
+    const CCTK_INT gz = cctk_nghostzones[2];
+    const CCTK_INT gy = cctk_nghostzones[1];
+    const CCTK_INT gx = cctk_nghostzones[0];
 
-    int i = 0;
-    int j = 0;
-    int k = 0;
+    CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
 
     /* Lower x Boundary */
     if (cctk_bbox[0]) {
@@ -78,7 +76,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = 0; i < gx; i++) {
 
-            const size_t ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
           }
@@ -92,7 +90,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = cctk_lsh[0] - gx; i < cctk_lsh[0]; i++) {
 
-            const size_t ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
           }
@@ -106,7 +104,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
         for (j = 0; j < gy; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
 
-            const size_t ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
           }
@@ -120,7 +118,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
         for (j = cctk_lsh[1] - gy; j < cctk_lsh[1]; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
 
-            const size_t ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
           }
@@ -134,7 +132,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
 
-            const size_t ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
           }
@@ -148,7 +146,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
 
-            const size_t ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
           }
@@ -184,12 +182,13 @@ void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {
   CCTK_INT ierr = 0;
 
   if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
-    ierr += Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1, "ADMScalarWave::evolved_group", "none");
+    ierr += Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
+                                      "ADMScalarWave::evolved_group", "none");
   } else {
     CCTK_WARN(CCTK_WARN_ABORT, "Boundary_SelectGroupForBC not aliased !");
     ++ierr;
   }
 
-  if(ierr < 0)
-	CCTK_WARN(0, "Failed to register BC for ADMScalarWave::rhs_group");
+  if (ierr < 0)
+    CCTK_WARN(0, "Failed to register BC for ADMScalarWave::rhs_group");
 }

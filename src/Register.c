@@ -53,7 +53,7 @@ void ADMScalarWave_MoLRegister(CCTK_ARGUMENTS) {
 
   CCTK_INT ierr = 0;
 
-  /* 
+  /*
    * The ADM variables must be set as "Save and restore" within MoL.
    * These are the variables that the Thorn sets but doesn't evolve.
    */
@@ -77,5 +77,6 @@ void ADMScalarWave_MoLRegister(CCTK_ARGUMENTS) {
   ierr += MoLRegisterEvolvedGroup(evolved_idx, rhs_idx);
 
   if (ierr != 0)
-    CCTK_WARN(CCTK_WARN_ABORT, "Error registering variables within MoL. Aborting.");
+    CCTK_WARN(CCTK_WARN_ABORT,
+              "Error registering variables within MoL. Aborting.");
 }

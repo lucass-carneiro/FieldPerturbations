@@ -49,10 +49,7 @@ void ADMScalarWave_ZeroRHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   /* Loop indexes */
-  int i = 0;
-  int j = 0;
-  int k = 0;
-  int ijk = 0;
+  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
 
   /* Loop over all points (ghostzones included) */
   for (k = 0; k < cctk_lsh[2]; k++) {

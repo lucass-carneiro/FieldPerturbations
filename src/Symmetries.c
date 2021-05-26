@@ -57,7 +57,8 @@ void ADMScalarWave_Symmetries(CCTK_ARGUMENTS) {
   ierr += SetCartSymVN(cctkGH, sym, "ADMScalarWave::K_Phi");
 
   if (ierr != 0)
-    CCTK_WARN(CCTK_WARN_ABORT, "Error registering symmetries for evolved variables. Aborting.");
+    CCTK_WARN(CCTK_WARN_ABORT,
+              "Error registering symmetries for evolved variables. Aborting.");
 }
 
 /**************************************************
@@ -83,5 +84,6 @@ void ADMScalarWave_RHSSymmetries(CCTK_ARGUMENTS) {
   ierr += SetCartSymVN(cctkGH, sym, "ADMScalarWave::K_Phi_rhs");
 
   if (ierr != 0)
-    CCTK_WARN(CCTK_WARN_ABORT, "Error registering symmetries for RHS variables. Aborting.");
+    CCTK_WARN(CCTK_WARN_ABORT,
+              "Error registering symmetries for RHS variables. Aborting.");
 }
