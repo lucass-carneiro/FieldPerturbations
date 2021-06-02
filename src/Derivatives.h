@@ -35,6 +35,11 @@
                   dxdz144 = 144.0 * CCTK_DELTA_SPACE(0) * CCTK_DELTA_SPACE(2), \
                   dydz144 = 144.0 * CCTK_DELTA_SPACE(1) * CCTK_DELTA_SPACE(2)
 
+#define DECLARE_FIRST_DERIVATIVE_FACTORS                                       \
+  const CCTK_REAL dx12 = 12.0 * CCTK_DELTA_SPACE(0),                           \
+                  dy12 = 12.0 * CCTK_DELTA_SPACE(1),                           \
+                  dz12 = 12.0 * CCTK_DELTA_SPACE(2)
+
 /* Shorthand for Cactus's index flattening */
 #define I(i_, j_, k_) CCTK_GFINDEX3D(cctkGH, i_, j_, k_)
 
