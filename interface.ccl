@@ -16,6 +16,11 @@ CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="none" t
   Phi_rhs, K_Phi_rhs
 } "Right hand side of the evolutoin equations"
 
+CCTK_REAL epsilon_group type=GF tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 Checkpoint="no"'
+{
+  epsilon
+} "Energy density of the PDE"
+
 ################################
 #  ALIASED FUNCTIONS FROM MoL  #
 ################################

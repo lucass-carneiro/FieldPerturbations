@@ -1,31 +1,32 @@
-# Schedule definitions for thorn ADMScalarWave
+# SCHEDULE definitions for thorn ADMScalarWave
 
 STORAGE:evolved_group[3]
 STORAGE:rhs_group
+STORAGE:epsilon_group
 
-schedule ADMScalarWave_Startup AT STARTUP
+SCHEDULE ADMScalarWave_Startup AT STARTUP
 {
   LANG: C
 } "Register banner"
 
-schedule ADMScalarWave_CheckParameters AT CCTK_PARAMCHECK
+SCHEDULE ADMScalarWave_CheckParameters AT CCTK_PARAMCHECK
 {
   LANG: C
 } "Check parameters"
 
-schedule ADMScalarWave_Symmetries AT CCTK_WRAGH
+SCHEDULE ADMScalarWave_Symmetries AT CCTK_WRAGH
 {
   LANG: C
   OPTIONS: Global
 } "Register symmetries of the grid functions"
 
-schedule ADMScalarWave_RHSSymmetries AT BASEGRID
+SCHEDULE ADMScalarWave_RHSSymmetries AT BASEGRID
 {
   LANG: C
   OPTIONS: META
 } "Register symmetries of the grid functions"
 
-schedule ADMScalarWave_ZeroRHS AT BASEGRID AFTER ADMScalarWave_RHSSymmetries
+SCHEDULE ADMScalarWave_ZeroRHS AT BASEGRID AFTER ADMScalarWave_RHSSymmetries
 {
   LANG:C
 } "Set all right hand side functions to zero to prevent spurious nans"
@@ -38,13 +39,22 @@ SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
   SYNC: evolved_group
 } "Initialize evolved variables and RHS to zero"
 
+SCHEDULE ADMScalarWave_Energy IN CCTK_ANALYSIS
+{
+  LANG: C
+  READS: ADMBase::metric(Interior)
+  READS: K_Phi(Interior)
+  WRITES: epsilon_group(Interior)
+  SYNC: epsilon_group
+} "Compute the associated PDE energy"
+
 SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
 {
   LANG: C
   OPTIONS: META
 } "Register variables"
 
-schedule ADMScalarWave_ZeroRHS IN MoL_CalcRHS BEFORE ADMScalarWave_RHS
+SCHEDULE ADMScalarWave_ZeroRHS IN MoL_CalcRHS BEFORE ADMScalarWave_RHS
 {
   LANG: C
 } "Set all right hand side functions to zero to prevent spurious nans"
@@ -78,7 +88,7 @@ SCHEDULE ADMScalarWave_Boundary IN MoL_PostStep
   SYNC: evolved_group
 } "Boundary enforcment"
 
-schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs in MoL_PostStep AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs in MoL_PostStep AFTER ADMScalarWave_Boundary
 {
 } "Apply boundary conditions"
 
@@ -89,7 +99,7 @@ SCHEDULE ADMScalarWave_Boundary AT postrestrict
   SYNC: evolved_group
 } "Boundary enforcment"
 
-schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrict AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrict AFTER ADMScalarWave_Boundary
 {
 } "Apply boundary conditions"
 
@@ -100,7 +110,7 @@ SCHEDULE ADMScalarWave_Boundary AT postrestrictinitial
   SYNC: evolved_group
 } "Boundary enforcment"
 
-schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrictinitial AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrictinitial AFTER ADMScalarWave_Boundary
 {
 } "Apply boundary conditions"
 
@@ -111,7 +121,7 @@ SCHEDULE ADMScalarWave_Boundary AT post_recover_variables
   SYNC: evolved_group
 } "Boundary enforcment"
 
-schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT post_recover_variables AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT post_recover_variables AFTER ADMScalarWave_Boundary
 {
 } "Apply boundary conditions"
 
@@ -122,6 +132,6 @@ SCHEDULE ADMScalarWave_Boundary AT postregrid
   SYNC: evolved_group
 } "Boundary enforcment"
 
-schedule GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postregrid AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postregrid AFTER ADMScalarWave_Boundary
 {
 } "Apply boundary conditions"
