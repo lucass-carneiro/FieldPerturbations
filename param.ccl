@@ -75,25 +75,3 @@ CCTK_REAL gaussian_c2 "The quadrupole momentum of the gaussian"
 {
   0:* :: "Positive"
 } 0.0
-
-BOOLEAN excision_mask "Apply single black hole excision mask"
-{
-} false
-
-CCTK_REAL excision_max_radius "The maximun radius of the excision mask"
-{
-  0:* :: "Positive"
-} 1.0
-
-CCTK_REAL excision_min_radius "The minimum radius of the excision mask"
-{
-  0:* :: "Positive"
-} 0.0
-
-CCTK_KEYWORD mask_type "Types excision masks to apply"
-{
-  "exp_smooth_step"     :: "A smooth step function based on exponential functions."
-  "cos_smooth_step"     :: "A smooth step function based on the cossine function."
-  "hermite_smooth_step" :: "A smooth step function based on the cubic Hermite polynomial."
-  "cubic_step"          :: "Non-smooth cubic polynomial."
-} "hermite_smooth_step"

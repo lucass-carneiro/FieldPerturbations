@@ -51,7 +51,4 @@ void ADMScalarWave_CheckParameters(CCTK_ARGUMENTS) {
   if (gaussian_sigma * gaussian_sigma < 1.0e-3)
     CCTK_PARAMWARN("The gaussian parameter sigma is too small. Increase it in "
                    "order to avoid singularities.");
-
-  if (excision_mask == 1)
-    CCTK_INFO("Excision mask enabled.");
 }

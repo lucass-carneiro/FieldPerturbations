@@ -69,18 +69,6 @@ SCHEDULE ADMScalarWave_OuterBoundary IN MoL_CalcRHS AFTER ADMScalarWave_RHS
   LANG: C
 } "Apply outer boundary conditions"
 
-if(excision_mask)
-{
-  SCHEDULE ADMScalarWave_ExcisionMask IN MoL_PostStep AFTER ADMScalarWave_Boundary
-  {
-    LANG: C
-    READS: Grid::coordinates(Everywhere)
-    READS: evolved_group(Everywhere)
-    WRITES: evolved_group(Everywhere)
-    SYNC: evolved_group
-  } "Apply excision masks"
-}
-
 SCHEDULE ADMScalarWave_Boundary IN MoL_PostStep
 {
   LANG: C

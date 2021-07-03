@@ -361,8 +361,6 @@ ADMScalarWave::gaussian_c0    = $gaussian_c0
 ADMScalarWave::gaussian_c1    = $gaussian_c1
 ADMScalarWave::gaussian_c2    = $gaussian_c2
 
-ADMScalarWave::excision_mask = no
-
 #######################################################################
 # Physical Boundaries                                                 #
 #######################################################################
