@@ -45,10 +45,30 @@ void ADMScalarWave_CheckParameters(CCTK_ARGUMENTS);
  * Output: Nothing                                *
  **************************************************/
 void ADMScalarWave_CheckParameters(CCTK_ARGUMENTS) {
-
+  DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
   if (gaussian_sigma * gaussian_sigma < 1.0e-3)
     CCTK_PARAMWARN("The gaussian parameter sigma is too small. Increase it in "
                    "order to avoid singularities.");
+
+  switch (fd_order) {
+  case 4: {
+    CCTK_INFO("Using 4th order finite differencing. Make sure that you have at "
+              "least 2 ghost zones");
+    break;
+  }
+
+  case 6: {
+    CCTK_INFO("Using 6th order finite differencing. Make sure that you have at "
+              "least 3 ghost zones");
+    break;
+  }
+
+  case 8: {
+    CCTK_INFO("Using 8th order finite differencing. Make sure that you have at "
+              "least 4 ghost zones");
+    break;
+  }
+  }
 }

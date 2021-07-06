@@ -6,6 +6,11 @@ CCTK_KEYWORD bc_type "Type of boundary condition to apply"
   "new_rad"    :: "Radiating boundary condition implemented in thorn NewRad"
 } "new_rad"
 
+INT fd_order "Order of accuracy" STEERABLE=always
+{
+  4:8:2 :: "Only even orders in the range(4,8) are implemented"
+} 4
+
 CCTK_REAL Phi0 "The field's asymptotic value"
 {
   *:* :: "No restriction"

@@ -60,7 +60,7 @@ void ADMScalarWave_Energy(CCTK_ARGUMENTS) {
   const CCTK_INT gz = cctk_nghostzones[2];
 
   /* Quantities required for the derivative macros to work */
-  DECLARE_FIRST_DERIVATIVE_FACTORS;
+  DECLARE_FIRST_DERIVATIVE_FACTORS_4;
 
   /* Loop indexes */
   CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
