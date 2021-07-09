@@ -63,7 +63,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
     if (ierr < 0)
       CCTK_ERROR("Failed to register NewRad boundary conditions");
   } else if (CCTK_EQUALS(bc_type, "reflecting")) {
-
     const CCTK_INT gz = cctk_nghostzones[2];
     const CCTK_INT gy = cctk_nghostzones[1];
     const CCTK_INT gx = cctk_nghostzones[0];
@@ -75,7 +74,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       for (k = 0; k < cctk_lsh[2]; k++) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = 0; i < gx; i++) {
-
             ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
@@ -89,7 +87,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       for (k = 0; k < cctk_lsh[2]; k++) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = cctk_lsh[0] - gx; i < cctk_lsh[0]; i++) {
-
             ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
@@ -103,7 +100,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       for (k = 0; k < cctk_lsh[2]; k++) {
         for (j = 0; j < gy; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
-
             ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
@@ -117,7 +113,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       for (k = 0; k < cctk_lsh[2]; k++) {
         for (j = cctk_lsh[1] - gy; j < cctk_lsh[1]; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
-
             ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
@@ -131,7 +126,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       for (k = 0; k < gz; k++) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
-
             ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;
@@ -145,7 +139,6 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
       for (k = cctk_lsh[2] - gz; k < cctk_lsh[2]; k++) {
         for (j = 0; j < cctk_lsh[1]; j++) {
           for (i = 0; i < cctk_lsh[0]; i++) {
-
             ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
             Phi_rhs[ijk] = K_Phi[ijk];
             K_Phi_rhs[ijk] = 0.0;

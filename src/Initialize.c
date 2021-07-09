@@ -65,7 +65,6 @@ void ADMScalarWave_Initialize(CCTK_ARGUMENTS) {
 
   /* Determine which type of initial data to apply */
   if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
-
     CCTK_REAL xmx0 = 0.0;
     CCTK_REAL ymy0 = 0.0;
     CCTK_REAL zmz0 = 0.0;
@@ -91,7 +90,6 @@ void ADMScalarWave_Initialize(CCTK_ARGUMENTS) {
     for (k = 0; k < cctk_lsh[2]; k++) {
       for (j = 0; j < cctk_lsh[1]; j++) {
         for (i = 0; i < cctk_lsh[0]; i++) {
-
           ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
           xmx0 = x[ijk] - gaussian_x0;

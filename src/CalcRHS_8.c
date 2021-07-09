@@ -189,7 +189,6 @@ void ADMScalarWave_RHS_8(CCTK_ARGUMENTS) {
   for (k = gz; k < cctk_lsh[2] - gz; k++) {
     for (j = gy; j < cctk_lsh[1] - gy; j++) {
       for (i = gx; i < cctk_lsh[0] - gx; i++) {
-
         ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
         /* Assing ADM local variables */
