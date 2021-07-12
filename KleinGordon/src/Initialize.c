@@ -1,15 +1,15 @@
 /*
- *  ADMScalarWave - Thorn for scalar wave evolutions in arbitrary space-times
+ *  KleinGordon - Thorn for scalar wave evolutions in arbitrary space-times
  *  Copyright (C) 2021  Lucas Timotheo Sanches
  *
- *  This file is part of ADMScalarWave.
+ *  This file is part of KleinGordon.
  *
- *  ADMScalarWave is free software: you can redistribute it and/or modify
+ *  KleinGordon is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  ADMScalarWave is distributed in the hope that it will be useful,
+ *  KleinGordon is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -43,10 +43,10 @@
 /**************
  * Prototypes *
  **************/
-void ADMScalarWave_Initialize(CCTK_ARGUMENTS);
+void KleinGordon_Initialize(CCTK_ARGUMENTS);
 
 /**************************************************
- * ADMScalarWave_Initialize(CCTK_ARGUMENTS)       *
+ * KleinGordon_Initialize(CCTK_ARGUMENTS)       *
  *                                                *
  * This function provies the scalar fields with   *
  * initial data to begin it's time evolution.     *
@@ -56,7 +56,7 @@ void ADMScalarWave_Initialize(CCTK_ARGUMENTS);
  *                                                *
  * Output: Nothing                                *
  **************************************************/
-void ADMScalarWave_Initialize(CCTK_ARGUMENTS) {
+void KleinGordon_Initialize(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 

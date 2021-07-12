@@ -1,37 +1,37 @@
-# SCHEDULE definitions for thorn ADMScalarWave
+# SCHEDULE definitions for thorn KleinGordon
 
 STORAGE:evolved_group[3]
 STORAGE:rhs_group
 STORAGE:epsilon_group
 
-SCHEDULE ADMScalarWave_Startup AT STARTUP
+SCHEDULE KleinGordon_Startup AT STARTUP
 {
   LANG: C
 } "Register banner"
 
-SCHEDULE ADMScalarWave_CheckParameters AT CCTK_PARAMCHECK
+SCHEDULE KleinGordon_CheckParameters AT CCTK_PARAMCHECK
 {
   LANG: C
 } "Check parameters"
 
-SCHEDULE ADMScalarWave_Symmetries AT CCTK_WRAGH
+SCHEDULE KleinGordon_Symmetries AT CCTK_WRAGH
 {
   LANG: C
   OPTIONS: Global
 } "Register symmetries of the grid functions"
 
-SCHEDULE ADMScalarWave_RHSSymmetries AT BASEGRID
+SCHEDULE KleinGordon_RHSSymmetries AT BASEGRID
 {
   LANG: C
   OPTIONS: META
 } "Register symmetries of the grid functions"
 
-SCHEDULE ADMScalarWave_ZeroRHS AT BASEGRID AFTER ADMScalarWave_RHSSymmetries
+SCHEDULE KleinGordon_ZeroRHS AT BASEGRID AFTER KleinGordon_RHSSymmetries
 {
   LANG:C
 } "Set all right hand side functions to zero to prevent spurious nans"
 
-SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
+SCHEDULE KleinGordon_Initialize AT CCTK_INITIAL
 {
   LANG: C
   READS: Grid::coordinates(Everywhere)
@@ -39,7 +39,7 @@ SCHEDULE ADMScalarWave_Initialize AT CCTK_INITIAL
   SYNC: evolved_group
 } "Initialize evolved variables and RHS to zero"
 
-SCHEDULE ADMScalarWave_Energy IN CCTK_ANALYSIS
+SCHEDULE KleinGordon_Energy IN CCTK_ANALYSIS
 {
   LANG: C
   READS: ADMBase::metric(Interior)
@@ -48,20 +48,20 @@ SCHEDULE ADMScalarWave_Energy IN CCTK_ANALYSIS
   SYNC: epsilon_group
 } "Compute the associated PDE energy"
 
-SCHEDULE ADMScalarWave_MoLRegister IN MoL_Register
+SCHEDULE KleinGordon_MoLRegister IN MoL_Register
 {
   LANG: C
   OPTIONS: META
 } "Register variables"
 
-SCHEDULE ADMScalarWave_ZeroRHS IN MoL_CalcRHS BEFORE ADMScalarWave_RHS
+SCHEDULE KleinGordon_ZeroRHS IN MoL_CalcRHS BEFORE KleinGordon_RHS
 {
   LANG: C
 } "Set all right hand side functions to zero to prevent spurious nans"
 
 if(fd_order == 4)
 {
-  SCHEDULE ADMScalarWave_RHS_4 AS ADMScalarWave_RHS IN MoL_CalcRHS
+  SCHEDULE KleinGordon_RHS_4 AS KleinGordon_RHS IN MoL_CalcRHS
   {
 	LANG: C
   } "Compute the RHS of the field equations using 4th order finite differences"
@@ -69,7 +69,7 @@ if(fd_order == 4)
 
 if(fd_order == 6)
 {
-  SCHEDULE ADMScalarWave_RHS_6 AS ADMScalarWave_RHS IN MoL_CalcRHS
+  SCHEDULE KleinGordon_RHS_6 AS KleinGordon_RHS IN MoL_CalcRHS
   {
 	LANG: C
   } "Compute the RHS of the field equations using 6th order finite differences"
@@ -77,68 +77,68 @@ if(fd_order == 6)
 
 if(fd_order == 8)
 {
-  SCHEDULE ADMScalarWave_RHS_8 AS ADMScalarWave_RHS IN MoL_CalcRHS
+  SCHEDULE KleinGordon_RHS_8 AS KleinGordon_RHS IN MoL_CalcRHS
   {
 	LANG: C
   } "Compute the RHS of the field equations using 8th order finite differences"
 }
 
-SCHEDULE ADMScalarWave_OuterBoundary IN MoL_CalcRHS AFTER ADMScalarWave_RHS
+SCHEDULE KleinGordon_OuterBoundary IN MoL_CalcRHS AFTER KleinGordon_RHS
 {
   LANG: C
 } "Apply outer boundary conditions"
 
-SCHEDULE ADMScalarWave_Boundary IN MoL_PostStep
+SCHEDULE KleinGordon_Boundary IN MoL_PostStep
 {
   LANG: C
   OPTIONS: LEVEL
   SYNC: evolved_group
 } "Boundary enforcment"
 
-SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs in MoL_PostStep AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as KleinGordon_ApplyBCs in MoL_PostStep AFTER KleinGordon_Boundary
 {
 } "Apply boundary conditions"
 
-SCHEDULE ADMScalarWave_Boundary AT postrestrict
+SCHEDULE KleinGordon_Boundary AT postrestrict
 {
   LANG: C
   OPTIONS: LEVEL
   SYNC: evolved_group
 } "Boundary enforcment"
 
-SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrict AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as KleinGordon_ApplyBCs AT postrestrict AFTER KleinGordon_Boundary
 {
 } "Apply boundary conditions"
 
-SCHEDULE ADMScalarWave_Boundary AT postrestrictinitial
+SCHEDULE KleinGordon_Boundary AT postrestrictinitial
 {
   LANG: C
   OPTIONS: LEVEL
   SYNC: evolved_group
 } "Boundary enforcment"
 
-SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postrestrictinitial AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as KleinGordon_ApplyBCs AT postrestrictinitial AFTER KleinGordon_Boundary
 {
 } "Apply boundary conditions"
 
-SCHEDULE ADMScalarWave_Boundary AT post_recover_variables
+SCHEDULE KleinGordon_Boundary AT post_recover_variables
 {
   LANG: C
   OPTIONS: LEVEL
   SYNC: evolved_group
 } "Boundary enforcment"
 
-SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT post_recover_variables AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as KleinGordon_ApplyBCs AT post_recover_variables AFTER KleinGordon_Boundary
 {
 } "Apply boundary conditions"
 
-SCHEDULE ADMScalarWave_Boundary AT postregrid
+SCHEDULE KleinGordon_Boundary AT postregrid
 {
   LANG: C
   OPTIONS: LEVEL
   SYNC: evolved_group
 } "Boundary enforcment"
 
-SCHEDULE GROUP ApplyBCs as ADMScalarWave_ApplyBCs AT postregrid AFTER ADMScalarWave_Boundary
+SCHEDULE GROUP ApplyBCs as KleinGordon_ApplyBCs AT postregrid AFTER KleinGordon_Boundary
 {
 } "Apply boundary conditions"

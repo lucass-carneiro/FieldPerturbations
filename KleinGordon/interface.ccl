@@ -1,5 +1,5 @@
-# Interface definition for thorn ADMScalarWave
-implements: ADMScalarWave
+# Interface definition for thorn KleinGordon
+implements: KleinGordon
 inherits: ADMBase Grid Boundary
 
 USES INCLUDE: Derivatives.h
@@ -14,7 +14,7 @@ CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tens
 CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 Checkpoint="no"'
 {
   Phi_rhs, K_Phi_rhs
-} "Right hand side of the evolutoin equations"
+} "Right hand side of the evolution equations"
 
 CCTK_REAL epsilon_group type=GF tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 Checkpoint="no"'
 {

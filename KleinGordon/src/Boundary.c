@@ -1,15 +1,15 @@
 /*
- *  ADMScalarWave - Thorn for scalar wave evolutions in arbitrary space-times
+ *  KleinGordon - Thorn for scalar wave evolutions in arbitrary space-times
  *  Copyright (C) 2021  Lucas Timotheo Sanches
  *
- *  This file is part of ADMScalarWave.
+ *  This file is part of KleinGordon.
  *
- *  ADMScalarWave is free software: you can redistribute it and/or modify
+ *  KleinGordon is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  ADMScalarWave is distributed in the hope that it will be useful,
+ *  KleinGordon is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -32,11 +32,11 @@
 /**************
  * Prototypes *
  **************/
-void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS);
-void ADMScalarWave_Boundary(CCTK_ARGUMENTS);
+void KleinGordon_OuterBoundary(CCTK_ARGUMENTS);
+void KleinGordon_Boundary(CCTK_ARGUMENTS);
 
 /***********************************************
- * ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) *
+ * KleinGordon_OuterBoundary(CCTK_ARGUMENTS) *
  *                                             *
  * This function updates the grid functions    *
  * at the outer boundary points with boundary  *
@@ -50,7 +50,7 @@ void ADMScalarWave_Boundary(CCTK_ARGUMENTS);
  *                                             *
  * Output: Nothing                             *
  ***********************************************/
-void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
+void KleinGordon_OuterBoundary(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -150,7 +150,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
 }
 
 /***********************************************
- * ADMScalarWave_Boundary(void)                *
+ * KleinGordon_Boundary(void)                *
  *                                             *
  * This function is a no-op (it does nothing). *
  * After taking a time step Carpet might apply *
@@ -168,7 +168,7 @@ void ADMScalarWave_OuterBoundary(CCTK_ARGUMENTS) {
  *
  * Output: Nothing                             *
  ***********************************************/
-void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {
+void KleinGordon_Boundary(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -176,12 +176,12 @@ void ADMScalarWave_Boundary(CCTK_ARGUMENTS) {
 
   if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
     ierr += Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
-                                      "ADMScalarWave::evolved_group", "none");
+                                      "KleinGordon::evolved_group", "none");
   } else {
     CCTK_WARN(CCTK_WARN_ABORT, "Boundary_SelectGroupForBC not aliased !");
     ++ierr;
   }
 
   if (ierr < 0)
-    CCTK_WARN(0, "Failed to register BC for ADMScalarWave::rhs_group");
+    CCTK_WARN(0, "Failed to register BC for KleinGordon::rhs_group");
 }

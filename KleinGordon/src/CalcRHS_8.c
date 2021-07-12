@@ -1,15 +1,15 @@
 /*
- *  ADMScalarWave - Thorn for scalar wave evolutions in arbitrary space-times
+ *  KleinGordon - Thorn for scalar wave evolutions in arbitrary space-times
  *  Copyright (C) 2021  Lucas Timotheo Sanches
  *
- *  This file is part of ADMScalarWave.
+ *  This file is part of KleinGordon.
  *
- *  ADMScalarWave is free software: you can redistribute it and/or modify
+ *  KleinGordon is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  ADMScalarWave is distributed in the hope that it will be useful,
+ *  KleinGordon is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -22,7 +22,7 @@
  * equation as presented in Eqs. (A3c) and (A3d) of
  * https://arxiv.org/pdf/1709.06118.pdf.
  * Tensorial quantities produced in Wolfram Mathematica.
- * 4th order finite differencing
+ * 8th order finite differencing
  */
 
 /*******************
@@ -40,10 +40,10 @@
 /**************
  * Prototypes *
  **************/
-void ADMScalarWave_RHS_4(CCTK_ARGUMENTS);
+void KleinGordon_RHS_8(CCTK_ARGUMENTS);
 
 /**********************************************
- * ADMScalarWave_RHS_4(CCTK_ARGUMENTS)        *
+ * KleinGordon_RHS_8(CCTK_ARGUMENTS)        *
  *                                            *
  * This function computes the right hand side *
  * of the ADM scalar wave equation.           *
@@ -53,7 +53,7 @@ void ADMScalarWave_RHS_4(CCTK_ARGUMENTS);
  *                                            *
  * Output: Nothing                            *
  **********************************************/
-void ADMScalarWave_RHS_4(CCTK_ARGUMENTS) {
+void KleinGordon_RHS_8(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -63,7 +63,7 @@ void ADMScalarWave_RHS_4(CCTK_ARGUMENTS) {
   const CCTK_INT gz = cctk_nghostzones[2];
 
   /* Quantities required for the derivative macros to work */
-  DECLARE_DERIVATIVE_FACTORS_4;
+  DECLARE_DERIVATIVE_FACTORS_8;
 
   /* Loop indexes */
   CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
@@ -231,53 +231,53 @@ void ADMScalarWave_RHS_4(CCTK_ARGUMENTS) {
                   2 * igxyL * kxyL + 2 * igxzL * kxzL + 2 * igyzL * kyzL;
 
         /* Derivatives of Phi */
-        d_x_Phi = D4x(Phi);
-        d_y_Phi = D4y(Phi);
-        d_z_Phi = D4z(Phi);
+        d_x_Phi = D8x(Phi);
+        d_y_Phi = D8y(Phi);
+        d_z_Phi = D8z(Phi);
 
-        d_xx_Phi = D4xx(Phi);
-        d_xy_Phi = D4xy(Phi);
-        d_xz_Phi = D4xz(Phi);
+        d_xx_Phi = D8xx(Phi);
+        d_xy_Phi = D8xy(Phi);
+        d_xz_Phi = D8xz(Phi);
 
-        d_yy_Phi = D4yy(Phi);
-        d_yz_Phi = D4yz(Phi);
+        d_yy_Phi = D8yy(Phi);
+        d_yz_Phi = D8yz(Phi);
 
-        d_zz_Phi = D4zz(Phi);
+        d_zz_Phi = D8zz(Phi);
 
         /* Derivatives of the metric */
-        d_x_gxx = D4x(gxx);
-        d_y_gxx = D4y(gxx);
-        d_z_gxx = D4z(gxx);
+        d_x_gxx = D8x(gxx);
+        d_y_gxx = D8y(gxx);
+        d_z_gxx = D8z(gxx);
 
-        d_x_gxy = D4x(gxy);
-        d_y_gxy = D4y(gxy);
-        d_z_gxy = D4z(gxy);
+        d_x_gxy = D8x(gxy);
+        d_y_gxy = D8y(gxy);
+        d_z_gxy = D8z(gxy);
 
-        d_x_gxz = D4x(gxz);
-        d_y_gxz = D4y(gxz);
-        d_z_gxz = D4z(gxz);
+        d_x_gxz = D8x(gxz);
+        d_y_gxz = D8y(gxz);
+        d_z_gxz = D8z(gxz);
 
-        d_x_gyy = D4x(gyy);
-        d_y_gyy = D4y(gyy);
-        d_z_gyy = D4z(gyy);
+        d_x_gyy = D8x(gyy);
+        d_y_gyy = D8y(gyy);
+        d_z_gyy = D8z(gyy);
 
-        d_x_gyz = D4x(gyz);
-        d_y_gyz = D4y(gyz);
-        d_z_gyz = D4z(gyz);
+        d_x_gyz = D8x(gyz);
+        d_y_gyz = D8y(gyz);
+        d_z_gyz = D8z(gyz);
 
-        d_x_gzz = D4x(gzz);
-        d_y_gzz = D4y(gzz);
-        d_z_gzz = D4z(gzz);
+        d_x_gzz = D8x(gzz);
+        d_y_gzz = D8y(gzz);
+        d_z_gzz = D8z(gzz);
 
         /* Derivatives of Alpha */
-        d_x_alp = D4x(alp);
-        d_y_alp = D4y(alp);
-        d_z_alp = D4z(alp);
+        d_x_alp = D8x(alp);
+        d_y_alp = D8y(alp);
+        d_z_alp = D8z(alp);
 
         /* Derivatives of K_Phi */
-        d_x_K_Phi = D4x(K_Phi);
-        d_y_K_Phi = D4y(K_Phi);
-        d_z_K_Phi = D4z(K_Phi);
+        d_x_K_Phi = D8x(K_Phi);
+        d_y_K_Phi = D8y(K_Phi);
+        d_z_K_Phi = D8z(K_Phi);
 
         /* Christoffell symbols */
         Gamma_xxx = 0.5 * (igxxL * d_x_gxx - igxyL * d_y_gxx - igxzL * d_z_gxx +

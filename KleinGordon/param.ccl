@@ -1,4 +1,4 @@
-# Parameter definitions for thorn ADMScalarWave
+# Parameter definitions for thorn KleinGrodon
 
 CCTK_KEYWORD bc_type "Type of boundary condition to apply"
 {
