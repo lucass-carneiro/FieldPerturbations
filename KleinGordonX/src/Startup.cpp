@@ -23,9 +23,11 @@
 
 #include "KleinGordonX.hpp"
 
-extern "C" void KleinGordenX::KleinGordonX_Startup() {
+extern "C" int KleinGordonX::KleinGordonX_Startup(void) {
   const char *banner =
       "KleinGordonX: Evolutions of a Scalar Klein-Gordon field over an "
       "arbitrary background";
   CCTK_RegisterBanner(banner);
+
+  return 0;
 }

@@ -32,23 +32,23 @@ extern "C" void KleinGordonX::KleinGordonX_Energy(CCTK_ARGUMENTS) {
   const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout(cctkGH, indextype);
 
-  const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
-  const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);
+  const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
+  const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
   const GF3D2<CCTK_REAL> gf_epsilon(layout, epsilon);
 
   auto error_lambda =
       [&](const PointDesc &p) {
-        CCTK_REAL dt_phi = gf_psi(p.I);
+        CCTK_REAL dt_phi = gf_K_Phi(p.I);
         CCTK_REAL dx_phi =
-            (gf_phi(p.I + p.DI[0]) - gf_phi(p.I - p.DI[0])) / (2 * p.dx);
+            (gf_Phi(p.I + p.DI[0]) - gf_Phi(p.I - p.DI[0])) / (2 * p.dx);
         CCTK_REAL dy_phi =
-            (gf_phi(p.I + p.DI[1]) - gf_phi(p.I - p.DI[1])) / (2 * p.dy);
+            (gf_Phi(p.I + p.DI[1]) - gf_Phi(p.I - p.DI[1])) / (2 * p.dy);
         CCTK_REAL dz_phi =
-            (gf_phi(p.I + p.DI[2]) - gf_phi(p.I - p.DI[2])) / (2 * p.dz);
-        gf_eps(p.I) = (pow(dt_phi, 2) + pow(dx_phi, 2) + pow(dy_phi, 2) +
+            (gf_Phi(p.I + p.DI[2]) - gf_Phi(p.I - p.DI[2])) / (2 * p.dz);
+        gf_epsilon(p.I) = (pow(dt_phi, 2) + pow(dx_phi, 2) + pow(dy_phi, 2) +
                        pow(dz_phi, 2)) /
                       2;
-      }
+  };
 
   loop_int<1, 1, 1>(cctkGH, error_lambda);
 }

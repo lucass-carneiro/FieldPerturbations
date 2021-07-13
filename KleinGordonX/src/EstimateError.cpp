@@ -21,9 +21,10 @@
  * Computes the regrid error.
  */
 
-#include "KlainGordonX.hpp"
+#include "KleinGordonX.hpp"
 
 using namespace Loop;
+using namespace std;
 
 extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_EstimateError;
@@ -31,13 +32,13 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
 
   const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout(cctkGH, indextype);
-  const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
-  const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);
+  const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
+  const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
   const GF3D2<CCTK_REAL> gf_regrid_error(layout, regrid_error);
 
   auto regriderror_lambda =
       [&](const PointDesc &p) {
-        CCTK_REAL base_phi = fabs(gf_Phi(p.I)) + fabs(phi_abs);
+        CCTK_REAL base_phi = fabs(gf_Phi(p.I)) + fabs(1.0);
         CCTK_REAL errx_phi = fabs(gf_Phi(p.I - p.DI[0]) - 2 * gf_Phi(p.I) +
                                   gf_Phi(p.I + p.DI[0])) /
                              base_phi;
@@ -47,7 +48,7 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
         CCTK_REAL errz_phi = fabs(gf_Phi(p.I - p.DI[2]) - 2 * gf_Phi(p.I) +
                                   gf_Phi(p.I + p.DI[2])) /
                              base_phi;
-        CCTK_REAL base_psi = fabs(gf_K_Phi(p.I)) + fabs(psi_abs);
+        CCTK_REAL base_psi = fabs(gf_K_Phi(p.I)) + fabs(1.0);
         CCTK_REAL errx_psi = fabs(gf_K_Phi(p.I - p.DI[0]) - 2 * gf_K_Phi(p.I) +
                                   gf_K_Phi(p.I + p.DI[0])) /
                              base_psi;
@@ -59,7 +60,7 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
                              base_psi;
         gf_regrid_error(p.I) =
             errx_phi + erry_phi + errz_phi + errx_psi + erry_psi + errz_psi;
-      }
+  };
 
   loop_int<1, 1, 1>(cctkGH, regriderror_lambda);
 }

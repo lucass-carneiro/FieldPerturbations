@@ -44,7 +44,9 @@ extern "C" void KleinGordonX::KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
     auto dirichilet_lambda = [&](const PointDesc &p) {
       gf_Phi(p.I) = CCTK_REAL(0);
       gf_K_Phi(p.I) = CCTK_REAL(0);
-    } loop_bnd<1, 1, 1>(cctkGH, dirichilet_lambda);
+    };
+
+    loop_bnd<1, 1, 1>(cctkGH, dirichilet_lambda);
   }
 }
 
@@ -61,7 +63,7 @@ extern "C" void KleinGordonX::KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
       [&](const PointDesc &p) {
         gf_Phi_rhs(p.I) = CCTK_REAL(0);
         gf_K_Phi_rhs(p.I) = CCTK_REAL(0);
-      }
+  };
 
   loop_bnd<1, 1, 1>(cctkGH, dirichilet_lambda);
 }

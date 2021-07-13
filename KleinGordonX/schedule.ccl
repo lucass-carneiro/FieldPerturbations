@@ -50,13 +50,13 @@ SCHEDULE GROUP KleinGordonX_AnalysisGroup AT analysis
 ################################################################################
 
 
-SCHEDULE KleinGordonX_Startup AT KleinGordonX_StartupGroup
+SCHEDULE KleinGordonX_Startup IN KleinGordonX_StartupGroup
 {
   LANG: C
 } "Register banner"
 
 
-SCHEDULE KleinGordonX_CheckParameters AT KleinGordonX_ParamCheckGroup
+SCHEDULE KleinGordonX_CheckParameters IN KleinGordonX_ParamCheckGroup
 {
   LANG: C
 } "Check parameters"

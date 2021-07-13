@@ -24,11 +24,15 @@
 #include "KleinGordonX.hpp"
 
 using namespace Loop;
+using namespace std;
 
 extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Initialize;
   DECLARE_CCTK_PARAMETERS;
 
+  const CCTK_REAL t = cctk_time;
+  const CCTK_REAL dt = CCTK_DELTA_TIME;
+  
   const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout(cctkGH, indextype);
   const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
@@ -38,9 +42,9 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
 
     auto gaussian_lambda =
         [&](const PointDesc &p) {
-          gf_Phi(p.I) = gaussian(p.x, p.y, p.z);
-          gf_K_Phi(p.I) = CCTK_REAL(0);
-        }
+         gf_Phi(p.I) = gaussian(t, p.x, p.y, p.z);
+         gf_K_Phi(p.I) = timederiv(gaussian, dt)(t, p.x, p.y, p.z);
+    };
 
     loop_int<1, 1, 1>(cctkGH, gaussian_lambda);
   }
@@ -52,8 +56,8 @@ CCTK_REAL KleinGordonX::gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
 
   // u(t,r) = (f(r-t) - f(r+t)) / r
   auto r = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-  auto f = [&](auto x) { return exp(-0.5 * pow(x / width, 2)); };
-  auto fx = [&](auto x) { return -x / pow(width, 2) * f(x); };
+  auto f = [&](auto x) { return exp(-0.5 * pow(x / gaussian_sigma, 2)); };
+  auto fx = [&](auto x) { return -x / pow(gaussian_sigma, 2) * f(x); };
 
   // Use L'Hôpital's rule for small r
   if (r < 1.0e-8)
