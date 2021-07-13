@@ -1,0 +1,33 @@
+# Interface definition for thorn KleinGordonX
+
+IMPLEMENTS: KleinGordonX
+INHERITS: ADMBase Grid CarpetX
+
+USES INCLUDE HEADER: KleinGordonX.hpp
+USES INCLUDE HEADER: fixmath.hxx
+USES INCLUDE HEADER: loop.hxx
+
+public:
+
+CCTK_REAL evolved_group type=gf tags='index={1 1 1} rhs="rhs_group"'
+{
+  Phi
+  K_Phi
+} "The scalar and conjugate momemtum fields"
+
+CCTK_REAL rhs_group type=gf tags='index={1 1 1} checkpoint="no"'
+{
+  Phi_rhs
+  K_Phi_rhs
+} "Right hand side of the evolution equations"
+
+CCTK_REAL epsilon_group TYPE=gf TAGS='index={1 1 1} checkpoint="no"'
+{
+  epsilon
+} "Energy density of the wave equation"
+
+CCTK_REAL error_group TYPE=gf TAGS='index={1 1 1} checkpoint="no"'
+{
+  Phi_err
+  K_Psi_err
+} "Error of wave equation solution"

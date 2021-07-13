@@ -1,0 +1,130 @@
+# Schedule definitions for thorn KleinGordonX
+
+
+# Define some schedule groups to organize the schedule
+
+SCHEDULE GROUP KleinGordonX_StartupGroup AT STARTUP
+{
+} "Startup functions, such as banner registration and other startup information"
+
+SCHEDULE GROUP KleinGordonX_ParamCheckGroup AT CCTK_PARAMCHECK
+{
+} "Check parameters"
+
+
+
+SCHEDULE GROUP KleinGordonX_InitialGroup AT initial
+{
+} "Set up initial conditions"
+
+
+
+SCHEDULE GROUP KleinGordonX_PostStepGroup AT postinitial
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP KleinGordonX_PostStepGroup AT postrestrict
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP KleinGordonX_PostStepGroup AT postregrid
+{
+} "Post-process state variables"
+
+
+
+SCHEDULE GROUP KleinGordonX_PostStepGroup IN ODESolvers_PostStep
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP KleinGordonX_RHSGroup IN ODESolvers_RHS
+{
+} "Calculate RHS"
+
+
+
+SCHEDULE GROUP KleinGordonX_AnalysisGroup AT analysis
+{
+} "Analyse state"
+
+################################################################################
+
+
+SCHEDULE KleinGordonX_Startup AT KleinGordonX_StartupGroup
+{
+  LANG: C
+} "Register banner"
+
+
+SCHEDULE KleinGordonX_CheckParameters AT KleinGordonX_ParamCheckGroup
+{
+  LANG: C
+} "Check parameters"
+
+
+SCHEDULE KleinGordonX_Initialize IN KleinGordonX_InitialGroup
+{
+  LANG: C
+  WRITES: Phi(interior) K_Phi(interior)
+} "Set up initial conditions for the wave equation"
+
+SCHEDULE KleinGordonX_Sync IN KleinGordonX_PostStepGroup
+{
+  LANG: C
+  SYNC: evolved_group
+} "Boundary conditions for the wave equation"
+
+SCHEDULE KleinGordonX_Boundaries IN KleinGordonX_PostStepGroup AFTER KleinGordonX_Sync
+{
+  LANG: C
+  READS: evolved_group(interior)
+  WRITES: evolved_group(boundary)
+} "Boundary conditions for the wave equation"
+
+
+
+SCHEDULE KleinGordonX_EstimateError IN KleinGordonX_PostStepGroup AFTER (KleinGordonX_Sync KleinGordonX_Boundaries)
+{
+  LANG: C
+  READS: Phi(interior) K_Phi(interior)
+  WRITES: CarpetX::regrid_error(interior)
+} "Estimate local error for regridding initial conditions"
+
+
+
+SCHEDULE KleinGordonX_RHS IN KleinGordonX_RHSGroup
+{
+  LANG: C
+  READS: Phi(everywhere) K_Phi(everywhere)
+  WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
+  SYNC: rhs_group
+} "Calculate the RHS for the wave equation"
+
+SCHEDULE KleinGordonX_RHSSync IN KleinGordonX_RHSGroup AFTER KleinGordonX_RHS
+{
+  LANG: C
+  SYNC: rhs_group
+} "Boundary conditions for the RHS of the wave equation"
+
+SCHEDULE KleinGordonX_RHSBoundaries IN KleinGordonX_RHSGroup AFTER KleinGordonX_RHSSync
+{
+  LANG: C
+  WRITES: Phi_rhs(boundary) K_Phi_rhs(boundary)
+} "Boundary conditions for the RHS of the wave equation"
+
+
+
+SCHEDULE KleinGordonX_Energy IN KleinGordonX_AnalysisGroup
+{
+  LANG: C
+  READS: Phi(everywhere) K_phi(interior)
+  WRITES: epsilon(interior)
+  SYNC: epsilon_group
+} "Calculate energy density for the wave equation"
+
+SCHEDULE KleinGordonX_Error IN KleinGordonX_AnalysisGroup
+{
+  LANG: C
+  READS: Phi(everywhere) K_Phi(everywhere)
+  WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
+} "Calculate error for the wave equation"
