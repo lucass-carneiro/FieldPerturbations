@@ -3,13 +3,17 @@
 CCTK_KEYWORD bc_type "Type of boundary condition to apply"
 {
   "reflecting" :: "Traditional totally reflecting boundary condition."
-  "new_rad"    :: "Radiating boundary condition implemented in thorn NewRad"
-} "new_rad"
+  "NewRad"    :: "Radiating boundary condition implemented in thorn NewRad"
+} "NewRad"
+
+
 
 INT fd_order "Order of accuracy" STEERABLE=always
 {
   4:8:2 :: "Only even orders in the range(4,8) are implemented"
 } 4
+
+
 
 CCTK_REAL Phi0 "The field's asymptotic value"
 {
@@ -31,15 +35,21 @@ CCTK_INT nK_Phi "The field's conjugate momentum fall of rate"
   0:4 :: "Positive in (0,4)"
 } 3
 
-CCTK_KEYWORD initial_data "Types of initial data to evolve"
-{
-  "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
-} "multipolar_gaussian"
+
 
 CCTK_REAL field_mass "The mass of the scalar field"
 {
   0:* :: "Positive"
 } 1.0
+
+
+
+CCTK_KEYWORD initial_data "Types of initial data to evolve"
+{
+  "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
+} "multipolar_gaussian"
+
+
 
 CCTK_REAL gaussian_sigma "The width of the gaussian"
 {

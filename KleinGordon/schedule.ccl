@@ -37,7 +37,7 @@ SCHEDULE KleinGordon_Initialize AT CCTK_INITIAL
   READS: Grid::coordinates(Everywhere)
   WRITES: evolved_group(Everywhere)
   SYNC: evolved_group
-} "Initialize evolved variables and RHS to zero"
+} "Initialize evolved variables and set the RHS to zero"
 
 SCHEDULE KleinGordon_Energy IN CCTK_ANALYSIS
 {

@@ -1,22 +1,23 @@
 # Interface definition for thorn KleinGordon
-implements: KleinGordon
-inherits: ADMBase Grid Boundary
 
-USES INCLUDE: Derivatives.h
+IMPLEMENTS: KleinGordon
+INHERITS: ADMBase Grid Boundary
+
+USES INCLUDE HEADER: Derivatives.h
 
 public:
 
-CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tensorweight=0 Checkpoint="no"'
+CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tensorweight=0'
 {
   Phi, K_Phi
-} "The scalar and momemtum fields"
+} "The scalar and conjugate momemtum fields"
 
-CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 Checkpoint="no"'
+CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 checkpoint="no"'
 {
   Phi_rhs, K_Phi_rhs
 } "Right hand side of the evolution equations"
 
-CCTK_REAL epsilon_group type=GF tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 Checkpoint="no"'
+CCTK_REAL epsilon_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 checkpoint="no"'
 {
   epsilon
 } "Energy density of the PDE"
