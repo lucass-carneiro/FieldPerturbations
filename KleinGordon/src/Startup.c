@@ -44,8 +44,9 @@ int KleinGordon_Startup(void);
  * Output: 0 on success                           *
  **************************************************/
 int KleinGordon_Startup(void) {
-  const char *banner = "KleinGordon: Evolutions of a Scalar Klein gordn field over an "
-                       "arbitrary background";
+  const char *banner =
+      "KleinGordon: Evolutions of a Scalar Klein gordn field over an "
+      "arbitrary background";
   CCTK_RegisterBanner(banner);
 
   return 0;

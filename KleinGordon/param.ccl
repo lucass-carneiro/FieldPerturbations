@@ -47,6 +47,7 @@ CCTK_REAL field_mass "The mass of the scalar field"
 CCTK_KEYWORD initial_data "Types of initial data to evolve"
 {
   "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
+  "exact_gaussian"       :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
 } "multipolar_gaussian"
 
 

@@ -44,6 +44,9 @@
  * Prototypes *
  **************/
 void KleinGordon_Initialize(CCTK_ARGUMENTS);
+CCTK_REAL exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
+CCTK_REAL dt_exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
+CCTK_REAL multipolar_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL);
 
 /**************************************************
  * KleinGordon_Initialize(CCTK_ARGUMENTS)       *
@@ -65,26 +68,6 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
 
   /* Determine which type of initial data to apply */
   if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
-    CCTK_REAL xmx0 = 0.0;
-    CCTK_REAL ymy0 = 0.0;
-    CCTK_REAL zmz0 = 0.0;
-
-    CCTK_REAL xmx02 = 0.0;
-    CCTK_REAL ymy02 = 0.0;
-    CCTK_REAL zmz02 = 0.0;
-
-    CCTK_REAL R2 = 0.0;
-    CCTK_REAL R = 0.0;
-
-    CCTK_REAL R2_shifted = 0.0;
-    CCTK_REAL R_shifted = 0.0;
-
-    CCTK_REAL expo = 0.0;
-
-    CCTK_REAL dipole = 0.0;
-    CCTK_REAL quadrupole = 0.0;
-
-    CCTK_REAL amplitude = 0.0;
 
     /* Loop over all points (ghostzones included) */
     for (k = 0; k < cctk_lsh[2]; k++) {
@@ -92,32 +75,121 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
         for (i = 0; i < cctk_lsh[0]; i++) {
           ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-          xmx0 = x[ijk] - gaussian_x0;
-          ymy0 = y[ijk] - gaussian_y0;
-          zmz0 = z[ijk] - gaussian_z0;
-
-          xmx02 = SQR(xmx0);
-          ymy02 = SQR(ymy0);
-          zmz02 = SQR(zmz0);
-
-          R2 = xmx02 + ymy02 + zmz02;
-          R = sqrt(R2);
-
-          R2_shifted = R2 + 1.0e-5;
-          R_shifted = sqrt(R2_shifted);
-
-          expo = exp(-0.5 * SQR((R - gaussian_R0) / gaussian_sigma));
-
-          dipole = (xmx0 - zmz0) / R_shifted;
-          quadrupole = (xmx02 - ymy02 + zmz02 + xmx0 * zmz0) / R2_shifted;
-
-          amplitude =
-              gaussian_c0 + gaussian_c1 * dipole + gaussian_c2 * quadrupole;
-
-          Phi[ijk] = amplitude * expo;
+          Phi[ijk] = multipolar_gaussian(x[ijk], y[ijk], z[ijk]);
           K_Phi[ijk] = 0.0;
         }
       }
     }
+  } else if (CCTK_EQUALS(initial_data, "exact_gaussian")) {
+
+    /* Loop over all points (ghostzones included) */
+    for (k = 0; k < cctk_lsh[2]; k++) {
+      for (j = 0; j < cctk_lsh[1]; j++) {
+        for (i = 0; i < cctk_lsh[0]; i++) {
+          ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+          Phi[ijk] = exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
+          K_Phi[ijk] = dt_exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
+        }
+      }
+    }
   }
+}
+
+inline CCTK_REAL f(CCTK_REAL x, CCTK_REAL sigma) {
+  return exp(-0.5 * (x / sigma) * (x / sigma));
+}
+inline CCTK_REAL fx(CCTK_REAL x, CCTK_REAL sigma) {
+  return (-x * f(x, sigma)) / (sigma * sigma);
+}
+
+/**********************************************************************
+ * exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
+ *                                                                    *
+ * Computes the exect result of a gaussian fild in a Minkowski        *
+ * background for a given time and position                           *
+ *                                                                    *
+ * Input: The 4-D point where the gaussian shoulde be computed        *
+ *                                                                    *
+ * Output: The result of the gaussian at the given point              *
+ **********************************************************************/
+CCTK_REAL exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
+  DECLARE_CCTK_PARAMETERS;
+
+  const CCTK_REAL r = sqrt((x - gaussian_x0) * (x - gaussian_x0) +
+                           (y - gaussian_y0) * (y - gaussian_y0) +
+                           (z - gaussian_z0) * (z - gaussian_z0));
+
+  // Use L'Hôpital's rule for small r
+  if (r < 1.0e-8)
+    return fx(r - t, gaussian_sigma) - fx(r + t, gaussian_sigma);
+  else
+    return (f(r - t, gaussian_sigma) - f(r + t, gaussian_sigma)) / r;
+}
+
+/*************************************************************************
+ * dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
+ *                                                                       *
+ * Computes the time derivative exect result of a gaussian field in a    *
+ * Minkowski background for a given time and position                    *
+ *                                                                       *
+ * Input: The 4-D point where the time derivative if the gaussian should *
+ * be computed                                                           *
+ *                                                                       *
+ * Output: The result of the time derivative of the gaussian at the      *
+ * given point                                                           *
+ *************************************************************************/
+CCTK_REAL dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
+                            CCTK_REAL z) {
+  DECLARE_CCTK_PARAMETERS;
+
+  const CCTK_REAL r = sqrt((x - gaussian_x0) * (x - gaussian_x0) +
+                           (y - gaussian_y0) * (y - gaussian_y0) +
+                           (z - gaussian_z0) * (z - gaussian_z0));
+
+  // Use L'Hôpital's rule for small r
+  if (r < 1.0e-8) {
+    return (2 * (-t + gaussian_sigma) * (t + gaussian_sigma)) /
+           (exp(t * t / (2. * gaussian_sigma * gaussian_sigma)) *
+            gaussian_sigma * gaussian_sigma * gaussian_sigma * gaussian_sigma);
+  } else {
+    return (r + exp((2 * r * t) / (gaussian_sigma * gaussian_sigma)) * (r - t) +
+            t) /
+           (exp(((r + t) * (r + t)) / (2 * gaussian_sigma * gaussian_sigma)) *
+            r * gaussian_sigma * gaussian_sigma);
+  }
+}
+
+/**********************************************************************
+ * exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
+ *                                                                    *
+ * Computes the multipolar gaussian of zilhao                         *
+ *                                                                    *
+ * Input: The 4-D point where the gaussian shoulde be computed        *
+ *                                                                    *
+ * Output: The result of the gaussian at the given point              *
+ **********************************************************************/
+CCTK_REAL multipolar_gaussian(CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
+  DECLARE_CCTK_PARAMETERS;
+
+  CCTK_REAL xmx0 = x - gaussian_x0;
+  CCTK_REAL ymy0 = y - gaussian_y0;
+  CCTK_REAL zmz0 = z - gaussian_z0;
+
+  CCTK_REAL xmx02 = xmx0 * xmx0;
+  CCTK_REAL ymy02 = ymy0 * ymy0;
+  CCTK_REAL zmz02 = zmz0 * zmz0;
+
+  CCTK_REAL R2 = xmx02 + ymy02 + zmz02;
+  CCTK_REAL R = sqrt(R2);
+
+  CCTK_REAL R2_shifted = R2 + 1.0e-5;
+  CCTK_REAL R_shifted = sqrt(R2_shifted);
+
+  CCTK_REAL expo = exp(-0.5 * SQR((R - gaussian_R0) / gaussian_sigma));
+
+  CCTK_REAL dipole = (xmx0 - zmz0) / R_shifted;
+  CCTK_REAL quadrupole = (xmx02 - ymy02 + zmz02 + xmx0 * zmz0) / R2_shifted;
+
+  return gaussian_c0 + gaussian_c1 * dipole + gaussian_c2 * quadrupole;
 }
