@@ -91,3 +91,11 @@ CCTK_REAL gaussian_c2 "The quadrupole momentum of the gaussian"
 {
   0:* :: "Positive"
 } 0.0
+
+BOOLEAN compute_error "Wether to compute the error of the evolution with respecto to a Minkowski evolution"
+{
+} no
+
+BOOLEAN compute_energy "Wether to compute the PDE energy"
+{
+} no
