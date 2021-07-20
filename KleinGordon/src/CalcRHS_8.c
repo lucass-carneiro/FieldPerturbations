@@ -25,34 +25,12 @@
  * 8th order finite differencing
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-
 /*************************
  * This thorn's includes *
  *************************/
+#include "KleinGordon.h"
 #include "Derivatives.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_RHS_8(CCTK_ARGUMENTS);
-
-/**********************************************
- * KleinGordon_RHS_8(CCTK_ARGUMENTS)        *
- *                                            *
- * This function computes the right hand side *
- * of the ADM scalar wave equation.           *
- *                                            *
- * Input: CCTK_ARGUMENTS (the grid functions  *
- * from interface.ccl                         *
- *                                            *
- * Output: Nothing                            *
- **********************************************/
 void KleinGordon_RHS_8(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

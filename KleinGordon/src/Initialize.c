@@ -21,12 +21,11 @@
  *  Initialize grid variables.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
+#include "Derivatives.h"
 
 /************************
  * C std. lib. includes *
@@ -39,14 +38,6 @@
 #ifndef SQR
 #define SQR(x) ((x) * (x))
 #endif
-
-/**************
- * Prototypes *
- **************/
-void KleinGordon_Initialize(CCTK_ARGUMENTS);
-CCTK_REAL exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
-CCTK_REAL dt_exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
-CCTK_REAL multipolar_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL);
 
 /**************************************************
  * KleinGordon_Initialize(CCTK_ARGUMENTS)       *
@@ -103,16 +94,6 @@ inline CCTK_REAL fx(CCTK_REAL x, CCTK_REAL sigma) {
   return (-x * f(x, sigma)) / (sigma * sigma);
 }
 
-/**********************************************************************
- * exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
- *                                                                    *
- * Computes the exect result of a gaussian fild in a Minkowski        *
- * background for a given time and position                           *
- *                                                                    *
- * Input: The 4-D point where the gaussian shoulde be computed        *
- *                                                                    *
- * Output: The result of the gaussian at the given point              *
- **********************************************************************/
 CCTK_REAL exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
   DECLARE_CCTK_PARAMETERS;
 
@@ -127,18 +108,6 @@ CCTK_REAL exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
     return (f(r - t, gaussian_sigma) - f(r + t, gaussian_sigma)) / r;
 }
 
-/*************************************************************************
- * dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
- *                                                                       *
- * Computes the time derivative exect result of a gaussian field in a    *
- * Minkowski background for a given time and position                    *
- *                                                                       *
- * Input: The 4-D point where the time derivative if the gaussian should *
- * be computed                                                           *
- *                                                                       *
- * Output: The result of the time derivative of the gaussian at the      *
- * given point                                                           *
- *************************************************************************/
 CCTK_REAL dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
                             CCTK_REAL z) {
   DECLARE_CCTK_PARAMETERS;
@@ -160,15 +129,6 @@ CCTK_REAL dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
   }
 }
 
-/**********************************************************************
- * exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
- *                                                                    *
- * Computes the multipolar gaussian of zilhao                         *
- *                                                                    *
- * Input: The 4-D point where the gaussian shoulde be computed        *
- *                                                                    *
- * Output: The result of the gaussian at the given point              *
- **********************************************************************/
 CCTK_REAL multipolar_gaussian(CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
   DECLARE_CCTK_PARAMETERS;
 

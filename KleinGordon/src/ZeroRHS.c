@@ -21,29 +21,11 @@
  * Zeros the RHS variables to prevent spurious NaNs.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_ZeroRHS(CCTK_ARGUMENTS);
-
-/**********************************************
- * KleinGordon_ZeroRHS(CCTK_ARGUMENTS)      *
- *                                            *
- * This function zeros the RHS variables in   *
- * order to prevent sporious NaNs.            *
- *                                            *
- * Input: CCTK_ARGUMENTS (the grid functions  *
- * from interface.ccl                         *
- *                                            *
- * Output: Nothing                            *
- **********************************************/
 void KleinGordon_ZeroRHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

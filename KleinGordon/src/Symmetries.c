@@ -21,30 +21,11 @@
  *  Register field symmetries.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_Symmetries(CCTK_ARGUMENTS);
-void KleinGordon_RHSSymmetries(CCTK_ARGUMENTS);
-
-/**************************************************
- * KleinGordon_Symmetries(CCTK_ARGUMENTS)       *
- *                                                *
- * This function registers symmetries for the     *
- * evolved functions                              *
- *                                                *
- * Input: CCTK_ARGUMENTS (the grid functions from *
- * interface.ccl                                  *
- *                                                *
- * Output: Nothing                                *
- **************************************************/
 void KleinGordon_Symmetries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
@@ -61,17 +42,6 @@ void KleinGordon_Symmetries(CCTK_ARGUMENTS) {
               "Error registering symmetries for evolved variables. Aborting.");
 }
 
-/**************************************************
- * KleinGordon_RHSSymmetries(CCTK_ARGUMENTS)    *
- *                                                *
- * This function registers symmetries for the     *
- * RHS functions                                  *
- *                                                *
- * Input: CCTK_ARGUMENTS (the grid functions from *
- * interface.ccl                                  *
- *                                                *
- * Output: Nothing                                *
- **************************************************/
 void KleinGordon_RHSSymmetries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

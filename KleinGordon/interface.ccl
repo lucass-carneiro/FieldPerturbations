@@ -3,6 +3,7 @@
 IMPLEMENTS: KleinGordon
 INHERITS: ADMBase Grid Boundary
 
+USES INCLUDE HEADER: KleinGordonX.h
 USES INCLUDE HEADER: Derivatives.h
 
 public:

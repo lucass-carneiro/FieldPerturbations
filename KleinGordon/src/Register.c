@@ -21,32 +21,11 @@
  *  Register vriables to be evolved with the MoL thorn.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_MoLRegister(CCTK_ARGUMENTS);
-
-/**************************************************
- * KleinGordon_MoLRegister(CCTK_ARGUMENTS)      *
- *                                                *
- * This function registers variables within the   *
- * MoL thorn. Specifically it tells it which      *
- * variables are to be evolved in time and        *
- * which variables contain the RHS to be computed *
- * during the evolution                           *
- *                                                *
- * Input: CCTK_ARGUMENTS (the grid functions from *
- * interface.ccl                                  *
- *                                                *
- * Output: Nothing                                *
- **************************************************/
 void KleinGordon_MoLRegister(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

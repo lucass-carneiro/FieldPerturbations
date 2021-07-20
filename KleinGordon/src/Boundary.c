@@ -22,34 +22,11 @@
  * equation.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_OuterBoundary(CCTK_ARGUMENTS);
-void KleinGordon_Boundary(CCTK_ARGUMENTS);
-
-/***********************************************
- * KleinGordon_OuterBoundary(CCTK_ARGUMENTS) *
- *                                             *
- * This function updates the grid functions    *
- * at the outer boundary points with boundary  *
- * conditions.                                 *
- *                                             *
- * Users can choose radiating or reflecting    *
- * boundary conditions                         *
- *                                             *
- * Input: CCTK_ARGUMENTS (the grid functions   *
- * from interface.ccl                          *
- *                                             *
- * Output: Nothing                             *
- ***********************************************/
 void KleinGordon_OuterBoundary(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
@@ -149,25 +126,7 @@ void KleinGordon_OuterBoundary(CCTK_ARGUMENTS) {
   }
 }
 
-/***********************************************
- * KleinGordon_Boundary(void)                *
- *                                             *
- * This function is a no-op (it does nothing). *
- * After taking a time step Carpet might apply *
- * wrong boundary conditions in the refinament *
- * boundaries.                                 *
- *                                             *
- * Scheduling this function in MoL_PostStep,   *
- * postrestrict and postregrid solves this.    *
- *                                             *
- * Fuerthermore, we register all BCs as 'none' *
- * to enforces the possible symmetry BCs       *
- *                                             *
- * Input: CCTK_ARGUMENTS (the grid functions   *
- * from interface.ccl                          *
- *
- * Output: Nothing                             *
- ***********************************************/
+
 void KleinGordon_Boundary(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

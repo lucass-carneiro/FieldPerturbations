@@ -22,34 +22,12 @@
  * presented in https://arxiv.org/abs/1005.2922v1.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-
 /*************************
  * This thorn's includes *
  *************************/
+#include "KleinGordon.h"
 #include "Derivatives.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_Energy(CCTK_ARGUMENTS);
-
-/**********************************************
- * KleinGordon_Energy(CCTK_ARGUMENTS)       *
- *                                            *
- * This function computes the PDE energy for  *
- * the wave equation
- *                                            *
- * Input: CCTK_ARGUMENTS (the grid functions  *
- * from interface.ccl                         *
- *                                            *
- * Output: Nothing                            *
- **********************************************/
 void KleinGordon_Energy(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
