@@ -26,12 +26,15 @@
 /*************************
  * This thorn's includes *
  *************************/
-#include "KleinGordon.h"
 #include "Derivatives.h"
+#include "KleinGordon.h"
 
 void KleinGordon_Error(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
+
+  /* Time values */
+  const CCTK_REAL t = cctk_time;
 
   /* Loop indexes */
   CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
@@ -42,8 +45,9 @@ void KleinGordon_Error(CCTK_ARGUMENTS) {
       for (i = 0; i < cctk_lsh[0]; i++) {
         ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-        Phi_err[ijk] = 0;
-        K_Phi_err[ijk] = 0.0;
+        Phi_err[ijk] = Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]);
+        K_Phi_err[ijk] =
+            K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]);
       }
     }
   }

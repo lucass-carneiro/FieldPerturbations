@@ -28,8 +28,8 @@
 /*************************
  * This thorn's includes *
  *************************/
-#include "KleinGordon.h"
 #include "Derivatives.h"
+#include "KleinGordon.h"
 
 /**********************************************
  * KleinGordon_RHS_6(CCTK_ARGUMENTS)        *

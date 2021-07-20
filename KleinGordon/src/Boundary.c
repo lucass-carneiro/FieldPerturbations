@@ -126,7 +126,6 @@ void KleinGordon_OuterBoundary(CCTK_ARGUMENTS) {
   }
 }
 
-
 void KleinGordon_Boundary(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

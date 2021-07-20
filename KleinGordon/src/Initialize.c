@@ -24,8 +24,8 @@
 /*************************
  * This thorn's includes *
  *************************/
-#include "KleinGordon.h"
 #include "Derivatives.h"
+#include "KleinGordon.h"
 
 /************************
  * C std. lib. includes *

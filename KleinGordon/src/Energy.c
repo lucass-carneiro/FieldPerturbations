@@ -25,8 +25,8 @@
 /*************************
  * This thorn's includes *
  *************************/
-#include "KleinGordon.h"
 #include "Derivatives.h"
+#include "KleinGordon.h"
 
 void KleinGordon_Energy(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;

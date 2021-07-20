@@ -57,7 +57,7 @@ if(compute_error)
   SCHEDULE KleinGordon_Error IN CCTK_ANALYSIS
   {
 	LANG: C
-	READS: Phi(Everywhere) K_Phi(Everywhere)
+	READS: Grid::coordinates(Everywhere) Phi(Everywhere) K_Phi(Everywhere)
 	WRITES: Phi_err(Everywhere) K_Phi_err(Everywhere)
 	SYNC: error_group
   } "Compute the associated PDE energy"

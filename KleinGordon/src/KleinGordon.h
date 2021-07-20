@@ -32,7 +32,7 @@
 #include "cctk_Parameters.h"
 
 /***********************************************
- * KleinGordon_OuterBoundary(CCTK_ARGUMENTS) *
+ * KleinGordon_OuterBoundary(CCTK_ARGUMENTS)   *
  *                                             *
  * This function updates the grid functions    *
  * at the outer boundary points with boundary  *
