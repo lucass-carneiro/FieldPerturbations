@@ -44,13 +44,6 @@
  ***********************************/
 #include <loop.hxx>
 
-/**********************
- * Std. lib. includes *
- **********************/
-#include <array>
-#include <cassert>
-#include <cmath>
-
 namespace KleinGordonX {
 
 // Linear interpolation between (i0, x0) and (i1, x1)
@@ -65,7 +58,7 @@ template <typename T> T spline(T r) {
   constexpr CCTK_REAL f = Loop::dim == 1   ? 1.0
                           : Loop::dim == 2 ? 24.0 / 7.0 / M_PI
                           : Loop::dim == 3 ? 4.0 / M_PI
-                                     : -1;
+                                           : -1;
   const T r2 = pow(r, 2);
   return f * (r <= 0.5 ? 1 - 2 * r2 : 2 + r * (-4 + 2 * r));
 }
@@ -111,9 +104,8 @@ template <typename T> auto zderiv(T f(T t, T x, T y, T z), T dz) {
 }
 
 // Central potential
-CCTK_REAL central_potential(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,CCTK_REAL z);
+CCTK_REAL central_potential(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z);
 
-  
 /****************************************************************
  * KleinGordonX_Startup()                                       *
  *                                                              *
@@ -124,7 +116,7 @@ CCTK_REAL central_potential(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,CCTK_REAL z);
  *                                                              *
  * Output: 0 on success                                         *
  ****************************************************************/
-extern "C" int  KleinGordonX_Startup(void);
+extern "C" int KleinGordonX_Startup(void);
 
 /****************************************************************
  * KleinGordonX_CheckParameters(CCTK_ARGUMENTS)                 *
@@ -263,7 +255,23 @@ extern "C" void KleinGordonX_Error(CCTK_ARGUMENTS);
  *                                                              *
  * Output: The gaussian at the point.                           *
  ************ ***************************************************/
-CCTK_REAL gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
+CCTK_REAL exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
+
+/****************************************************************
+ * dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,     *
+                     CCTK_REAL z)                               *
+ *                                                              *
+ * Computes the time derivative exect result of a gaussian      *
+ * field in a Minkowski background for a given time and         *
+ * position                                                     *
+ *                                                              *
+ * Input: The 4-D point where the time derivative if the        *
+ * gaussian should be computed                                  *
+ *                                                              *
+ * Output: The result of the time derivative of the gaussian at *
+ * the given point                                              *
+ ****************************************************************/
+CCTK_REAL dt_exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
 
 } // namespace KleinGordonX
 

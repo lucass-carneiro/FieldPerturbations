@@ -59,10 +59,9 @@ extern "C" void KleinGordonX::KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
   const GF3D2<CCTK_REAL> gf_Phi_rhs(layout, Phi_rhs);
   const GF3D2<CCTK_REAL> gf_K_Phi_rhs(layout, K_Phi_rhs);
 
-  auto dirichilet_lambda =
-      [&](const PointDesc &p) {
-        gf_Phi_rhs(p.I) = CCTK_REAL(0);
-        gf_K_Phi_rhs(p.I) = CCTK_REAL(0);
+  auto dirichilet_lambda = [&](const PointDesc &p) {
+    gf_Phi_rhs(p.I) = CCTK_REAL(0);
+    gf_K_Phi_rhs(p.I) = CCTK_REAL(0);
   };
 
   loop_bnd<1, 1, 1>(cctkGH, dirichilet_lambda);

@@ -31,7 +31,7 @@ extern "C" void KleinGordonX::KleinGordonX_Error(CCTK_ARGUMENTS) {
 
   const CCTK_REAL t = cctk_time;
   const CCTK_REAL dt = CCTK_DELTA_TIME;
-  
+
   const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout(cctkGH, indextype);
 
@@ -42,11 +42,10 @@ extern "C" void KleinGordonX::KleinGordonX_Error(CCTK_ARGUMENTS) {
 
   if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
 
-    auto gaussian_lambda =
-        [&](const PointDesc &p) {
-          gf_Phi_err(p.I) = gf_Phi(p.I) - gaussian(t, p.x, p.y, p.z);
-          gf_K_Phi_err(p.I) =
-              gf_K_Phi(p.I) - timederiv(gaussian, dt)(t, p.x, p.y, p.z);
+    auto gaussian_lambda = [&](const PointDesc &p) {
+      gf_Phi_err(p.I) = gf_Phi(p.I) - gaussian(t, p.x, p.y, p.z);
+      gf_K_Phi_err(p.I) =
+          gf_K_Phi(p.I) - timederiv(gaussian, dt)(t, p.x, p.y, p.z);
     };
 
     loop_all<1, 1, 1>(cctkGH, gaussian_lambda);

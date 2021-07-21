@@ -154,17 +154,6 @@ CCTK_REAL multipolar_gaussian(CCTK_REAL *buffer, CCTK_INT lmax, CCTK_REAL x,
   return multipole_sum * expo;
 }
 
-/**************************************************
- * KleinGordon_Initialize(CCTK_ARGUMENTS)         *
- *                                                *
- * This function provies the scalar fields with   *
- * initial data to begin it's time evolution.     *
- *                                                *
- * Input: CCTK_ARGUMENTS (the grid functions from *
- * interface.ccl                                  *
- *                                                *
- * Output: Nothing                                *
- **************************************************/
 void KleinGordon_Initialize(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;

@@ -30,7 +30,7 @@ extern "C" void KleinGordonX::KleinGordonX_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_REAL t = cctk_time;
-  
+
   const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout(cctkGH, indextype);
 
@@ -40,21 +40,20 @@ extern "C" void KleinGordonX::KleinGordonX_RHS(CCTK_ARGUMENTS) {
   const GF3D2<CCTK_REAL> gf_Phi_rhs(layout, Phi_rhs);
   const GF3D2<CCTK_REAL> gf_K_Phi_rhs(layout, K_Phi_rhs);
 
-  auto rhs_lambda =
-      [&](const PointDesc &p) {
-        CCTK_REAL ddx_phi =
-            (gf_Phi(p.I - p.DI[0]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[0])) /
-            (p.dx * p.dx);
-        CCTK_REAL ddy_phi =
-            (gf_Phi(p.I - p.DI[1]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[1])) /
-            (p.dx * p.dx);
-        CCTK_REAL ddz_phi =
-            (gf_Phi(p.I - p.DI[2]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[2])) /
-            (p.dx * p.dx);
-        gf_K_Phi_rhs(p.I) = ddx_phi + ddy_phi + ddz_phi -
-                           pow(field_mass, 2) * gf_Phi(p.I) +
-                           4 * M_PI * central_potential(t, p.x, p.y, p.z);
-        gf_Phi_rhs(p.I) = gf_K_Phi(p.I);
+  auto rhs_lambda = [&](const PointDesc &p) {
+    CCTK_REAL ddx_phi =
+        (gf_Phi(p.I - p.DI[0]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[0])) /
+        (p.dx * p.dx);
+    CCTK_REAL ddy_phi =
+        (gf_Phi(p.I - p.DI[1]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[1])) /
+        (p.dx * p.dx);
+    CCTK_REAL ddz_phi =
+        (gf_Phi(p.I - p.DI[2]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[2])) /
+        (p.dx * p.dx);
+    gf_K_Phi_rhs(p.I) = ddx_phi + ddy_phi + ddz_phi -
+                        pow(field_mass, 2) * gf_Phi(p.I) +
+                        4 * M_PI * central_potential(t, p.x, p.y, p.z);
+    gf_Phi_rhs(p.I) = gf_K_Phi(p.I);
   };
 
   loop_int<1, 1, 1>(cctkGH, rhs_lambda);
