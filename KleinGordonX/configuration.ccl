@@ -1,2 +1,2 @@
 # Configuration definitions for thorn KleinGordonX
-REQUIRES CarpetX
+REQUIRES CarpetX GSL

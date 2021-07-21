@@ -23,10 +23,13 @@
 
 #include "KleinGordonX.hpp"
 
-/**********************
- * Std. lib. includes *
- **********************/
+/**************************
+ * Std. lib. includes     *
+ * and external libraries *
+ **************************/
 #include <cmath>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_legendre.h>
 #include <memory>
 
 using namespace Loop;
@@ -126,8 +129,8 @@ CCTK_REAL multipolar_gaussian(CCTK_REAL *buffer, CCTK_INT lmax, CCTK_REAL x,
       gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_SPHARM, lmax, theta, -1, buffer);
 
   if (ierr) {
-    CCTK_VWARN("GSL internal error: %s", gsl_strerror(ierr));
-	return 0.0;
+    CCTK_VWARN(CCTK_WARN_ALERT, "GSL internal error: %s", gsl_strerror(ierr));
+    return 0.0;
   }
 
   /* Compute the multipole series */
@@ -142,7 +145,7 @@ CCTK_REAL multipolar_gaussian(CCTK_REAL *buffer, CCTK_INT lmax, CCTK_REAL x,
       multipoles[7] * Ylm(buffer, 2, 1, atan2(ymy0, xmx0)) +
       multipoles[8] * Ylm(buffer, 2, 2, atan2(ymy0, xmx0));
 
-  const result = multipole_sum * expo;
+  const CCTK_REAL result = multipole_sum * expo;
 
   return result;
 }
@@ -166,12 +169,12 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
     };
 
     loop_int<1, 1, 1>(cctkGH, exact_gaussian_lambda);
-	
+
   } else if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
 
-	auto buffer = Ylm_buffer(2);
-	
-	auto multipolar_gaussian_lambda = [&](const PointDesc &p) {
+    auto buffer = Ylm_buffer(2);
+
+    auto multipolar_gaussian_lambda = [&](const PointDesc &p) {
       gf_Phi(p.I) = multipolar_gaussian(buffer.get(), 2, p.x, p.y, p.z);
       gf_K_Phi(p.I) = 0.0;
     };

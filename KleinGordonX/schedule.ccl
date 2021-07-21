@@ -114,17 +114,23 @@ SCHEDULE KleinGordonX_RHSBoundaries IN KleinGordonX_RHSGroup AFTER KleinGordonX_
 
 
 
-SCHEDULE KleinGordonX_Energy IN KleinGordonX_AnalysisGroup
+if(compute_energy)
 {
-  LANG: C
-  READS: Phi(everywhere) K_phi(interior)
-  WRITES: epsilon(interior)
-  SYNC: epsilon_group
-} "Calculate energy density for the wave equation"
+  SCHEDULE KleinGordonX_Energy IN KleinGordonX_AnalysisGroup
+  {
+    LANG: C
+    READS: Phi(everywhere) K_phi(interior)
+    WRITES: epsilon(interior)
+    SYNC: epsilon_group
+  } "Calculate energy density for the wave equation"
+}
 
-SCHEDULE KleinGordonX_Error IN KleinGordonX_AnalysisGroup
+if(compute_error)
 {
-  LANG: C
-  READS: Phi(everywhere) K_Phi(everywhere)
-  WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
-} "Calculate error for the wave equation"
+  SCHEDULE KleinGordonX_Error IN KleinGordonX_AnalysisGroup
+  {
+    LANG: C
+    READS: Phi(everywhere) K_Phi(everywhere)
+    WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
+  } "Calculate error for the wave equation"
+}

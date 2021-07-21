@@ -50,4 +50,11 @@ extern "C" void KleinGordonX::KleinGordonX_CheckParameters(CCTK_ARGUMENTS) {
     break;
   }
   }
+
+  if (compute_error && !CCTK_Equals(initial_data, "exact_gaussian")) {
+    CCTK_PARAMWARN(
+        "Error computing was requested with an initial condition other than "
+        "\"exact_gaussian\". The error estimate is only significant when "
+        "evolving \"exact_gaussian\" data on top of a Minkowski background.");
+  }
 }
