@@ -1,7 +1,7 @@
 # Interface definition for thorn KleinGordonX
 
 IMPLEMENTS: KleinGordonX
-INHERITS: CarpetX ADMBase Grid
+INHERITS: CarpetX ADMBase
 
 USES INCLUDE HEADER: fixmath.hxx
 USES INCLUDE HEADER: loop.hxx
