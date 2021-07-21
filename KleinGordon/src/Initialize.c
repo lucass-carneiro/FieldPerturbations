@@ -27,65 +27,13 @@
 #include "Derivatives.h"
 #include "KleinGordon.h"
 
-/************************
- * C std. lib. includes *
- ************************/
+/**************************
+ * C std. lib. includes   *
+ * and external libraries *
+ **************************/
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_legendre.h>
 #include <math.h>
-
-/*****************
- * Local Defines *
- *****************/
-#ifndef SQR
-#define SQR(x) ((x) * (x))
-#endif
-
-/**************************************************
- * KleinGordon_Initialize(CCTK_ARGUMENTS)       *
- *                                                *
- * This function provies the scalar fields with   *
- * initial data to begin it's time evolution.     *
- *                                                *
- * Input: CCTK_ARGUMENTS (the grid functions from *
- * interface.ccl                                  *
- *                                                *
- * Output: Nothing                                *
- **************************************************/
-void KleinGordon_Initialize(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  /* Loop indexes */
-  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
-
-  /* Determine which type of initial data to apply */
-  if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
-
-    /* Loop over all points (ghostzones included) */
-    for (k = 0; k < cctk_lsh[2]; k++) {
-      for (j = 0; j < cctk_lsh[1]; j++) {
-        for (i = 0; i < cctk_lsh[0]; i++) {
-          ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-
-          Phi[ijk] = multipolar_gaussian(x[ijk], y[ijk], z[ijk]);
-          K_Phi[ijk] = 0.0;
-        }
-      }
-    }
-  } else if (CCTK_EQUALS(initial_data, "exact_gaussian")) {
-
-    /* Loop over all points (ghostzones included) */
-    for (k = 0; k < cctk_lsh[2]; k++) {
-      for (j = 0; j < cctk_lsh[1]; j++) {
-        for (i = 0; i < cctk_lsh[0]; i++) {
-          ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-
-          Phi[ijk] = exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
-          K_Phi[ijk] = dt_exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
-        }
-      }
-    }
-  }
-}
 
 inline CCTK_REAL f(CCTK_REAL x, CCTK_REAL sigma) {
   return exp(-0.5 * (x / sigma) * (x / sigma));
@@ -129,27 +77,132 @@ CCTK_REAL dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
   }
 }
 
-CCTK_REAL multipolar_gaussian(CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
+/* This function allocates a buffer for storing the spherical harmonics
+ * IT'S ASSUMED THAT THE BUFFER OWNERSHIP IS MOVED ON ASSIGNMENT,
+ * thus the final user is responsible for freeing the memory
+ * If memory allocation fails, the function halts Cactus
+ */
+CCTK_REAL *Ylm_buffer(CCTK_INT lmax) {
+
+  CCTK_REAL *buffer = malloc(gsl_sf_legendre_array_n(lmax) * sizeof(CCTK_REAL));
+
+  if (buffer == NULL)
+    CCTK_ERROR("Internal error. Failed to allocate memory for the spherical "
+               "harmonic array");
+
+  return buffer;
+}
+
+CCTK_REAL Ylm(const CCTK_REAL *buffer, CCTK_INT l, CCTK_INT m,
+              CCTK_REAL theta) {
+  const CCTK_REAL legendre_part =
+      buffer[gsl_sf_legendre_array_index(l, abs(m))];
+
+  if (m < 0)
+    return sqrt(2.0) * legendre_part * sin(-m * theta);
+  else if (m > 0)
+    return sqrt(2.0) * legendre_part * cos(m * theta);
+  else
+    return pow(-1.0, -m) * legendre_part;
+}
+
+CCTK_REAL multipolar_gaussian(CCTK_REAL *buffer, CCTK_INT lmax, CCTK_REAL x,
+                              CCTK_REAL y, CCTK_REAL z) {
   DECLARE_CCTK_PARAMETERS;
 
-  CCTK_REAL xmx0 = x - gaussian_x0;
-  CCTK_REAL ymy0 = y - gaussian_y0;
-  CCTK_REAL zmz0 = z - gaussian_z0;
+  const CCTK_REAL xmx0 = x - gaussian_x0;
+  const CCTK_REAL ymy0 = y - gaussian_y0;
+  const CCTK_REAL zmz0 = z - gaussian_z0;
 
-  CCTK_REAL xmx02 = xmx0 * xmx0;
-  CCTK_REAL ymy02 = ymy0 * ymy0;
-  CCTK_REAL zmz02 = zmz0 * zmz0;
+  const CCTK_REAL xmx02 = xmx0 * xmx0;
+  const CCTK_REAL ymy02 = ymy0 * ymy0;
+  const CCTK_REAL zmz02 = zmz0 * zmz0;
 
-  CCTK_REAL R2 = xmx02 + ymy02 + zmz02;
+  const CCTK_REAL R2 = xmx02 + ymy02 + zmz02;
   CCTK_REAL R = sqrt(R2);
 
-  CCTK_REAL R2_shifted = R2 + 1.0e-5;
-  CCTK_REAL R_shifted = sqrt(R2_shifted);
+  /* TODO: Do something better for small R ?*/
+  if (R < 1.0e-8)
+    R = 1.0e-8;
 
-  CCTK_REAL expo = exp(-0.5 * SQR((R - gaussian_R0) / gaussian_sigma));
+  const CCTK_REAL theta = zmz0 / R;
+  const CCTK_REAL expo = exp(-0.5 * ((R - gaussian_R0) / gaussian_sigma) *
+                             ((R - gaussian_R0) / gaussian_sigma));
 
-  CCTK_REAL dipole = (xmx0 - zmz0) / R_shifted;
-  CCTK_REAL quadrupole = (xmx02 - ymy02 + zmz02 + xmx0 * zmz0) / R2_shifted;
+  /* Compute all spherical harmonics up to lmax at this point */
+  const CCTK_INT ierr =
+      gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_SPHARM, lmax, theta, -1, buffer);
 
-  return gaussian_c0 + gaussian_c1 * dipole + gaussian_c2 * quadrupole;
+  if (ierr) {
+    free(buffer);
+    buffer = NULL;
+    CCTK_VERROR("GSL internal error: %s", gsl_strerror(ierr));
+  }
+
+  /* Compute the multipole series */
+  CCTK_REAL multipole_sum =
+      multipoles[0] * Ylm(buffer, 0, 0, atan2(ymy0, xmx0)) +
+      multipoles[1] * Ylm(buffer, 1, -1, atan2(ymy0, xmx0)) +
+      multipoles[2] * Ylm(buffer, 1, 0, atan2(ymy0, xmx0)) +
+      multipoles[3] * Ylm(buffer, 1, 1, atan2(ymy0, xmx0)) +
+      multipoles[4] * Ylm(buffer, 2, -2, atan2(ymy0, xmx0)) +
+      multipoles[5] * Ylm(buffer, 2, -1, atan2(ymy0, xmx0)) +
+      multipoles[6] * Ylm(buffer, 2, 0, atan2(ymy0, xmx0)) +
+      multipoles[7] * Ylm(buffer, 2, 1, atan2(ymy0, xmx0)) +
+      multipoles[8] * Ylm(buffer, 2, 2, atan2(ymy0, xmx0));
+
+  return multipole_sum * expo;
+}
+
+/**************************************************
+ * KleinGordon_Initialize(CCTK_ARGUMENTS)         *
+ *                                                *
+ * This function provies the scalar fields with   *
+ * initial data to begin it's time evolution.     *
+ *                                                *
+ * Input: CCTK_ARGUMENTS (the grid functions from *
+ * interface.ccl                                  *
+ *                                                *
+ * Output: Nothing                                *
+ **************************************************/
+void KleinGordon_Initialize(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
+  /* Loop indexes */
+  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
+
+  /* Determine which type of initial data to apply */
+  if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
+
+    CCTK_REAL *buffer = Ylm_buffer(2);
+
+    /* Loop over all points (ghostzones included) */
+    for (k = 0; k < cctk_lsh[2]; k++) {
+      for (j = 0; j < cctk_lsh[1]; j++) {
+        for (i = 0; i < cctk_lsh[0]; i++) {
+          ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+          Phi[ijk] = multipolar_gaussian(buffer, 2, x[ijk], y[ijk], z[ijk]);
+          K_Phi[ijk] = 0.0;
+        }
+      }
+    }
+
+    free(buffer);
+
+  } else if (CCTK_EQUALS(initial_data, "exact_gaussian")) {
+
+    /* Loop over all points (ghostzones included) */
+    for (k = 0; k < cctk_lsh[2]; k++) {
+      for (j = 0; j < cctk_lsh[1]; j++) {
+        for (i = 0; i < cctk_lsh[0]; i++) {
+          ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+          Phi[ijk] = exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
+          K_Phi[ijk] = dt_exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
+        }
+      }
+    }
+  }
 }

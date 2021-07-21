@@ -8,7 +8,7 @@ CCTK_KEYWORD bc_type "Type of boundary condition to apply"
 
 
 
-INT fd_order "Order of accuracy" STEERABLE=always
+CCTK_INT fd_order "Order of accuracy"
 {
   4:8:2 :: "Only even orders in the range(4,8) are implemented"
 } 4
@@ -77,25 +77,17 @@ CCTK_REAL gaussian_z0 "The z posititon of the center of the gaussian"
   *:* :: "No restriction"
 } 0.0
 
-CCTK_REAL gaussian_c0 "The monopole momentum of the gaussian"
+CCTK_REAL multipoles[9] "The coefficients in the multipole series. Maximiun value of l possible is 2"
 {
-  0:* :: "Positive"
-} 1.0
-
-CCTK_REAL gaussian_c1 " The dipole momentum of the gaussian"
-{
-  0:* :: "Positive"
+  *:* :: "No restriction"
 } 0.0
 
-CCTK_REAL gaussian_c2 "The quadrupole momentum of the gaussian"
-{
-  0:* :: "Positive"
-} 0.0
 
-BOOLEAN compute_error "Wether to compute the error of the evolution with respecto to a Minkowski evolution"
+
+CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respecto to a Minkowski evolution"
 {
 } no
 
-BOOLEAN compute_energy "Wether to compute the PDE energy"
+CCTK_BOOLEAN compute_energy "Wether to compute the PDE energy"
 {
 } no

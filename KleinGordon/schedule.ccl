@@ -1,9 +1,9 @@
 # SCHEDULE definitions for thorn KleinGordon
 
-STORAGE:evolved_group[3]
-STORAGE:epsilon_group[3]
-STORAGE: error_group[3]
-STORAGE:rhs_group
+STORAGE: evolved_group[3]
+STORAGE: epsilon_group[3]
+STORAGE: error_group
+STORAGE: rhs_group
 
 SCHEDULE KleinGordon_Startup AT STARTUP
 {

@@ -54,16 +54,10 @@ void KleinGordon_CheckParameters(CCTK_ARGUMENTS) {
   }
   }
 
-  if (compute_energy) {
-    CCTK_INFO("Error estimation requested. Please note that the error results "
-              "are only meaningfull when evolving \"exact_gaussian\" initial "
-              "data on top of a Minkowski background.");
-
-    if (!CCTK_Equals(initial_data, "exact_gaussian")) {
-      CCTK_PARAMWARN(
-          "Error computing was requested with an initial condition other than "
-          "\"exact_gaussian\". The error estimate is only significant when "
-          "evolving \"exact_gaussian\" data on top of a Minkowski background.");
-    }
+  if (compute_error && !CCTK_Equals(initial_data, "exact_gaussian")) {
+    CCTK_PARAMWARN(
+        "Error computing was requested with an initial condition other than "
+        "\"exact_gaussian\". The error estimate is only significant when "
+        "evolving \"exact_gaussian\" data on top of a Minkowski background.");
   }
 }

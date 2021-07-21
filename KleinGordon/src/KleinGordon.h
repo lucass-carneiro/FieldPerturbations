@@ -186,17 +186,6 @@ CCTK_REAL exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
  *************************************************************************/
 CCTK_REAL dt_exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
 
-/**********************************************************************
- * exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
- *                                                                    *
- * Computes the multipolar gaussian of zilhao                         *
- *                                                                    *
- * Input: The 4-D point where the gaussian shoulde be computed        *
- *                                                                    *
- * Output: The result of the gaussian at the given point              *
- **********************************************************************/
-CCTK_REAL multipolar_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL);
-
 /**************************************************
  * KleinGordon_MoLRegister(CCTK_ARGUMENTS)        *
  *                                                *

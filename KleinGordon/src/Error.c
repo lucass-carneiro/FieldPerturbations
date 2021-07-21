@@ -29,6 +29,12 @@
 #include "Derivatives.h"
 #include "KleinGordon.h"
 
+/**************************
+ * C std. lib. includes   *
+ * and external libraries *
+ **************************/
+#include <math.h>
+
 void KleinGordon_Error(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
@@ -45,9 +51,10 @@ void KleinGordon_Error(CCTK_ARGUMENTS) {
       for (i = 0; i < cctk_lsh[0]; i++) {
         ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-        Phi_err[ijk] = Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]);
+        Phi_err[ijk] =
+            fabs(Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
         K_Phi_err[ijk] =
-            K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]);
+            fabs(K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
       }
     }
   }
