@@ -22,42 +22,15 @@
  * presented in https://arxiv.org/abs/1005.2922v1.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-
 /*************************
  * This thorn's includes *
  *************************/
 #include "Derivatives.h"
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_Energy(CCTK_ARGUMENTS);
-
-/**********************************************
- * KleinGordon_Energy(CCTK_ARGUMENTS)       *
- *                                            *
- * This function computes the PDE energy for  *
- * the wave equation
- *                                            *
- * Input: CCTK_ARGUMENTS (the grid functions  *
- * from interface.ccl                         *
- *                                            *
- * Output: Nothing                            *
- **********************************************/
 void KleinGordon_Energy(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
-
-  /* Ghost zone indexes */
-  const CCTK_INT gx = cctk_nghostzones[0];
-  const CCTK_INT gy = cctk_nghostzones[1];
-  const CCTK_INT gz = cctk_nghostzones[2];
 
   /* Quantities required for the derivative macros to work */
   DECLARE_FIRST_DERIVATIVE_FACTORS_4;
@@ -91,9 +64,9 @@ void KleinGordon_Energy(CCTK_ARGUMENTS) {
   CCTK_REAL contracted_part = 0;
 
 #pragma omp parallel for
-  for (k = gz; k < cctk_lsh[2] - gz; k++) {
-    for (j = gy; j < cctk_lsh[1] - gy; j++) {
-      for (i = gx; i < cctk_lsh[0] - gx; i++) {
+  for (k = 0; k < cctk_lsh[2]; k++) {
+    for (j = 0; j < cctk_lsh[1]; j++) {
+      for (i = 0; i < cctk_lsh[0]; i++) {
         ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
         /* The 3-metric */

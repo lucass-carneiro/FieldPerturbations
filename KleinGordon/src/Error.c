@@ -17,43 +17,45 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  *
- *  Symmetries.c
- *  Register field symmetries.
+ * Error.c
+ * Calculate the wave equation's solution error.
+ * This error measure only makes sense when evolving an "exact_gaussian"
+ * pulse in a Minkowski background.
  */
 
 /*************************
  * This thorn's includes *
  *************************/
+#include "Derivatives.h"
 #include "KleinGordon.h"
 
-void KleinGordon_Symmetries(CCTK_ARGUMENTS) {
+/**************************
+ * C std. lib. includes   *
+ * and external libraries *
+ **************************/
+#include <math.h>
+
+void KleinGordon_Error(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  CCTK_INT ierr = 0;
+  /* Time values */
+  const CCTK_REAL t = cctk_time;
 
-  const CCTK_INT sym[3] = {1, 1, 1};
+  /* Loop indexes */
+  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
 
-  ierr += SetCartSymVN(cctkGH, sym, "KleinGordon::Phi");
-  ierr += SetCartSymVN(cctkGH, sym, "KleinGordon::K_Phi");
+#pragma omp parallel for
+  for (k = 0; k < cctk_lsh[2]; k++) {
+    for (j = 0; j < cctk_lsh[1]; j++) {
+      for (i = 0; i < cctk_lsh[0]; i++) {
+        ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-  if (ierr != 0)
-    CCTK_WARN(CCTK_WARN_ABORT,
-              "Error registering symmetries for evolved variables. Aborting.");
-}
-
-void KleinGordon_RHSSymmetries(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  CCTK_INT ierr = 0;
-
-  const CCTK_INT sym[3] = {1, 1, 1};
-
-  ierr += SetCartSymVN(cctkGH, sym, "KleinGordon::Phi_rhs");
-  ierr += SetCartSymVN(cctkGH, sym, "KleinGordon::K_Phi_rhs");
-
-  if (ierr != 0)
-    CCTK_WARN(CCTK_WARN_ABORT,
-              "Error registering symmetries for RHS variables. Aborting.");
+        Phi_err[ijk] =
+            fabs(Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
+        K_Phi_err[ijk] =
+            fabs(K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
+      }
+    }
+  }
 }

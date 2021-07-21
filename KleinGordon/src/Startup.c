@@ -21,31 +21,15 @@
  *  Code executed at Cactus startup.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-int KleinGordon_Startup(void);
-
-/**************************************************
- * KleinGordon_Startup(void)                    *
- *                                                *
- * This functions registers a banner in Cactus's  *
- * startup.                                       *
- *                                                *
- * Input: Nothing                                 *
- *                                                *
- * Output: 0 on success                           *
- **************************************************/
 int KleinGordon_Startup(void) {
-  const char *banner = "KleinGordon: Evolutions of a Scalar Klein gordn field over an "
-                       "arbitrary background";
+  const char *banner =
+      "KleinGordon: Evolutions of a Scalar Klein gordn field over an "
+      "arbitrary background";
   CCTK_RegisterBanner(banner);
 
   return 0;

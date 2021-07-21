@@ -1,8 +1,9 @@
 # SCHEDULE definitions for thorn KleinGordon
 
-STORAGE:evolved_group[3]
-STORAGE:rhs_group
-STORAGE:epsilon_group
+STORAGE: evolved_group[3]
+STORAGE: epsilon_group[3]
+STORAGE: error_group
+STORAGE: rhs_group
 
 SCHEDULE KleinGordon_Startup AT STARTUP
 {
@@ -39,14 +40,28 @@ SCHEDULE KleinGordon_Initialize AT CCTK_INITIAL
   SYNC: evolved_group
 } "Initialize evolved variables and set the RHS to zero"
 
-SCHEDULE KleinGordon_Energy IN CCTK_ANALYSIS
+if(compute_energy)
 {
-  LANG: C
-  READS: ADMBase::metric(Interior)
-  READS: K_Phi(Interior)
-  WRITES: epsilon_group(Interior)
-  SYNC: epsilon_group
-} "Compute the associated PDE energy"
+  SCHEDULE KleinGordon_Energy IN CCTK_ANALYSIS
+  {
+	LANG: C
+	READS: ADMBase::metric(Everywhere)
+	READS: K_Phi(Everywhere)
+	WRITES: epsilon_group(Everywhere)
+	SYNC: epsilon_group
+  } "Compute the associated PDE energy"
+}
+
+if(compute_error)
+{
+  SCHEDULE KleinGordon_Error IN CCTK_ANALYSIS
+  {
+	LANG: C
+	READS: Grid::coordinates(Everywhere) Phi(Everywhere) K_Phi(Everywhere)
+	WRITES: Phi_err(Everywhere) K_Phi_err(Everywhere)
+	SYNC: error_group
+  } "Compute the associated PDE energy"
+}
 
 SCHEDULE KleinGordon_MoLRegister IN MoL_Register
 {

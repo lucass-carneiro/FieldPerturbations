@@ -25,22 +25,11 @@
  * 6th order finite differencing
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-
 /*************************
  * This thorn's includes *
  *************************/
 #include "Derivatives.h"
-
-/**************
- * Prototypes *
- **************/
-void KleinGordon_RHS_6(CCTK_ARGUMENTS);
+#include "KleinGordon.h"
 
 /**********************************************
  * KleinGordon_RHS_6(CCTK_ARGUMENTS)        *

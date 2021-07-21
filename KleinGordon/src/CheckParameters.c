@@ -21,29 +21,11 @@
  * Check if the parameters parsed by Cactus are valid.
  */
 
-/*******************
- * Cactus includes *
- *******************/
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "KleinGordon.h"
 
-/**************
- * Prototypes *
- **************/
-void KleinGordon_CheckParameters(CCTK_ARGUMENTS);
-
-/**************************************************
- * KleinGordon_CheckParameters(CCTK_ARGUMENTS)  *
- *                                                *
- * This function checks the parsed parameters to  *
- * assert that they will produce valid results.   *
- *                                                *
- * Input: CCTK_ARGUMENTS (the grid functions from *
- * interface.ccl                                  *
- *                                                *
- * Output: Nothing                                *
- **************************************************/
 void KleinGordon_CheckParameters(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
@@ -70,5 +52,12 @@ void KleinGordon_CheckParameters(CCTK_ARGUMENTS) {
               "least 4 ghost zones");
     break;
   }
+  }
+
+  if (compute_error && !CCTK_Equals(initial_data, "exact_gaussian")) {
+    CCTK_PARAMWARN(
+        "Error computing was requested with an initial condition other than "
+        "\"exact_gaussian\". The error estimate is only significant when "
+        "evolving \"exact_gaussian\" data on top of a Minkowski background.");
   }
 }
