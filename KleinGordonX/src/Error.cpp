@@ -33,7 +33,7 @@ extern "C" void KleinGordonX::KleinGordonX_Error(CCTK_ARGUMENTS) {
 
   const CCTK_REAL t = cctk_time;
 
-  const array<int, dim> indextype = {1, 1, 1};
+  const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
 
   const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
@@ -48,6 +48,6 @@ extern "C" void KleinGordonX::KleinGordonX_Error(CCTK_ARGUMENTS) {
       gf_K_Phi_err(p.I) = gf_K_Phi(p.I) - dt_exact_gaussian(t, p.x, p.y, p.z);
     };
 
-    loop_all<1, 1, 1>(cctkGH, exact_gaussian_lambda);
+    loop_all<0, 0, 0>(cctkGH, exact_gaussian_lambda);
   }
 }

@@ -55,10 +55,10 @@ template <typename Y, typename X> Y linterp(Y y0, Y y1, X x0, X x1, X x) {
 template <typename T> T spline(T r) {
   if (r >= 1.0)
     return 0.0;
-  constexpr CCTK_REAL f = Loop::dim == 1   ? 1.0
-                          : Loop::dim == 2 ? 24.0 / 7.0 / M_PI
-                          : Loop::dim == 3 ? 4.0 / M_PI
-                                           : -1;
+  constexpr CCTK_REAL f =
+      Loop::dim == 1 ? 1.0
+                     : Loop::dim == 2 ? 24.0 / 7.0 / M_PI
+                                      : Loop::dim == 3 ? 4.0 / M_PI : -1;
   const T r2 = pow(r, 2);
   return f * (r <= 0.5 ? 1 - 2 * r2 : 2 + r * (-4 + 2 * r));
 }

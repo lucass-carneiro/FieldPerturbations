@@ -29,7 +29,7 @@ extern "C" void KleinGordonX::KleinGordonX_Energy(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Energy;
   DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {1, 1, 1};
+  const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
 
   const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
@@ -48,5 +48,5 @@ extern "C" void KleinGordonX::KleinGordonX_Energy(CCTK_ARGUMENTS) {
         (pow(dt_phi, 2) + pow(dx_phi, 2) + pow(dy_phi, 2) + pow(dz_phi, 2)) / 2;
   };
 
-  loop_int<1, 1, 1>(cctkGH, error_lambda);
+  loop_int<0, 0, 0>(cctkGH, error_lambda);
 }

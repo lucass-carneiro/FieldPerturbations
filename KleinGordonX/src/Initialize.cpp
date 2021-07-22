@@ -156,7 +156,7 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
 
   const CCTK_REAL t = cctk_time;
 
-  const array<int, dim> indextype = {1, 1, 1};
+  const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
   const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
   const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);
@@ -168,7 +168,7 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
       gf_K_Phi(p.I) = dt_exact_gaussian(t, p.x, p.y, p.z);
     };
 
-    loop_int<1, 1, 1>(cctkGH, exact_gaussian_lambda);
+    loop_int<0, 0, 0>(cctkGH, exact_gaussian_lambda);
 
   } else if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
 
@@ -179,6 +179,6 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
       gf_K_Phi(p.I) = 0.0;
     };
 
-    loop_int<1, 1, 1>(cctkGH, multipolar_gaussian_lambda);
+    loop_int<0, 0, 0>(cctkGH, multipolar_gaussian_lambda);
   }
 }

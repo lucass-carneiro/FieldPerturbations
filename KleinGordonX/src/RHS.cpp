@@ -29,9 +29,7 @@ extern "C" void KleinGordonX::KleinGordonX_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHS;
   DECLARE_CCTK_PARAMETERS;
 
-  const CCTK_REAL t = cctk_time;
-
-  const array<int, dim> indextype = {1, 1, 1};
+  const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
 
   const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
@@ -50,11 +48,10 @@ extern "C" void KleinGordonX::KleinGordonX_RHS(CCTK_ARGUMENTS) {
     CCTK_REAL ddz_phi =
         (gf_Phi(p.I - p.DI[2]) - 2 * gf_Phi(p.I) + gf_Phi(p.I + p.DI[2])) /
         (p.dx * p.dx);
-    gf_K_Phi_rhs(p.I) = ddx_phi + ddy_phi + ddz_phi -
-                        pow(field_mass, 2) * gf_Phi(p.I) +
-                        4 * M_PI * central_potential(t, p.x, p.y, p.z);
+    gf_K_Phi_rhs(p.I) =
+        ddx_phi + ddy_phi + ddz_phi - pow(field_mass, 2) * gf_Phi(p.I);
     gf_Phi_rhs(p.I) = gf_K_Phi(p.I);
   };
 
-  loop_int<1, 1, 1>(cctkGH, rhs_lambda);
+  loop_int<0, 0, 0>(cctkGH, rhs_lambda);
 }

@@ -30,7 +30,7 @@ extern "C" void KleinGordonX::KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Boundaries;
   DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {1, 1, 1};
+  const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
   const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
   const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);
@@ -46,7 +46,7 @@ extern "C" void KleinGordonX::KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
       gf_K_Phi(p.I) = CCTK_REAL(0);
     };
 
-    loop_bnd<1, 1, 1>(cctkGH, dirichilet_lambda);
+    loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
   }
 }
 
@@ -54,7 +54,7 @@ extern "C" void KleinGordonX::KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHSBoundaries;
   DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {1, 1, 1};
+  const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
   const GF3D2<CCTK_REAL> gf_Phi_rhs(layout, Phi_rhs);
   const GF3D2<CCTK_REAL> gf_K_Phi_rhs(layout, K_Phi_rhs);
@@ -64,5 +64,5 @@ extern "C" void KleinGordonX::KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
     gf_K_Phi_rhs(p.I) = CCTK_REAL(0);
   };
 
-  loop_bnd<1, 1, 1>(cctkGH, dirichilet_lambda);
+  loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
 }
