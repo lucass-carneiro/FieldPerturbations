@@ -11,24 +11,24 @@ USES INCLUDE HEADER: fixmath.hxx
 USES INCLUDE HEADER: loop.hxx
 USES INCLUDE HEADER: KleinGordonX.hpp
 
-CCTK_REAL evolved_group type=gf tags='index={1 1 1} rhs="rhs_group"'
+CCTK_REAL evolved_group TYPE=gf tags='index={0 0 0} rhs="rhs_group"'
 {
   Phi
   K_Phi
 } "The scalar and conjugate momemtum fields"
 
-CCTK_REAL rhs_group type=gf tags='index={1 1 1} checkpoint="no"'
+CCTK_REAL rhs_group TYPE=gf tags='index={0 0 0} checkpoint="no"'
 {
   Phi_rhs
   K_Phi_rhs
 } "Right hand side of the evolution equations"
 
-CCTK_REAL epsilon_group TYPE=gf TAGS='index={1 1 1} checkpoint="no"'
+CCTK_REAL epsilon_group TYPE=gf TAGS='index={0 0 0} checkpoint="no"'
 {
   epsilon
 } "Energy density of the wave equation"
 
-CCTK_REAL error_group TYPE=gf TAGS='index={1 1 1} checkpoint="no"'
+CCTK_REAL error_group TYPE=gf TAGS='index={0 0 0} checkpoint="no"'
 {
   Phi_err
   K_Phi_err
