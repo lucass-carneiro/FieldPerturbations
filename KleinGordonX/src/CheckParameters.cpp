@@ -31,6 +31,9 @@ extern "C" void KleinGordonX::KleinGordonX_CheckParameters(CCTK_ARGUMENTS) {
     CCTK_PARAMWARN("The gaussian parameter sigma is too small. Increase it in "
                    "order to avoid singularities.");
 
+  // for(int d=0;d<3;++d) assert(cctk_nghostzones[d]>=2);
+  // cassert
+
   switch (fd_order) {
   case 4: {
     CCTK_INFO("Using 4th order finite differencing. Make sure that you have at "

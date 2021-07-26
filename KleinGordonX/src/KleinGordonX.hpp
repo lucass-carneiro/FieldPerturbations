@@ -39,10 +39,11 @@
 #include <cctk_Parameters.h>
 
 /***********************************
- * CarpetX includes part 1         *
+ * CarpetX includes part 2         *
  * This include order is important *
  ***********************************/
 #include <loop.hxx>
+#include <vect.hxx>
 
 namespace KleinGordonX {
 

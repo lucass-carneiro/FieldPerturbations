@@ -32,7 +32,13 @@
 #include <gsl/gsl_sf_legendre.h>
 #include <memory>
 
-using namespace Loop;
+using Arith::vect;
+using Loop::dim;
+using Loop::GF3D2;
+using Loop::GF3D2layout;
+using Loop::loop_int;
+using Loop::PointDesc;
+
 using namespace std;
 
 CCTK_REAL KleinGordonX::exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
@@ -156,7 +162,7 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
 
   const CCTK_REAL t = cctk_time;
 
-  const array<int, dim> indextype = {0, 0, 0};
+  const vect<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
   const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
   const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);

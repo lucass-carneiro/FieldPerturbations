@@ -21,31 +21,41 @@
  * Compute the energy density of the wave equation.
  */
 
+#include "Derivative.hpp"
 #include "KleinGordonX.hpp"
 
-using namespace Loop;
+using Arith::vect;
+using Loop::dim;
+using Loop::GF3D2;
+using Loop::GF3D2layout;
+using Loop::loop_int;
+using Loop::PointDesc;
+
+#define POW2(x) (x * x)
 
 extern "C" void KleinGordonX::KleinGordonX_Energy(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Energy;
   DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {0, 0, 0};
+  const vect<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
 
   const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
   const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
   const GF3D2<CCTK_REAL> gf_epsilon(layout, epsilon);
 
+  const Derivative<Stencil::c3> d_Phi(gf_Phi);
+
   auto error_lambda = [&](const PointDesc &p) {
-    CCTK_REAL dt_phi = gf_K_Phi(p.I);
-    CCTK_REAL dx_phi =
-        (gf_Phi(p.I + p.DI[0]) - gf_Phi(p.I - p.DI[0])) / (2 * p.dx);
-    CCTK_REAL dy_phi =
-        (gf_Phi(p.I + p.DI[1]) - gf_Phi(p.I - p.DI[1])) / (2 * p.dy);
-    CCTK_REAL dz_phi =
-        (gf_Phi(p.I + p.DI[2]) - gf_Phi(p.I - p.DI[2])) / (2 * p.dz);
+    auto grad_Phi = d_Phi.grad(p);
+
+    const CCTK_REAL dt_Phi = gf_K_Phi(p.I);
+    const CCTK_REAL dx_Phi = grad_Phi[0];
+    const CCTK_REAL dy_Phi = grad_Phi[1];
+    const CCTK_REAL dz_Phi = grad_Phi[2];
+
     gf_epsilon(p.I) =
-        (pow(dt_phi, 2) + pow(dx_phi, 2) + pow(dy_phi, 2) + pow(dz_phi, 2)) / 2;
+        POW2(dt_Phi) + POW2(dx_Phi) + POW2(dy_Phi) + POW2(dz_Phi) / 2;
   };
 
   loop_int<0, 0, 0>(cctkGH, error_lambda);

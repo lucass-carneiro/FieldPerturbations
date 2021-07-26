@@ -96,6 +96,10 @@ SCHEDULE KleinGordonX_RHS IN KleinGordonX_RHSGroup
 {
   LANG: C
   READS: Phi(everywhere) K_Phi(everywhere)
+  READS: ADMBase::metric(everywhere)
+  READS: ADMBase::curv(everywhere)
+  READS: ADMBase::lapse(everywhere)
+  READS: ADMBase::shift(everywhere)
   WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
   SYNC: rhs_group
 } "Calculate the RHS for the wave equation"
@@ -119,7 +123,7 @@ if(compute_energy)
   SCHEDULE KleinGordonX_Energy IN KleinGordonX_AnalysisGroup
   {
     LANG: C
-    READS: Phi(everywhere) K_phi(interior)
+    READS: Phi(interior) K_phi(interior)
     WRITES: epsilon(interior)
     SYNC: epsilon_group
   } "Calculate energy density for the wave equation"
@@ -130,7 +134,7 @@ if(compute_error)
   SCHEDULE KleinGordonX_Error IN KleinGordonX_AnalysisGroup
   {
     LANG: C
-    READS: Phi(everywhere) K_Phi(everywhere)
-    WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
+    READS: Phi(interior) K_Phi(interior)
+    WRITES: Phi_err(interior) K_Phi_err(interior)
   } "Calculate error for the wave equation"
 }

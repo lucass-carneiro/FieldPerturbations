@@ -18,3 +18,5 @@ WARNING[L1,P0] (CarpetX): Before reduction: Grid function "KLEINGORDONX::K_Phi_e
 WARNING[L1,P0] (CarpetX): Before reduction: Grid function "KLEINGORDONX::K_Phi_err" is invalid on refinement level 2, time level 0; required [int:VAL,outer:INV,ghosts:INV], found [int:INV,outer:INV,ghosts:INV],why{int:RemakeLevel: not p
 
 * Add some simple/exact BH ID thorn for testing.
+* Why the spinning gaussian does not spin?
+* implement higher order FD

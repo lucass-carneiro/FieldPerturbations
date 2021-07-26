@@ -1,15 +1,17 @@
 # Interface definition for thorn KleinGordonX
 
 IMPLEMENTS: KleinGordonX
-INHERITS: CarpetX
 
-# Right now, ADMBase cannot be inherited. There are no CarpetX thorns that set ADM variables with exact initial data.
-# When there are, we can use this. For now, we are restricted to Minkowski only
-#INHERITS: CarpetX ADMBase
+# Warning: This only works if the implementation of ADMBase provides cowling, that is, ADMBase::cowling = yes works
+# Reasong: Without cowling, the ADM variables are not set and CarpetX cannot continue evolution.
+INHERITS: ADMBase
+INHERITS: CarpetX
 
 USES INCLUDE HEADER: fixmath.hxx
 USES INCLUDE HEADER: loop.hxx
+USES INCLUDE HEADER: vect.hxx
 USES INCLUDE HEADER: KleinGordonX.hpp
+USES INCLUDE HEADER: Derivative.hpp
 
 CCTK_REAL evolved_group TYPE=gf tags='index={0 0 0} rhs="rhs_group"'
 {
