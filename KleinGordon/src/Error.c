@@ -42,20 +42,12 @@ void KleinGordon_Error(CCTK_ARGUMENTS) {
   /* Time values */
   const CCTK_REAL t = cctk_time;
 
-  /* Loop indexes */
-  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
+  CCTK_LOOP3_INT(loop_error, cctkGH, i, j, k) {
+    const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-#pragma omp parallel for
-  for (k = 0; k < cctk_lsh[2]; k++) {
-    for (j = 0; j < cctk_lsh[1]; j++) {
-      for (i = 0; i < cctk_lsh[0]; i++) {
-        ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-
-        Phi_err[ijk] =
-            fabs(Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
-        K_Phi_err[ijk] =
-            fabs(K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
-      }
-    }
+    Phi_err[ijk] = fabs(Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
+    K_Phi_err[ijk] =
+        fabs(K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
   }
+  CCTK_ENDLOOP3_INT(loop_error);
 }

@@ -170,8 +170,8 @@ if(compute_error)
   SCHEDULE KleinGordon_Error IN KleinGordonX_AnalysisGroup
   {
 	LANG: C
-	READS: Grid::coordinates(Everywhere) Phi(Everywhere) K_Phi(Everywhere)
-	WRITES: Phi_err(Everywhere) K_Phi_err(Everywhere)
+	READS: Grid::coordinates(interior) Phi(interior) K_Phi(interior)
+	WRITES: Phi_err(interior) K_Phi_err(interior)
 	SYNC: error_group
   } "Compute the associated PDE energy"
 }
