@@ -146,8 +146,13 @@ SCHEDULE KleinGordon_RHSBoundaries IN KleinGordon_RHSGroup AFTER KleinGordon_RHS
 } "Apply outer boundary conditions"
 
 
+SCHEDULE KleinGordon_EnforceSymBound IN MoL_PostStep
+{
+  LANG: C
+  OPTIONS: LEVEL
+} "Enforce symmetry boundary conditions"
 
-SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup
+SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup AFTER KleinGordon_EnforceSymBound
 {
   LANG: C
   SYNC: evolved_group

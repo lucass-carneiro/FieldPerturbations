@@ -193,6 +193,20 @@ void KleinGordon_RHSSync(CCTK_ARGUMENTS);
  ***********************************************/
 void KleinGordon_RHSBoundaries(CCTK_ARGUMENTS);
 
+/***********************************************
+ * KleinGordon_EnforceSymBound(CCTK_ARGUMENTS) *
+ *                                             *
+ * This function enforces the symmetry BC by   *
+ * scheduling the RHS group to the "none" BC   *
+ * type.
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl)                         *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_EnforceSymBound(CCTK_ARGUMENTS);
+
 /****************************************************************
  * KleinGordon_Sync(CCTK_ARGUMENTS)                             *
  *                                                              *

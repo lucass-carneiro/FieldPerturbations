@@ -29,17 +29,12 @@
 void KleinGordon_RHSSync(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
-  // Do nothing
+  /* Do nothing */
 }
 
 void KleinGordon_Sync(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
-    int ierr = Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
-                                         "KleinGordon::evolved_group", "none");
-    if (ierr)
-      CCTK_ERROR("Error applaying BCs in KleinGordon::evolved_group");
-  }
+  /* Do nothing */
 }

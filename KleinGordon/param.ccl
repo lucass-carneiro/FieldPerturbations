@@ -3,7 +3,8 @@
 CCTK_KEYWORD bc_type "Type of boundary condition to apply"
 {
   "reflecting" :: "Traditional totally reflecting boundary condition."
-  "NewRad"    :: "Radiating boundary condition implemented in thorn NewRad"
+  "NewRad"     :: "Radiating boundary condition implemented in thorn NewRad"
+  "NewRad"     :: "Radiating boundary condition implemented in thorn NewRad"
 } "NewRad"
 
 
