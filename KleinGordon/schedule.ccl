@@ -174,8 +174,8 @@ if(compute_error)
   SCHEDULE KleinGordon_Error IN KleinGordon_AnalysisGroup
   {
 	LANG: C
-	READS: Grid::coordinates(everywhere) Phi(everywhere) K_Phi(everywhere)
-	WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
+	READS: Grid::coordinates(interior) Phi(interior) K_Phi(interior)
+	WRITES: Phi_err(interior) K_Phi_err(interior)
 	SYNC: error_group
   } "Compute the error of the evolution of an exact gaussian"
 }

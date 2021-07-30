@@ -42,12 +42,12 @@ void KleinGordon_Error(CCTK_ARGUMENTS) {
   /* Time values */
   const CCTK_REAL t = cctk_time;
 
-  CCTK_LOOP3_ALL(loop_error, cctkGH, i, j, k) {
+  CCTK_LOOP3_INT(loop_error, cctkGH, i, j, k) {
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
     Phi_err[ijk] = fabs(Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
     K_Phi_err[ijk] =
         fabs(K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
   }
-  CCTK_ENDLOOP3_ALL(loop_error);
+  CCTK_ENDLOOP3_INT(loop_error);
 }
