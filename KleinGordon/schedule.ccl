@@ -78,7 +78,7 @@ SCHEDULE KleinGordon_CheckParameters IN KleinGordon_ParamCheckGroup
 SCHEDULE KleinGordon_Initialize IN KleinGordon_InitialGroup
 {
   LANG: C
-  WRITES: Phi(Everywhere) K_Phi(Everywhere)
+  WRITES: Phi(everywhere) K_Phi(everywhere)
   SYNC: evolved_group
 } "Initialize evolved variables and set the RHS to zero"
 
@@ -147,7 +147,7 @@ SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup
 SCHEDULE KleinGordon_Boundaries IN KleinGordon_PostStepGroup AFTER KleinGordon_Sync
 {
   LANG: C
-  READS: evolved_group(interior)
+  READS: Phi(interior) K_Phi(interior)
   WRITES: evolved_group(boundary)
 } "Boundary conditions for the wave equation"
 

@@ -174,11 +174,11 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
 
   } else if (CCTK_EQUALS(initial_data, "exact_gaussian")) {
 
-    CCTK_LOOP3_ALL(loop_multipolar_gaussian, cctkGH, i, j, k) {
+    CCTK_LOOP3_ALL(loop_exact_gaussian, cctkGH, i, j, k) {
       const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
       Phi[ijk] = exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
       K_Phi[ijk] = dt_exact_gaussian(0.0, x[ijk], y[ijk], z[ijk]);
     }
-    CCTK_ENDLOOP3_ALL(loop_multipolar_gaussian);
+    CCTK_ENDLOOP3_ALL(loop_exact_gaussian);
   }
 }
