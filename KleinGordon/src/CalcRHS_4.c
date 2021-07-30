@@ -339,7 +339,7 @@ void KleinGordon_RHS_4(CCTK_ARGUMENTS) {
 
         /* Phi_rhs */
         Phi_rhs[ijk] = -2.0 * alpL * K_PhiL + betaxL * d_x_Phi +
-		  betayL * d_y_Phi + betazL * d_z_Phi;
+                       betayL * d_y_Phi + betazL * d_z_Phi;
 
         /* K_Phi_rhs */
         K_Phi_rhs[ijk] =
