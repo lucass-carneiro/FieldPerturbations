@@ -167,7 +167,7 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
     CCTK_REAL *buffer = Ylm_buffer(2);
 
     /* Loop over all points (ghostzones included) */
-    for (k = 0; k < cctk_lsh[2]; k++) {
+    /*for (k = 0; k < cctk_lsh[2]; k++) {
       for (j = 0; j < cctk_lsh[1]; j++) {
         for (i = 0; i < cctk_lsh[0]; i++) {
           ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
@@ -175,8 +175,24 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
           Phi[ijk] = multipolar_gaussian(buffer, 2, x[ijk], y[ijk], z[ijk]);
           K_Phi[ijk] = 0.0;
         }
-      }
+		}
+		}*/
+	const CCTK_REAL x0 = CCTK_ORIGIN_SPACE(0);
+	const CCTK_REAL y0 = CCTK_ORIGIN_SPACE(1);
+	const CCTK_REAL z0 = CCTK_ORIGIN_SPACE(2);
+	const CCTK_REAL dx = CCTK_DELTA_SPACE(0);
+	const CCTK_REAL dy = CCTK_DELTA_SPACE(1);
+	const CCTK_REAL dz = CCTK_DELTA_SPACE(2);
+
+	CCTK_LOOP3_ALL(loop_multipolar_gaussian, cctkGH, i, j, k) {
+      const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+      const CCTK_REAL x = x0 + (cctk_lbnd[0] + i) * dx;
+      const CCTK_REAL y = y0 + (cctk_lbnd[1] + j) * dy;
+      const CCTK_REAL z = z0 + (cctk_lbnd[2] + k) * dz;
+      Phi[ijk] = multipolar_gaussian(buffer, 2, x, y, z);
+      K_Phi[ijk] = 0.0;
     }
+    CCTK_ENDLOOP3_ALL(loop_multipolar_gaussian);
 
     free(buffer);
 

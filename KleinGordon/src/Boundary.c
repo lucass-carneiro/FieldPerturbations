@@ -27,11 +27,11 @@
  *************************/
 #include "KleinGordon.h"
 
-void KleinGordon_OuterBoundary(CCTK_ARGUMENTS) {
+void KleinGordon_RHSBoundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  if (CCTK_EQUALS(bc_type, "new_rad")) {
+  if (CCTK_EQUALS(bc_type, "NewRad")) {
     CCTK_INT ierr = 0;
 
     ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, Phi0, 1.0, nPhi);
@@ -126,20 +126,8 @@ void KleinGordon_OuterBoundary(CCTK_ARGUMENTS) {
   }
 }
 
-void KleinGordon_Boundary(CCTK_ARGUMENTS) {
+void KleinGordon_Boundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
-
-  CCTK_INT ierr = 0;
-
-  if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
-    ierr += Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
-                                      "KleinGordon::evolved_group", "none");
-  } else {
-    CCTK_WARN(CCTK_WARN_ABORT, "Boundary_SelectGroupForBC not aliased !");
-    ++ierr;
-  }
-
-  if (ierr < 0)
-    CCTK_WARN(0, "Failed to register BC for KleinGordon::rhs_group");
+  // Do nothing
 }
