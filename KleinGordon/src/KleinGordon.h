@@ -112,6 +112,19 @@ void KleinGordon_ZeroRHS(CCTK_ARGUMENTS);
 void KleinGordon_ZeroError(CCTK_ARGUMENTS);
 
 /**********************************************
+ * KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS)    *
+ *                                            *
+ * This function zeros the epsilon variable   *
+ * in order to prevent sporious NaNs.         *
+ *                                            *
+ * Input: CCTK_ARGUMENTS (the grid functions  *
+ * from interface.ccl                         *
+ *                                            *
+ * Output: Nothing                            *
+ **********************************************/
+void KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS);
+
+/**********************************************
  * KleinGordon_RHS_4(CCTK_ARGUMENTS)          *
  *                                            *
  * This function computes the right hand side *

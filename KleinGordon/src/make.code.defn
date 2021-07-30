@@ -1,7 +1,7 @@
 #Main make.code.defn file for thorn ADMScalarWave
 
 #Source files in this directory
-SRCS = Boundary.c CalcRHS_4.c CalcRHS_6.c CalcRHS_8.c CheckParameters.c Energy.c Error.c Initialize.c Register.c Startup.c Sync.c ZeroError.c ZeroRHS.c
+SRCS = Boundary.c CalcRHS_4.c CalcRHS_6.c CalcRHS_8.c CheckParameters.c Energy.c Error.c Initialize.c Register.c Startup.c Sync.c ZeroEpsilon.c ZeroError.c ZeroRHS.c
 
 #Subdirectories containing source files
 SUBDIRS =

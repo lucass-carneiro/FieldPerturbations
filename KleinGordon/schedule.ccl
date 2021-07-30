@@ -100,7 +100,12 @@ SCHEDULE KleinGordon_ZeroRHS IN KleinGordon_BaseGridGroup
 SCHEDULE KleinGordon_ZeroError IN KleinGordon_BaseGridGroup
 {
   LANG: C
-} "Set all right hand side functions to zero to prevent spurious nans"
+} "Set the error functions to zero to prevent spurious nans"
+
+SCHEDULE KleinGordon_ZeroEpsilon IN KleinGordon_BaseGridGroup
+{
+  LANG: C
+} "Set the PDE energy function to zero to prevent spurious nans"
 
 
 
