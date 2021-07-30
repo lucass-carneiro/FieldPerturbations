@@ -25,8 +25,7 @@ CCTK_REAL epsilon_group type=gf tags='tensortypealias="Scalar" prolongation="non
 
 CCTK_REAL error_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 checkpoint="no"'
 {
-  Phi_err
-  K_Phi_err
+  Phi_err, K_Phi_err
 } "Error measure of the wave equation"
 
 ################################

@@ -99,6 +99,19 @@ void KleinGordon_MoLRegister(CCTK_ARGUMENTS);
 void KleinGordon_ZeroRHS(CCTK_ARGUMENTS);
 
 /**********************************************
+ * KleinGordon_ZeroError(CCTK_ARGUMENTS)      *
+ *                                            *
+ * This function zeros the Error variables in *
+ * order to prevent sporious NaNs.            *
+ *                                            *
+ * Input: CCTK_ARGUMENTS (the grid functions  *
+ * from interface.ccl                         *
+ *                                            *
+ * Output: Nothing                            *
+ **********************************************/
+void KleinGordon_ZeroError(CCTK_ARGUMENTS);
+
+/**********************************************
  * KleinGordon_RHS_4(CCTK_ARGUMENTS)          *
  *                                            *
  * This function computes the right hand side *

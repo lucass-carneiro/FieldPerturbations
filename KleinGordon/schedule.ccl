@@ -57,7 +57,7 @@ SCHEDULE GROUP KleinGordon_RHSGroup IN MoL_CalcRHS
 
 
 
-SCHEDULE GROUP KleinGordonX_AnalysisGroup AT analysis
+SCHEDULE GROUP KleinGordon_AnalysisGroup AT analysis
 {
 } "Analyse state"
 
@@ -82,11 +82,6 @@ SCHEDULE KleinGordon_Initialize IN KleinGordon_InitialGroup
   SYNC: evolved_group
 } "Initialize evolved variables and set the RHS to zero"
 
-SCHEDULE KleinGordon_ZeroRHS AT BASEGRID AFTER KleinGordon_RHSSymmetries
-{
-  LANG:C
-} "Set all right hand side functions to zero to prevent spurious nans"
-
 
 
 SCHEDULE KleinGordon_MoLRegister IN KleinGordon_RegisterGroup
@@ -95,10 +90,19 @@ SCHEDULE KleinGordon_MoLRegister IN KleinGordon_RegisterGroup
   OPTIONS: META
 } "Register variables"
 
+
+
 SCHEDULE KleinGordon_ZeroRHS IN KleinGordon_BaseGridGroup
 {
   LANG: C
 } "Set all right hand side functions to zero to prevent spurious nans"
+
+SCHEDULE KleinGordon_ZeroError IN KleinGordon_BaseGridGroup
+{
+  LANG: C
+} "Set all right hand side functions to zero to prevent spurious nans"
+
+
 
 if(fd_order == 4)
 {
@@ -155,7 +159,7 @@ SCHEDULE KleinGordon_Boundaries IN KleinGordon_PostStepGroup AFTER KleinGordon_S
 
 if(compute_energy)
 {
-  SCHEDULE KleinGordon_Energy IN KleinGordonX_AnalysisGroup
+  SCHEDULE KleinGordon_Energy IN KleinGordon_AnalysisGroup
   {
 	LANG: C
 	READS: ADMBase::metric(interior)
@@ -167,11 +171,11 @@ if(compute_energy)
 
 if(compute_error)
 {
-  SCHEDULE KleinGordon_Error IN KleinGordonX_AnalysisGroup
+  SCHEDULE KleinGordon_Error IN KleinGordon_AnalysisGroup
   {
 	LANG: C
-	READS: Grid::coordinates(interior) Phi(interior) K_Phi(interior)
-	WRITES: Phi_err(interior) K_Phi_err(interior)
+	READS: Grid::coordinates(everywhere) Phi(everywhere) K_Phi(everywhere)
+	WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
 	SYNC: error_group
-  } "Compute the associated PDE energy"
+  } "Compute the error of the evolution of an exact gaussian"
 }
