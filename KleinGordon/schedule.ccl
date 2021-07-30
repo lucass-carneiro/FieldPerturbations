@@ -3,7 +3,7 @@
 # Storage allocations
 
 STORAGE: evolved_group[3]
-STORAGE: epsilon_group[3]
+STORAGE: epsilon_group
 STORAGE: error_group
 STORAGE: rhs_group
 
@@ -158,9 +158,9 @@ if(compute_energy)
   SCHEDULE KleinGordon_Energy IN KleinGordonX_AnalysisGroup
   {
 	LANG: C
-	READS: ADMBase::metric(Everywhere)
-	READS: K_Phi(Everywhere)
-	WRITES: epsilon_group(Everywhere)
+	READS: ADMBase::metric(interior)
+	READS: K_Phi(interior)
+	WRITES: epsilon_group(interior)
 	SYNC: epsilon_group
   } "Compute the associated PDE energy"
 }

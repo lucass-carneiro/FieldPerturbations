@@ -35,71 +35,40 @@ void KleinGordon_Energy(CCTK_ARGUMENTS) {
   /* Quantities required for the derivative macros to work */
   DECLARE_FIRST_DERIVATIVE_FACTORS_4;
 
-  /* Loop indexes */
-  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
+  CCTK_LOOP3_INT(loop_energy, cctkGH, i, j, k) {
+    const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-  /* Local 3-metric, inverse 3-metric and 3-metric determinant*/
-  CCTK_REAL gxxL = 0.0;
-  CCTK_REAL gxyL = 0.0;
-  CCTK_REAL gxzL = 0.0;
-  CCTK_REAL gyyL = 0.0;
-  CCTK_REAL gyzL = 0.0;
-  CCTK_REAL gzzL = 0.0;
+    /* The 3-metric */
+    const CCTK_REAL gxxL = gxx[ijk];
+    const CCTK_REAL gxyL = gxy[ijk];
+    const CCTK_REAL gxzL = gxz[ijk];
+    const CCTK_REAL gyyL = gyy[ijk];
+    const CCTK_REAL gyzL = gyz[ijk];
+    const CCTK_REAL gzzL = gzz[ijk];
 
-  CCTK_REAL igxxL = 0.0;
-  CCTK_REAL igxyL = 0.0;
-  CCTK_REAL igxzL = 0.0;
-  CCTK_REAL igyyL = 0.0;
-  CCTK_REAL igyzL = 0.0;
-  CCTK_REAL igzzL = 0.0;
+    /* The 3-metric inverse */
+    const CCTK_REAL gdetL = -(gxzL * gxzL * gyyL) + 2 * gxyL * gxzL * gyzL -
+                            gxxL * gyzL * gyzL - gxyL * gxyL * gzzL +
+                            gxxL * gyyL * gzzL;
+    const CCTK_REAL igxxL = (-gyzL * gyzL + gyyL * gzzL) / gdetL;
+    const CCTK_REAL igxyL = (gxzL * gyzL - gxyL * gzzL) / gdetL;
+    const CCTK_REAL igxzL = (-(gxzL * gyyL) + gxyL * gyzL) / gdetL;
+    const CCTK_REAL igyyL = (-gxzL * gxzL + gxxL * gzzL) / gdetL;
+    const CCTK_REAL igyzL = (gxyL * gxzL - gxxL * gyzL) / gdetL;
+    const CCTK_REAL igzzL = (-gxyL * gxyL + gxxL * gyyL) / gdetL;
 
-  CCTK_REAL gdetL = 0.0;
+    /* The derivatives of Phi */
+    const CCTK_REAL d_x_Phi = D4x(Phi);
+    const CCTK_REAL d_y_Phi = D4y(Phi);
+    const CCTK_REAL d_z_Phi = D4z(Phi);
 
-  /* Derivatives of Phi */
-  CCTK_REAL d_x_Phi = 0.0;
-  CCTK_REAL d_y_Phi = 0.0;
-  CCTK_REAL d_z_Phi = 0.0;
+    /* Contracted part */
+    const CCTK_REAL contracted_part =
+        igxxL * d_x_Phi * d_x_Phi + igxyL * d_x_Phi * d_y_Phi +
+        igxzL * d_x_Phi * d_z_Phi + igyyL * d_y_Phi * d_y_Phi +
+        igyzL * d_y_Phi * d_z_Phi + igzzL * d_z_Phi * d_z_Phi;
 
-  /* Parts of the energy density */
-  CCTK_REAL contracted_part = 0;
-
-#pragma omp parallel for
-  for (k = 0; k < cctk_lsh[2]; k++) {
-    for (j = 0; j < cctk_lsh[1]; j++) {
-      for (i = 0; i < cctk_lsh[0]; i++) {
-        ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-
-        /* The 3-metric */
-        gxxL = gxx[ijk];
-        gxyL = gxy[ijk];
-        gxzL = gxz[ijk];
-        gyyL = gyy[ijk];
-        gyzL = gyz[ijk];
-        gzzL = gzz[ijk];
-
-        /* The 3-metric inverse */
-        gdetL = -(gxzL * gxzL * gyyL) + 2 * gxyL * gxzL * gyzL -
-                gxxL * gyzL * gyzL - gxyL * gxyL * gzzL + gxxL * gyyL * gzzL;
-        igxxL = (-gyzL * gyzL + gyyL * gzzL) / gdetL;
-        igxyL = (gxzL * gyzL - gxyL * gzzL) / gdetL;
-        igxzL = (-(gxzL * gyyL) + gxyL * gyzL) / gdetL;
-        igyyL = (-gxzL * gxzL + gxxL * gzzL) / gdetL;
-        igyzL = (gxyL * gxzL - gxxL * gyzL) / gdetL;
-        igzzL = (-gxyL * gxyL + gxxL * gyyL) / gdetL;
-
-        /* The derivatives of Phi */
-        d_x_Phi = D4x(Phi);
-        d_y_Phi = D4y(Phi);
-        d_z_Phi = D4z(Phi);
-
-        /* Contracted part */
-        contracted_part =
-            igxxL * d_x_Phi * d_x_Phi + igxyL * d_x_Phi * d_y_Phi +
-            igxzL * d_x_Phi * d_z_Phi + igyyL * d_y_Phi * d_y_Phi +
-            igyzL * d_y_Phi * d_z_Phi + igzzL * d_z_Phi * d_z_Phi;
-
-        epsilon[ijk] = 0.5 * (K_Phi[ijk] * K_Phi[ijk] + contracted_part);
-      }
-    }
+    epsilon[ijk] = 0.5 * (K_Phi[ijk] * K_Phi[ijk] + contracted_part);
   }
+  CCTK_ENDLOOP3_INT(loop_energy);
 }
