@@ -103,7 +103,7 @@ CCTK_REAL Ylm(const CCTK_REAL *buffer, CCTK_INT l, CCTK_INT m,
   else if (m > 0)
     return sqrt(2.0) * legendre_part * cos(m * theta);
   else
-    return pow(-1.0, -m) * legendre_part;
+    return legendre_part;
 }
 
 CCTK_REAL multipolar_gaussian(CCTK_REAL *buffer, CCTK_INT lmax, CCTK_REAL x,
