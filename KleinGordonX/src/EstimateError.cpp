@@ -41,7 +41,7 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
   const GF3D2<CCTK_REAL> gf_regrid_error(layout, regrid_error);
 
   auto regriderror_lambda = [&](const PointDesc &p) {
-    const CCTK_REAL base_Phi = fabs(gf_Phi(p.I)) + fabs(1.0);
+    const CCTK_REAL base_Phi = fabs(gf_Phi(p.I)) + fabs(Phi_abs);
     const CCTK_REAL errx_Phi =
         fabs(gf_Phi(p.I + p.DI[0]) - gf_Phi(p.I)) / base_Phi;
     const CCTK_REAL erry_Phi =
@@ -49,7 +49,7 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
     const CCTK_REAL errz_Phi =
         fabs(gf_Phi(p.I + p.DI[2]) - gf_Phi(p.I)) / base_Phi;
 
-    const CCTK_REAL base_K_Phi = fabs(gf_K_Phi(p.I)) + fabs(1.0);
+    const CCTK_REAL base_K_Phi = fabs(gf_K_Phi(p.I)) + fabs(K_Phi_abs);
     const CCTK_REAL errx_K_Phi =
         fabs(gf_K_Phi(p.I + p.DI[0]) - gf_K_Phi(p.I)) / base_K_Phi;
     const CCTK_REAL erry_K_Phi =
@@ -57,10 +57,8 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
     const CCTK_REAL errz_K_Phi =
         fabs(gf_K_Phi(p.I + p.DI[2]) - gf_K_Phi(p.I)) / base_K_Phi;
 
-    const CCTK_REAL avg_error = 0.5 * (errx_Phi + erry_Phi + errz_Phi) +
-                                0.5 * (errx_K_Phi + erry_K_Phi + errz_K_Phi);
-
-    gf_regrid_error(p.I) = avg_error;
+    gf_regrid_error(p.I) =
+        errx_Phi + erry_Phi + errz_Phi + errx_K_Phi + erry_K_Phi + errz_K_Phi;
   };
 
   loop_int<1, 1, 1>(cctkGH, regriderror_lambda);

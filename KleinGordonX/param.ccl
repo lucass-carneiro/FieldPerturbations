@@ -92,3 +92,13 @@ CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with re
 CCTK_BOOLEAN compute_energy "Wether to compute the PDE energy"
 {
 } no
+
+CCTK_REAL Phi_abs "Typical value of Phi to determine absolute error" STEERABLE=always
+{
+  *:* :: "No restriction"
+} 1.0
+
+CCTK_REAL K_Phi_abs "Typical value of psi to determine absolute error" STEERABLE=always
+{
+  *:* :: "No restriction"
+} 1.0
