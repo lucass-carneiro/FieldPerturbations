@@ -1,0 +1,248 @@
+#######################################################################
+# Minkowski.par                                                       #
+#                                                                     #
+# Evolve the Klein gordon equation on top of a Minkowski background   #
+#######################################################################
+
+#######################################################################
+# Script variables                                                    #
+#######################################################################
+
+$title = "Minkowski unigrid evolution"
+
+$cells = 80
+$zcells = $cells/2
+
+$fd_order = 8
+$ghosts = $fd_order - 1
+
+$courant_factor = 0.25
+$final_time = 1
+
+$nan_check_every = 256
+$info_every = 1
+$out_every = 1
+
+#######################################################################
+# General settings                                                    #
+#######################################################################
+
+Cactus::cctk_run_title = $title
+
+Cactus::cctk_full_warnings         = yes
+Cactus::highlight_warning_messages = yes
+
+#######################################################################
+# Grid setup                                                          #
+#######################################################################
+
+ActiveThorns = "Boundary CartGrid3D CoordBase SymBase"
+
+CartGrid3D::type = "coordbase"
+
+CoordBase::domainsize = "minmax"
+CoordBase::spacing    = "numcells"
+
+CoordBase::xmin = -5.0
+CoordBase::xmax = 5.0
+
+CoordBase::ymin = -5.0
+CoordBase::ymax = 5.0
+
+CoordBase::zmin = 0.0
+CoordBase::zmax = 5.0
+
+CoordBase::ncells_x = $cells
+CoordBase::ncells_y = $cells
+CoordBase::ncells_z = $zcells
+
+CoordBase::boundary_size_x_lower = $ghosts
+CoordBase::boundary_size_y_lower = $ghosts
+CoordBase::boundary_size_z_lower = $ghosts
+CoordBase::boundary_size_x_upper = $ghosts
+CoordBase::boundary_size_y_upper = $ghosts
+CoordBase::boundary_size_z_upper = $ghosts
+
+CoordBase::boundary_internal_x_lower = no
+CoordBase::boundary_internal_x_upper = no
+CoordBase::boundary_internal_y_lower = no
+CoordBase::boundary_internal_y_upper = no
+CoordBase::boundary_internal_z_lower = no
+CoordBase::boundary_internal_z_upper = no
+
+CoordBase::boundary_staggered_x_lower = no
+CoordBase::boundary_staggered_x_upper = no
+CoordBase::boundary_staggered_y_lower = no
+CoordBase::boundary_staggered_y_upper = no
+CoordBase::boundary_staggered_z_lower = no
+CoordBase::boundary_staggered_z_upper = no
+
+CoordBase::boundary_shiftout_x_lower = 0
+CoordBase::boundary_shiftout_y_lower = 0
+CoordBase::boundary_shiftout_z_lower = 1
+CoordBase::boundary_shiftout_x_upper = 0
+CoordBase::boundary_shiftout_y_upper = 0
+CoordBase::boundary_shiftout_z_upper = 0
+
+#######################################################################
+# Reflection Symmetry                                                 #
+#######################################################################
+
+ActiveThorns = "ReflectionSymmetry SymBase"
+
+ReflectionSymmetry::reflection_x   = no
+ReflectionSymmetry::reflection_y   = no
+ReflectionSymmetry::reflection_z   = yes
+ReflectionSymmetry::avoid_origin_x = no
+ReflectionSymmetry::avoid_origin_y = no
+ReflectionSymmetry::avoid_origin_z = no
+
+#######################################################################
+# Carpet setup                                                        #
+#######################################################################
+
+ActiveThorns = "Carpet CarpetLib CarpetInterp CarpetInterp2 CarpetReduce CarpetSlab CarpetRegrid2"
+
+Carpet::domain_from_coordbase = yes
+Carpet::ghost_size            = $ghosts
+Carpet::max_refinement_levels = 1
+
+Carpet::use_buffer_zones         = yes
+Carpet::prolongation_order_space = 5
+Carpet::prolongation_order_time  = 2
+
+Carpet::grid_structure_filename   = "carpet-grid-structure.asc"
+Carpet::grid_coordinates_filename = "carpet-grid-coordinates.asc"
+
+Carpet::convergence_level = 0
+Carpet::time_refinement_factors = "[1,1,2,4,8,16,32,64,128,256]"
+
+CarpetRegrid2::regrid_every            = -1
+CarpetRegrid2::freeze_unaligned_levels = yes
+CarpetRegrid2::verbose                 = yes
+
+#######################################################################
+# Background spacetime                                                #
+#######################################################################
+
+ActiveThorns = "InitBase ADMBase Minkowski"
+
+ADMBase::initial_data     = "Minkowski"
+ADMBase::evolution_method = "Minkowski"
+ADMBase::initial_lapse    = "Minkowski"
+ADMBase::initial_shift    = "Minkowski"
+ADMBase::initial_dtlapse  = "Minkowski"
+ADMBase::initial_dtshift  = "Minkowski"
+
+ADMBase::lapse_timelevels  = 3
+ADMBase::shift_timelevels  = 3
+ADMBase::metric_timelevels = 3
+
+InitBase::initial_data_setup_method = "init_some_levels"
+Carpet::init_fill_timelevels        = yes
+Carpet::init_3_timelevels           = no
+
+#######################################################################
+# Scalar field initial data                                           #
+#######################################################################
+
+ActiveThorns = "KleinGordon"
+
+KleinGordon::field_mass     = 0.0
+
+KleinGordon::initial_data   = "multipolar_gaussian"
+
+KleinGordon::gaussian_sigma = 0.25
+KleinGordon::gaussian_R0    = 2.0
+
+KleinGordon::gaussian_x0    = 0.0
+KleinGordon::gaussian_y0    = 0.0
+KleinGordon::gaussian_z0    = 0.0
+
+KleinGordon::fd_order = $fd_order
+
+KleinGordon::compute_error  = no
+KleinGordon::compute_energy = no
+
+KleinGordon::multipoles[0] = 0.0
+KleinGordon::multipoles[1] = -0.57735026919
+KleinGordon::multipoles[2] = 0.0
+KleinGordon::multipoles[3] = -0.57735026919
+KleinGordon::multipoles[4] = 0.0
+KleinGordon::multipoles[5] = -0.4472135955
+KleinGordon::multipoles[6] = 0.0
+KleinGordon::multipoles[7] = 0.4472135955
+KleinGordon::multipoles[8] = 0.0
+
+#######################################################################
+# Physical Boundaries                                                 #
+#######################################################################
+
+ActiveThorns = "Boundary NewRad"
+
+KleinGordon::bc_type = "NewRad"
+KleinGordon::nPhi    = 3
+KleinGordon::nK_Phi  = 3
+KleinGordon::Phi0    = 0.0
+KleinGordon::K_Phi0  = 0.0
+
+#######################################################################
+# Dissipation                                                         #
+#######################################################################
+
+ActiveThorns = "SphericalSurface LocalInterp AEILocalInterp SpaceMask Dissipation"
+
+Dissipation::verbose                         = no
+Dissipation::epsdis                          = 0.25
+Dissipation::extra_Dissipation_at_outerbound = yes
+
+Dissipation::ob_slope                  = 0.1
+Dissipation::outer_boundary_max_epsdis = 0.3
+Dissipation::outer_bound_npoints       = $ghosts
+Dissipation::vars                      = "KleinGordon::evolved_group"
+
+#######################################################################
+# Time integration                                                    #
+#######################################################################
+
+ActiveThorns = "MoL Time"
+
+MoL::ode_method              = "RK87"
+MoL::mol_intermediate_steps  = 13
+MoL::mol_num_scratch_levels  = 13
+MoL::initial_data_is_crap    = true
+
+Time::timestep_method = "courant_static"
+Time::dtfac           = $courant_factor
+
+#######################################################################
+# Termination and final time                                          #
+#######################################################################
+
+Cactus::terminate       = "time"
+Cactus::cctk_final_time = $final_time
+
+#######################################################################
+# Debugging checks                                                    #
+#######################################################################
+
+ActiveThorns = "NaNChecker"
+
+NaNChecker::check_every     = $nan_check_every
+NaNChecker::action_if_found = "terminate"
+NaNChecker::check_vars      = "KleinGordon::evolved_group KleinGordon::rhs_group"
+
+#######################################################################
+# Output                                                              #
+#######################################################################
+
+ActiveThorns = "IOUtil CarpetIOBasic CarpetIOScalar CarpetIOHDF5"
+
+IO::out_dir                     = $parfile
+
+CarpetIOBasic::outInfo_every    = $info_every
+CarpetIOBasic::outInfo_vars     = "KleinGordon::evolved_group"
+
+CarpetIOHDF5::out_every         = $out_every
+CarpetIOHDF5::compression_level = 9
+CarpetIOHDF5::out_vars          = "KleinGordon::Phi"

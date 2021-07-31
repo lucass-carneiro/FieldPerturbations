@@ -1,0 +1,393 @@
+#######################################################################
+# Schwarzschild.par                                                   #
+#                                                                     #
+# Evolve the Klein gordon equation on top of a Schwarzschild          #
+# background                                                          #
+#######################################################################
+
+#######################################################################
+# Script variables                                                    #
+#######################################################################
+
+$title = "Schwarzschild multigrid evolution"
+
+$cells = 300
+$zcells = $cells/2
+
+$fd_order = 8
+$ghosts = 6
+
+$courant_factor = 0.25
+$final_time = 1.0
+
+$nan_check_every = 256
+$info_every = 2
+$out_every = 2
+
+$bh_m = 1.0
+$bh_x = 0.01
+$bh_y = 0.0
+$bh_z = 0.0
+
+################################################################################
+# General settings                                                             #
+################################################################################
+
+Cactus::cctk_run_title = "KleinGordon on a Schwarzschild background"
+Cactus::cctk_full_warnings         = yes
+Cactus::highlight_warning_messages = yes
+
+################################################################################
+# Grid setup                                                                   #
+################################################################################
+
+ActiveThorns = "Boundary CartGrid3D CoordBase"
+
+CartGrid3D::type = "coordbase"
+
+CoordBase::domainsize = "minmax"
+CoordBase::spacing    = "numcells"
+
+CoordBase::xmin = -20.0
+CoordBase::xmax = 20.0
+
+CoordBase::ymin = -20.0
+CoordBase::ymax = 20.0
+
+CoordBase::zmin = 0.0
+CoordBase::zmax = 20.0
+
+CoordBase::ncells_x = $cells
+CoordBase::ncells_y = $cells
+CoordBase::ncells_z = $zcells
+
+CoordBase::boundary_size_x_lower = $ghosts
+CoordBase::boundary_size_y_lower = $ghosts
+CoordBase::boundary_size_z_lower = $ghosts
+CoordBase::boundary_size_x_upper = $ghosts
+CoordBase::boundary_size_y_upper = $ghosts
+CoordBase::boundary_size_z_upper = $ghosts
+
+CoordBase::boundary_internal_x_lower = no
+CoordBase::boundary_internal_x_upper = no
+CoordBase::boundary_internal_y_lower = no
+CoordBase::boundary_internal_y_upper = no
+CoordBase::boundary_internal_z_lower = no
+CoordBase::boundary_internal_z_upper = no
+
+CoordBase::boundary_staggered_x_lower = no
+CoordBase::boundary_staggered_x_upper = no
+CoordBase::boundary_staggered_y_lower = no
+CoordBase::boundary_staggered_y_upper = no
+CoordBase::boundary_staggered_z_lower = no
+CoordBase::boundary_staggered_z_upper = no
+
+CoordBase::boundary_shiftout_x_lower = 0
+CoordBase::boundary_shiftout_y_lower = 0
+CoordBase::boundary_shiftout_z_lower = 1
+CoordBase::boundary_shiftout_x_upper = 0
+CoordBase::boundary_shiftout_y_upper = 0
+CoordBase::boundary_shiftout_z_upper = 0
+
+################################################################################
+# Reflection Symmetry                                                          #
+################################################################################
+
+ActiveThorns = "ReflectionSymmetry SymBase"
+
+ReflectionSymmetry::reflection_x   = no
+ReflectionSymmetry::reflection_y   = no
+ReflectionSymmetry::reflection_z   = yes
+ReflectionSymmetry::avoid_origin_x = no
+ReflectionSymmetry::avoid_origin_y = no
+ReflectionSymmetry::avoid_origin_z = no
+
+################################################################################
+# Carpet setup                                                                 #
+################################################################################
+
+ActiveThorns = "Carpet CarpetLib CarpetInterp CarpetInterp2 CarpetReduce CarpetSlab CarpetRegrid2"
+
+Carpet::domain_from_coordbase = yes
+Carpet::ghost_size            = $ghosts
+Carpet::max_refinement_levels = 3
+
+Carpet::use_buffer_zones         = yes
+Carpet::prolongation_order_space = 5
+Carpet::prolongation_order_time  = 2
+
+Carpet::grid_structure_filename   = "carpet-grid-structure.asc"
+Carpet::grid_coordinates_filename = "carpet-grid-coordinates.asc"
+
+#Carpet::convergence_level = 0
+Carpet::time_refinement_factors = "[1,1,2,4,8,16,32,64,128,256]"
+
+CarpetRegrid2::regrid_every            = -1
+CarpetRegrid2::freeze_unaligned_levels = yes
+CarpetRegrid2::verbose                 = yes
+
+CarpetRegrid2::num_centres  = 1
+CarpetRegrid2::num_levels_1 = 3
+CarpetRegrid2::position_x_1 = 0.01
+CarpetRegrid2::position_y_1 = 0.01
+CarpetRegrid2::position_z_1 = 0.0
+CarpetRegrid2::radius_1     = [0, 5.0, 2.0 * $bh_m + 0.5]
+
+################################################################################
+# Background spacetime                                                         #
+################################################################################
+
+ActiveThorns = "InitBase ADMBase KerrSchild"
+
+ADMBase::initial_data     = "KerrSchild"
+ADMBase::evolution_method = "KerrSchild"
+ADMBase::initial_lapse    = "KerrSchild"
+ADMBase::initial_shift    = "KerrSchild"
+ADMBase::initial_dtlapse  = "KerrSchild"
+ADMBase::initial_dtshift  = "KerrSchild"
+
+ADMBase::lapse_timelevels  = 3
+ADMBase::shift_timelevels  = 3
+ADMBase::metric_timelevels = 3
+
+InitBase::initial_data_setup_method = "init_some_levels"
+Carpet::init_fill_timelevels        = yes
+Carpet::init_3_timelevels           = no
+
+KerrSchild::positionx = $bh_x
+KerrSchild::positiony = $bh_y
+KerrSchild::positionz = $bh_z
+KerrSchild::m = $bh_m
+KerrSchild::a = 0.0
+
+################################################################################
+# Scalar field initial data                                                    #
+################################################################################
+
+ActiveThorns = "KleinGordon"
+
+KleinGordon::field_mass     = 0.0
+
+KleinGordon::initial_data   = "multipolar_gaussian"
+
+KleinGordon::gaussian_sigma = 0.25
+KleinGordon::gaussian_R0    =1.0
+
+KleinGordon::gaussian_x0    = 3.5
+KleinGordon::gaussian_y0    = 3.5
+KleinGordon::gaussian_z0    = 0.0
+
+KleinGordon::fd_order = $fd_order
+
+KleinGordon::compute_error  = no
+KleinGordon::compute_energy = no
+
+KleinGordon::multipoles[0] = 0.0
+KleinGordon::multipoles[1] = -0.57735026919
+KleinGordon::multipoles[2] = 0.0
+KleinGordon::multipoles[3] = -0.57735026919
+KleinGordon::multipoles[4] = 0.0
+KleinGordon::multipoles[5] = -0.4472135955
+KleinGordon::multipoles[6] = 0.0
+KleinGordon::multipoles[7] = 0.4472135955
+KleinGordon::multipoles[8] = 0.0
+
+################################################################################
+# Interpolation                                                                #
+################################################################################
+
+CarpetInterp::check_tree_search = no
+CarpetInterp::tree_search       = yes
+
+################################################################################
+# Field mode decomposition                                                     #
+################################################################################
+
+ActiveThorns = "Multipole"
+
+# Radii are chosen to be evenly spaced in 1/r as that is the variable
+# extrapolation is performed in
+Multipole::nradii       = 1
+Multipole::radius       = [5.0]
+Multipole::ntheta       = 120
+Multipole::nphi         = 240
+Multipole::variables    = "KleinGordon::Phi{sw=0 name='Phi'}"
+
+Multipole::out_every    = $out_every
+Multipole::l_max        = 2
+Multipole::output_hdf5  = yes
+
+# Disable ASCII output to avoid creating a large number of files
+Multipole::output_ascii = no
+
+################################################################################
+# Apparent Horizons                                                            #
+################################################################################
+
+ActiveThorns = "TmunuBase SphericalSurface QuasiLocalMeasures AHFinderDirect LocalInterp AEILocalInterp"
+
+AHFinderDirect::N_horizons                               = 1
+AHFinderDirect::find_every                               = 1000000000
+AHFinderDirect::output_h_every                           = 1000000000
+AHFinderDirect::output_Theta_every                       = 1000000000
+AHFinderDirect::max_Newton_iterations__initial           = 50
+AHFinderDirect::max_Newton_iterations__subsequent        = 50
+AHFinderDirect::max_allowable_Theta_growth_iterations    = 10
+AHFinderDirect::max_allowable_Theta_nonshrink_iterations = 10
+AHFinderDirect::geometry_interpolator_name               = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars               = "order=4"
+AHFinderDirect::surface_interpolator_name                = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars                = "order=4"
+AHFinderDirect::verbose_level                            = "physics details"
+AHFinderDirect::move_origins                             = yes
+
+AHFinderDirect::origin_x                             [1] = $bh_x
+AHFinderDirect::origin_y                             [1] = $bh_y
+AHFinderDirect::origin_z                             [1] = $bh_z
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__radius  [1] = 2.0 * $bh_m
+AHFinderDirect::which_surface_to_store_info          [1] = 0
+
+################################################################################
+# Spherical Surfaces                                                           #
+################################################################################
+
+SphericalSurface::nsurfaces = 1
+SphericalSurface::maxntheta = 66
+SphericalSurface::maxnphi   = 124
+SphericalSurface::verbose   = no
+
+SphericalSurface::ntheta      [0] = 41
+SphericalSurface::nphi        [0] = 80
+SphericalSurface::nghoststheta[0] = 2
+SphericalSurface::nghostsphi  [0] = 2
+
+################################################################################
+# Isolated Horizons                                                            #
+################################################################################
+
+QuasiLocalMeasures::verbose              = no
+QuasiLocalMeasures::veryverbose          = no
+QuasiLocalMeasures::interpolator         = "Lagrange polynomial interpolation"
+QuasiLocalMeasures::interpolator_options = "order=4"
+QuasiLocalMeasures::spatial_order        = 4
+QuasiLocalMeasures::num_surfaces         = 1
+QuasiLocalMeasures::surface_index[0]     = 0
+QuasiLocalMeasures::output_vtk_every     = 0
+
+################################################################################
+# Singularity Excision                                                         #
+################################################################################
+
+ActiveThorns = "StaticConformal SphericalSurface NoExcision"
+
+NoExcision::num_regions        = 1
+NoExcision::centre_x       [0] = $bh_x
+NoExcision::centre_y       [0] = $bh_y
+NoExcision::centre_z       [0] = $bh_z
+NoExcision::radius         [0] = 0.5 * $bh_m
+NoExcision::Minkowski_scale[0] = 2.6637047122099 # value found at r=0.875
+NoExcision::reduce_rhs     [0] = yes
+
+################################################################################
+# Physical Boundaries                                                          #
+################################################################################
+
+ActiveThorns = "NewRad"
+
+KleinGordon::bc_type = "NewRad"
+KleinGordon::nPhi    = 3
+KleinGordon::nK_Phi  = 3
+KleinGordon::Phi0    = 0.0
+KleinGordon::K_Phi0  = 0.0
+
+################################################################################
+# Dissipation                                                                  #
+################################################################################
+
+ActiveThorns = "Dissipation SpaceMask"
+
+Dissipation::verbose                         = no
+Dissipation::order                           = 9
+Dissipation::epsdis                          = 0.25
+Dissipation::extra_Dissipation_in_horizons   = yes
+Dissipation::extra_Dissipation_at_outerbound = yes
+
+Dissipation::ah_slope          = 0.1
+Dissipation::ah_max_epsdis     = 0.32
+Dissipation::update_ah_every   = 1000000000
+Dissipation::surface_number[0] = 0
+Dissipation::horizon_number[0] = 1
+
+Dissipation::ob_slope                  = 0.1
+Dissipation::outer_boundary_max_epsdis = 0.32
+Dissipation::outer_bound_npoints       = 4
+Dissipation::vars                      = "KleinGordon::evolved_group"
+
+################################################################################
+# Time integration                                                             #
+################################################################################
+
+ActiveThorns = "MoL Time"
+
+MoL::ode_method              = "RK87"
+MoL::mol_intermediate_steps  = 13
+MoL::mol_num_scratch_levels  = 13
+MoL::initial_data_is_crap    = true
+
+Time::timestep_method = "courant_static"
+Time::dtfac           = $courant_factor
+
+#######################################################################
+# Termination and final time                                          #
+#######################################################################
+
+#Cactus::terminate       = "time"
+#Cactus::cctk_final_time = $final_time
+
+Cactus::terminate      = "iteration"
+Cactus::cctk_itlast    = 2
+
+################################################################################
+# Debugging checks                                                             #
+################################################################################
+
+ActiveThorns = "NaNChecker"
+
+Carpet::poison_new_timelevels = no
+Carpet::check_for_poison      = no
+
+NaNChecker::check_every     = $nan_check_every
+NanChecker::check_after     = 0
+NaNChecker::report_max      = 10
+NaNChecker::verbose         = "all"
+NaNChecker::action_if_found = terminate
+NaNChecker::out_NaNmask     = yes
+NaNChecker::check_vars      = "KleinGordon::evolved_group"
+
+################################################################################
+# Output                                                                       #
+################################################################################
+
+ActiveThorns = "IOUtil CarpetIOBasic CarpetIOScalar CarpetIOHDF5 CarpetIOASCII"
+
+IO::out_dir = $parfile
+
+IOBasic::outInfo_every      = $out_every
+IOBasic::outInfo_reductions = "norm2"
+IOBasic::outInfo_vars       = "KleinGordon::Phi Carpet::physical_time_per_hour"
+
+IOHDF5::out_every = $out_every
+IOHDF5::out_vars  = "KleinGordon::Phi"
+
+IOHDF5::out2D_every     = $out_every
+IOHDF5::out2d_xy        = yes
+IOHDF5::out2d_xz        = no
+IOHDF5::out2d_yz        = no
+IOHDF5::out2d_xyplane_z = 0.0
+IOHDF5::out2D_vars      = "KleinGordon::Phi"
+
+IOASCII::out0D_every = 1000000000
+IOASCII::out0D_vars  = "QuasiLocalMeasures::qlm_scalars{out_every = 1000000000}"

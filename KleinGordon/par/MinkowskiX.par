@@ -1,0 +1,95 @@
+ActiveThorns = "
+    ADMBase
+    CarpetX
+    ErrorEstimator
+    IOUtil
+    ODESolvers
+    TmunuBase
+    Z4c
+"
+ 
+$nlevels = 3
+$ncells = 64
+
+Cactus::cctk_show_schedule = yes
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "time"
+Cactus::cctk_final_time = 7.0
+
+CarpetX::verbose = yes
+
+CarpetX::xmin = -10.0
+CarpetX::ymin = -10.0
+CarpetX::zmin = -10.0
+
+CarpetX::xmax = +10.0
+CarpetX::ymax = +10.0
+CarpetX::zmax = +10.0
+
+CarpetX::ncells_x = $ncells
+CarpetX::ncells_y = $ncells
+CarpetX::ncells_z = $ncells
+
+CarpetX::ghost_size = 3
+
+CarpetX::max_num_levels = $nlevels
+CarpetX::regrid_every = 4
+CarpetX::regrid_error_threshold = 0.56
+
+ErrorEstimator::region_shape = "cube"
+ErrorEstimator::scale_by_resolution = yes
+
+CarpetX::prolongation_type = "ddf" # interpolate in vertex, conservative in cell centered
+CarpetX::prolongation_order = 5
+
+#######################################################################
+# Scalar field initial data                                           #
+#######################################################################
+
+ActiveThorns = "KleinGordonX"
+
+KleinGordonX::field_mass     = 0.0
+
+KleinGordonX::initial_data   = "multipolar_gaussian"
+
+KleinGordonX::gaussian_sigma = 0.25
+KleinGordonX::gaussian_R0    = 1.5
+
+KleinGordonX::gaussian_x0    = 0.0
+KleinGordonX::gaussian_y0    = 0.0
+KleinGordonX::gaussian_z0    = 0.0
+
+KleinGordonX::fd_order = 6
+
+KleinGordonX::compute_error  = no
+KleinGordonX::compute_energy = no
+
+KleinGordonX::multipoles[0] = 0.0
+KleinGordonX::multipoles[1] = -0.57735026919
+KleinGordonX::multipoles[2] = 0.0
+KleinGordonX::multipoles[3] = -0.57735026919
+KleinGordonX::multipoles[4] = 0.0
+KleinGordonX::multipoles[5] = -0.4472135955
+KleinGordonX::multipoles[6] = 0.0
+KleinGordonX::multipoles[7] = 0.4472135955
+KleinGordonX::multipoles[8] = 0.0
+
+KleingordonX::Phi_abs   = 0.3989422804014327
+KleinGordonX::K_Phi_abs = 0.3989422804014327
+
+#####################################
+
+ADMBase::initial_data = "Cartesian Minkowski"
+ADMBase::initial_lapse = "one"
+ADMBase::initial_shift = "zero"
+
+#####################################
+
+ODESolvers::method = "RK4"
+CarpetX::dtfac = 0.25
+
+IO::out_dir = $parfile
+IO::out_every = 1
+CarpetX::out_silo_vars = "KleinGordonX::Phi"
