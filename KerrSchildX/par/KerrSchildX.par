@@ -5,32 +5,35 @@ ActiveThorns = "
     IOUtil
     ODESolvers
     KerrSchildX
+    TmunuBase
     Z4c
 "
  
 $nlevels = 1
-$ncells = 20
+$ncells = 160
 
 Cactus::cctk_show_schedule = yes
+Cactus::presync_mode       = "mixed-error"
 
 Cactus::terminate = "time"
 Cactus::cctk_final_time = 1.0
 
 CarpetX::verbose = yes
 
-CarpetX::xmin = -5.0
-CarpetX::ymin = -5.0
-CarpetX::zmin = -5.0
+# The domain size should be divisible by the blocking factor, which defaults to 8
+CarpetX::xmin = -8.0
+CarpetX::ymin = -8.0
+CarpetX::zmin = -8.0
 
-CarpetX::xmax = 5.0
-CarpetX::ymax = 5.0
-CarpetX::zmax = 5.0
+CarpetX::xmax = 8.0
+CarpetX::ymax = 8.0
+CarpetX::zmax = 8.0
 
 CarpetX::ncells_x = $ncells
 CarpetX::ncells_y = $ncells
 CarpetX::ncells_z = $ncells
 
-CarpetX::ghost_size = 2
+CarpetX::ghost_size = 3
 
 CarpetX::max_num_levels = $nlevels
 CarpetX::regrid_every = 16
@@ -49,6 +52,9 @@ ADMBase::initial_lapse   = "Kerr Schild"
 ADMBase::initial_shift   = "Kerr Schild"
 ADMBase::initial_dtshift = "Kerr Schild"
 
+KerrSchildX::positionx = 0.01
+KerrSchildX::positiony = 0.01
+KerrSchildX::positionz = 0.01
 KerrSchildX::M = 1.0
 KerrSchildX::a = 0.5
 
@@ -56,3 +62,9 @@ IO::out_dir = $parfile
 IO::out_every = 1
 
 CarpetX::out_tsv = no
+CarpetX::out_silo_vars = "
+    ADMBase::lapse
+    ADMBase::shift
+    ADMBase::metric
+    ADMBase::curv
+"
