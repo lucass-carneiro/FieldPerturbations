@@ -43,6 +43,7 @@
  * This include order is important *
  ***********************************/
 #include <loop.hxx>
+#include <vect.hxx>
 
 namespace KerrSchildX {
 

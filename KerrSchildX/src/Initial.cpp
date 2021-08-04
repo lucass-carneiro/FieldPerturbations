@@ -29,58 +29,66 @@
  **************************/
 #include <cmath>
 
+using Arith::vect;
 using Loop::dim;
 using Loop::GF3D2;
 using Loop::GF3D2layout;
-using Loop::loop_int;
+using Loop::loop_all;
 using Loop::PointDesc;
 
 using namespace std;
 
 extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_ARGUMENTS_KerrSchildX_Initial;
   DECLARE_CCTK_PARAMETERS;
 
-  const GF3D<CCTK_REAL, 0, 0, 0> gxx_(cctkGH, gxx);
-  const GF3D<CCTK_REAL, 0, 0, 0> gxy_(cctkGH, gxy);
-  const GF3D<CCTK_REAL, 0, 0, 0> gxz_(cctkGH, gxz);
-  const GF3D<CCTK_REAL, 0, 0, 0> gyy_(cctkGH, gyy);
-  const GF3D<CCTK_REAL, 0, 0, 0> gyz_(cctkGH, gyz);
-  const GF3D<CCTK_REAL, 0, 0, 0> gzz_(cctkGH, gzz);
+  // Grid layout -----------------------------------------------
+  const vect<int, dim> indextype = {0, 0, 0};
+  const GF3D2layout layout(cctkGH, indextype);
 
-  const GF3D<CCTK_REAL, 0, 0, 0> kxx_(cctkGH, kxx);
-  const GF3D<CCTK_REAL, 0, 0, 0> kxy_(cctkGH, kxy);
-  const GF3D<CCTK_REAL, 0, 0, 0> kxz_(cctkGH, kxz);
-  const GF3D<CCTK_REAL, 0, 0, 0> kyy_(cctkGH, kyy);
-  const GF3D<CCTK_REAL, 0, 0, 0> kyz_(cctkGH, kyz);
-  const GF3D<CCTK_REAL, 0, 0, 0> kzz_(cctkGH, kzz);
+  // Grid functions --------------------------------------------
+  const GF3D2<CCTK_REAL> gxx_(layout, gxx);
+  const GF3D2<CCTK_REAL> gxy_(layout, gxy);
+  const GF3D2<CCTK_REAL> gxz_(layout, gxz);
+  const GF3D2<CCTK_REAL> gyy_(layout, gyy);
+  const GF3D2<CCTK_REAL> gyz_(layout, gyz);
+  const GF3D2<CCTK_REAL> gzz_(layout, gzz);
 
-  const GF3D<CCTK_REAL, 0, 0, 0> alp_(cctkGH, alp);
+  const GF3D2<CCTK_REAL> kxx_(layout, kxx);
+  const GF3D2<CCTK_REAL> kxy_(layout, kxy);
+  const GF3D2<CCTK_REAL> kxz_(layout, kxz);
+  const GF3D2<CCTK_REAL> kyy_(layout, kyy);
+  const GF3D2<CCTK_REAL> kyz_(layout, kyz);
+  const GF3D2<CCTK_REAL> kzz_(layout, kzz);
 
-  const GF3D<CCTK_REAL, 0, 0, 0> dtalp_(cctkGH, dtalp);
+  const GF3D2<CCTK_REAL> alp_(layout, alp);
 
-  const GF3D<CCTK_REAL, 0, 0, 0> betax_(cctkGH, betax);
-  const GF3D<CCTK_REAL, 0, 0, 0> betay_(cctkGH, betay);
-  const GF3D<CCTK_REAL, 0, 0, 0> betaz_(cctkGH, betaz);
+  const GF3D2<CCTK_REAL> dtalp_(layout, dtalp);
 
-  const GF3D<CCTK_REAL, 0, 0, 0> dtbetax_(cctkGH, dtbetax);
-  const GF3D<CCTK_REAL, 0, 0, 0> dtbetay_(cctkGH, dtbetay);
-  const GF3D<CCTK_REAL, 0, 0, 0> dtbetaz_(cctkGH, dtbetaz);
+  const GF3D2<CCTK_REAL> betax_(layout, betax);
+  const GF3D2<CCTK_REAL> betay_(layout, betay);
+  const GF3D2<CCTK_REAL> betaz_(layout, betaz);
+
+  const GF3D2<CCTK_REAL> dtbetax_(layout, dtbetax);
+  const GF3D2<CCTK_REAL> dtbetay_(layout, dtbetay);
+  const GF3D2<CCTK_REAL> dtbetaz_(layout, dtbetaz);
+
+  const CCTK_REAL t = cctk_time;
 
   auto id_lambda = [&](const PointDesc &p) {
-    const CCTK_REAL alpL = alp_(p.I);
-    const CCTK_REAL betaxL = betax_(p.I);
-    const CCTK_REAL betayL = betay_(p.I);
-    const CCTK_REAL betazL = betaz_(p.I);
-    const CCTK_REAL dtbetaxL = dtbetax_(p.I);
-    const CCTK_REAL dtbetayL = dtbetay_(p.I);
-    const CCTK_REAL dtbetazL = dtbetaz_(p.I);
-    const CCTK_REAL gxxL = gxx_(p.I);
-    const CCTK_REAL gxyL = gxy_(p.I);
-    const CCTK_REAL gxzL = gxz_(p.I);
-    const CCTK_REAL gyyL = gyy_(p.I);
-    const CCTK_REAL gyzL = gyz_(p.I);
-    const CCTK_REAL gzzL = gzz_(p.I);
+    CCTK_REAL alpL = alp_(p.I);
+    CCTK_REAL betaxL = betax_(p.I);
+    CCTK_REAL betayL = betay_(p.I);
+    CCTK_REAL betazL = betaz_(p.I);
+    CCTK_REAL dtbetaxL = dtbetax_(p.I);
+    CCTK_REAL dtbetayL = dtbetay_(p.I);
+    CCTK_REAL dtbetazL = dtbetaz_(p.I);
+    CCTK_REAL gxxL = gxx_(p.I);
+    CCTK_REAL gxyL = gxy_(p.I);
+    CCTK_REAL gxzL = gxz_(p.I);
+    CCTK_REAL gyyL = gyy_(p.I);
+    CCTK_REAL gyzL = gyz_(p.I);
+    CCTK_REAL gzzL = gzz_(p.I);
     const CCTK_REAL xL = p.x;
     const CCTK_REAL yL = p.y;
     const CCTK_REAL zL = p.z;
@@ -305,7 +313,7 @@ extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
     const CCTK_REAL xformL33 = xform1L30 * xform2L03 + xform1L31 * xform2L13 +
                                xform1L32 * xform2L23 + xform1L33 * xform2L33;
 
-    const CCTK_REAL xx0 = t - timeoffset;
+    const CCTK_REAL xx0 = t;
 
     const CCTK_REAL xx1 = xL - positionx;
 
@@ -2655,26 +2663,26 @@ extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
         (2 * (gxzL * dbeta13 + gyzL * dbeta23 + gzzL * dbeta33) +
          betaxL * dg331 + betayL * dg332 + betazL * dg333 - dtg33);
 
-    alp(p.I) = alpL;
-    betax(p.I) = betaxL;
-    betay(p.I) = betayL;
-    betaz(p.I) = betazL;
-    dtalp(p.I) = dtalpL;
-    dtbetax(p.I) = dtbetaxL;
-    dtbetay(p.I) = dtbetayL;
-    dtbetaz(p.I) = dtbetazL;
-    gxx(p.I) = gxxL;
-    gxy(p.I) = gxyL;
-    gxz(p.I) = gxzL;
-    gyy(p.I) = gyyL;
-    gyz(p.I) = gyzL;
-    gzz(p.I) = gzzL;
-    kxx(p.I) = kxxL;
-    kxy(p.I) = kxyL;
-    kxz(p.I) = kxzL;
-    kyy(p.I) = kyyL;
-    kyz(p.I) = kyzL;
-    kzz(p.I) = kzzL;
+    alp_(p.I) = alpL;
+    betax_(p.I) = betaxL;
+    betay_(p.I) = betayL;
+    betaz_(p.I) = betazL;
+    dtalp_(p.I) = dtalpL;
+    dtbetax_(p.I) = dtbetaxL;
+    dtbetay_(p.I) = dtbetayL;
+    dtbetaz_(p.I) = dtbetazL;
+    gxx_(p.I) = gxxL;
+    gxy_(p.I) = gxyL;
+    gxz_(p.I) = gxzL;
+    gyy_(p.I) = gyyL;
+    gyz_(p.I) = gyzL;
+    gzz_(p.I) = gzzL;
+    kxx_(p.I) = kxxL;
+    kxy_(p.I) = kxyL;
+    kxz_(p.I) = kxzL;
+    kyy_(p.I) = kyyL;
+    kyz_(p.I) = kyzL;
+    kzz_(p.I) = kzzL;
   };
 
   loop_all<0, 0, 0>(cctkGH, id_lambda);

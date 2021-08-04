@@ -2,4 +2,4 @@ IMPLEMENTS: KerrSchildX
 
 INHERITS: ADMBase
 
-USES INCLUDE HEADER: loop.hxx
+USES INCLUDE HEADER: loop.hxx vect.hxx

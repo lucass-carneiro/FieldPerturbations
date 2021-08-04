@@ -16,10 +16,12 @@ if (CCTK_EQUALS(initial_data, "Kerr Schild") ||
     WRITES: ADMBase::lapse(everywhere)
     WRITES: ADMBase::shift(everywhere)
     WRITES: ADMBase::dtshift(everywhere)
+    WRITES: ADMBase::dtlapse(everywhere)
     SYNC: ADMBase::metric
     SYNC: ADMBase::curv
     SYNC: ADMBase::lapse
     SYNC: ADMBase::shift
     SYNC: ADMBase::dtshift
+    SYNC: ADMBase::dtlapse
   } "Set up Kerr initial conditions"
 }
