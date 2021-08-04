@@ -41,7 +41,7 @@ using namespace std;
 extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KerrSchildX_Initial;
   DECLARE_CCTK_PARAMETERS;
-
+  
   // Grid layout -----------------------------------------------
   const vect<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
@@ -63,15 +63,27 @@ extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
 
   const GF3D2<CCTK_REAL> alp_(layout, alp);
 
-  const GF3D2<CCTK_REAL> dtalp_(layout, dtalp);
-
   const GF3D2<CCTK_REAL> betax_(layout, betax);
   const GF3D2<CCTK_REAL> betay_(layout, betay);
   const GF3D2<CCTK_REAL> betaz_(layout, betaz);
 
+  const GF3D2<CCTK_REAL> dtalp_(layout, dtalp);
+  const GF3D2<CCTK_REAL> dt2alp_(layout, dt2alp);
+  
   const GF3D2<CCTK_REAL> dtbetax_(layout, dtbetax);
   const GF3D2<CCTK_REAL> dtbetay_(layout, dtbetay);
   const GF3D2<CCTK_REAL> dtbetaz_(layout, dtbetaz);
+
+  const GF3D2<CCTK_REAL> dt2betax_(layout, dt2betax);
+  const GF3D2<CCTK_REAL> dt2betay_(layout, dt2betay);
+  const GF3D2<CCTK_REAL> dt2betaz_(layout, dt2betaz);
+
+  const GF3D2<CCTK_REAL> dtkxx_(layout, dtkxx);
+  const GF3D2<CCTK_REAL> dtkxy_(layout, dtkxy);
+  const GF3D2<CCTK_REAL> dtkxz_(layout, dtkxz);
+  const GF3D2<CCTK_REAL> dtkyy_(layout, dtkyy);
+  const GF3D2<CCTK_REAL> dtkyz_(layout, dtkyz);
+  const GF3D2<CCTK_REAL> dtkzz_(layout, dtkzz);
 
   const CCTK_REAL t = cctk_time;
 
@@ -2664,25 +2676,43 @@ extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
          betaxL * dg331 + betayL * dg332 + betazL * dg333 - dtg33);
 
     alp_(p.I) = alpL;
+
     betax_(p.I) = betaxL;
     betay_(p.I) = betayL;
     betaz_(p.I) = betazL;
-    dtalp_(p.I) = dtalpL;
-    dtbetax_(p.I) = dtbetaxL;
-    dtbetay_(p.I) = dtbetayL;
-    dtbetaz_(p.I) = dtbetazL;
+
     gxx_(p.I) = gxxL;
     gxy_(p.I) = gxyL;
     gxz_(p.I) = gxzL;
     gyy_(p.I) = gyyL;
     gyz_(p.I) = gyzL;
     gzz_(p.I) = gzzL;
+
     kxx_(p.I) = kxxL;
     kxy_(p.I) = kxyL;
     kxz_(p.I) = kxzL;
     kyy_(p.I) = kyyL;
     kyz_(p.I) = kyzL;
     kzz_(p.I) = kzzL;
+
+    dtalp_(p.I) = dtalpL;
+    
+    dtbetax_(p.I) = dtbetaxL;
+    dtbetay_(p.I) = dtbetayL;
+    dtbetaz_(p.I) = dtbetazL;
+
+    dtkxx_(p.I) = 0.0;
+    dtkxy_(p.I) = 0.0;
+    dtkxz_(p.I) = 0.0;
+    dtkyy_(p.I) = 0.0;
+    dtkyz_(p.I) = 0.0;
+    dtkzz_(p.I) = 0.0;
+
+    dt2alp_(p.I) = 0.0;
+    
+    dt2betax_(p.I) = 0.0;
+    dt2betay_(p.I) = 0.0;
+    dt2betaz_(p.I) = 0.0;
   };
 
   loop_all<0, 0, 0>(cctkGH, id_lambda);

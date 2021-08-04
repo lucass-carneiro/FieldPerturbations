@@ -17,12 +17,18 @@ if (CCTK_EQUALS(initial_data, "Kerr Schild")  ||
     WRITES: ADMBase::shift(everywhere)
     WRITES: ADMBase::dtshift(everywhere)
     WRITES: ADMBase::dtlapse(everywhere)
+    WRITES: ADMBase::dtcurv(everywhere)
+    WRITES: ADMBase::dt2lapse(everywhere)
+    WRITES: ADMBase::dt2shift(everywhere)
     SYNC: ADMBase::metric
     SYNC: ADMBase::curv
     SYNC: ADMBase::lapse
     SYNC: ADMBase::shift
     SYNC: ADMBase::dtshift
     SYNC: ADMBase::dtlapse
+    SYNC: ADMBase::dtcurv
+    SYNC: ADMBase::dt2lapse
+    SYNC: ADMBase::dt2shift
   } "Set up Kerr initial conditions"
 }
 
@@ -37,11 +43,17 @@ if (evolve)
     WRITES: ADMBase::shift(everywhere)
     WRITES: ADMBase::dtshift(everywhere)
     WRITES: ADMBase::dtlapse(everywhere)
+    WRITES: ADMBase::dtcurv(everywhere)
+    WRITES: ADMBase::dt2lapse(everywhere)
+    WRITES: ADMBase::dt2shift(everywhere)
     SYNC: ADMBase::metric
     SYNC: ADMBase::curv
     SYNC: ADMBase::lapse
     SYNC: ADMBase::shift
     SYNC: ADMBase::dtshift
     SYNC: ADMBase::dtlapse
+    SYNC: ADMBase::dtcurv
+    SYNC: ADMBase::dt2lapse
+    SYNC: ADMBase::dt2shift
   } "Enforce that the Kerr metric stays constant"
 }
