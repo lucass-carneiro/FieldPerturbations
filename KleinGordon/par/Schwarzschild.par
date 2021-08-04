@@ -11,18 +11,21 @@
 
 $title = "Schwarzschild multigrid evolution"
 
-$cells = 300
+$abscorner = 250
+$cells = 620
 $zcells = $cells/2
 
 $fd_order = 8
 $ghosts = 6
 
 $courant_factor = 0.25
-$final_time = 1.0
+$final_time = 500.0
 
 $nan_check_every = 256
-$info_every = 2
-$out_every = 2
+$info_every      = 4
+$out3D_every     = 0
+$out2D_every     = 4
+$multipole_every = 4
 
 $bh_m = 1.0
 $bh_x = 0.01
@@ -48,14 +51,14 @@ CartGrid3D::type = "coordbase"
 CoordBase::domainsize = "minmax"
 CoordBase::spacing    = "numcells"
 
-CoordBase::xmin = -20.0
-CoordBase::xmax = 20.0
+CoordBase::xmin = -1.0 * $abscorner
+CoordBase::xmax = $abscorner
 
-CoordBase::ymin = -20.0
-CoordBase::ymax = 20.0
+CoordBase::ymin = -1.0 * $abscorner
+CoordBase::ymax = $abscorner
 
 CoordBase::zmin = 0.0
-CoordBase::zmax = 20.0
+CoordBase::zmax = $abscorner
 
 CoordBase::ncells_x = $cells
 CoordBase::ncells_y = $cells
@@ -110,7 +113,7 @@ ActiveThorns = "Carpet CarpetLib CarpetInterp CarpetInterp2 CarpetReduce CarpetS
 
 Carpet::domain_from_coordbase = yes
 Carpet::ghost_size            = $ghosts
-Carpet::max_refinement_levels = 3
+Carpet::max_refinement_levels = 4
 
 Carpet::use_buffer_zones         = yes
 Carpet::prolongation_order_space = 5
@@ -127,11 +130,11 @@ CarpetRegrid2::freeze_unaligned_levels = yes
 CarpetRegrid2::verbose                 = yes
 
 CarpetRegrid2::num_centres  = 1
-CarpetRegrid2::num_levels_1 = 3
+CarpetRegrid2::num_levels_1 = 4
 CarpetRegrid2::position_x_1 = 0.01
 CarpetRegrid2::position_y_1 = 0.01
 CarpetRegrid2::position_z_1 = 0.0
-CarpetRegrid2::radius_1     = [0, 5.0, 2.0 * $bh_m + 0.5]
+CarpetRegrid2::radius_1     = [0, $abscorner/2, $abscorner/3, 2.0 * $bh_m + 0.5]
 
 ################################################################################
 # Background spacetime                                                         #
@@ -154,11 +157,12 @@ InitBase::initial_data_setup_method = "init_some_levels"
 Carpet::init_fill_timelevels        = yes
 Carpet::init_3_timelevels           = no
 
-KerrSchild::positionx = $bh_x
-KerrSchild::positiony = $bh_y
-KerrSchild::positionz = $bh_z
-KerrSchild::m = $bh_m
-KerrSchild::a = 0.0
+KerrSchild::timelevels = 3
+KerrSchild::positionx  = $bh_x
+KerrSchild::positiony  = $bh_y
+KerrSchild::positionz  = $bh_z
+KerrSchild::m          = $bh_m
+KerrSchild::a          = 0.0
 
 ################################################################################
 # Scalar field initial data                                                    #
@@ -207,13 +211,13 @@ ActiveThorns = "Multipole"
 
 # Radii are chosen to be evenly spaced in 1/r as that is the variable
 # extrapolation is performed in
-Multipole::nradii       = 1
-Multipole::radius       = [5.0]
+Multipole::nradii       = 17
+Multipole::radius       = [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 150.0, 200.0]
 Multipole::ntheta       = 120
 Multipole::nphi         = 240
 Multipole::variables    = "KleinGordon::Phi{sw=0 name='Phi'}"
 
-Multipole::out_every    = $out_every
+Multipole::out_every    = $multipole_every
 Multipole::l_max        = 2
 Multipole::output_hdf5  = yes
 
@@ -340,16 +344,6 @@ MoL::initial_data_is_crap    = true
 Time::timestep_method = "courant_static"
 Time::dtfac           = $courant_factor
 
-#######################################################################
-# Termination and final time                                          #
-#######################################################################
-
-#Cactus::terminate       = "time"
-#Cactus::cctk_final_time = $final_time
-
-Cactus::terminate      = "iteration"
-Cactus::cctk_itlast    = 2
-
 ################################################################################
 # Debugging checks                                                             #
 ################################################################################
@@ -375,14 +369,14 @@ ActiveThorns = "IOUtil CarpetIOBasic CarpetIOScalar CarpetIOHDF5 CarpetIOASCII"
 
 IO::out_dir = $parfile
 
-IOBasic::outInfo_every      = $out_every
+IOBasic::outInfo_every      = $info_every
 IOBasic::outInfo_reductions = "norm2"
 IOBasic::outInfo_vars       = "KleinGordon::Phi Carpet::physical_time_per_hour"
 
-IOHDF5::out_every = $out_every
+IOHDF5::out_every = $out3D_every
 IOHDF5::out_vars  = "KleinGordon::Phi"
 
-IOHDF5::out2D_every     = $out_every
+IOHDF5::out2D_every     = $out2D_every
 IOHDF5::out2d_xy        = yes
 IOHDF5::out2d_xz        = no
 IOHDF5::out2d_yz        = no
@@ -391,3 +385,39 @@ IOHDF5::out2D_vars      = "KleinGordon::Phi"
 
 IOASCII::out0D_every = 1000000000
 IOASCII::out0D_vars  = "QuasiLocalMeasures::qlm_scalars{out_every = 1000000000}"
+
+################################################################################
+# Checkpointing and recovery
+################################################################################
+
+CarpetIOHDF5::checkpoint                    = yes
+IO::checkpoint_ID                           = no
+IO::recover                                 = "autoprobe"
+IO::out_proc_every                          = 2
+IO::checkpoint_on_terminate                 = yes
+IO::checkpoint_dir                          = "../checkpoints"
+IO::recover_dir                             = "../checkpoints"
+IO::abort_on_io_errors                      = yes
+CarpetIOHDF5::open_one_input_file_at_a_time = yes
+CarpetIOHDF5::compression_level             = 9
+
+################################################################################
+# Run termination and final time                                               #
+################################################################################
+
+ActiveThorns = "TerminationTrigger"
+
+TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
+
+# Trigger termination 30 minutes before the walltime is reached
+TerminationTrigger::on_remaining_walltime        = 30
+TerminationTrigger::output_remtime_every_minutes = 30
+TerminationTrigger::termination_from_file        = yes
+TerminationTrigger::termination_file             = "terminate.txt"
+TerminationTrigger::create_termination_file      = yes
+
+Cactus::terminate       = "time"
+Cactus::cctk_final_time = $final_time
+
+#Cactus::terminate      = "iteration"
+#Cactus::cctk_itlast    = 2
