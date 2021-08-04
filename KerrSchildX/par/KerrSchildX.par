@@ -5,8 +5,8 @@ ActiveThorns = "
     IOUtil
     ODESolvers
     KerrSchildX
-    TmunuBase
-    Z4c
+#    TmunuBase
+#    Z4c
 "
  
 $nlevels = 1
@@ -15,8 +15,8 @@ $ncells = 160
 Cactus::cctk_show_schedule = yes
 Cactus::presync_mode       = "mixed-error"
 
-Cactus::terminate = "time"
-Cactus::cctk_final_time = 1.0
+Cactus::terminate   = "iteration"
+Cactus::cctk_itlast = 5
 
 CarpetX::verbose = yes
 
@@ -47,11 +47,11 @@ CarpetX::prolongation_order = 3
 
 CarpetX::dtfac = 0.25
 
-ADMBase::initial_data    = "Kerr Schild"
-ADMBase::initial_lapse   = "Kerr Schild"
-ADMBase::initial_shift   = "Kerr Schild"
-ADMBase::initial_dtshift = "Kerr Schild"
+ADMBase::initial_lapse    = "Kerr Schild"
+ADMBase::initial_shift    = "Kerr Schild"
+ADMBase::initial_dtshift  = "Kerr Schild"
 
+KerrSchildX::evolve    = yes
 KerrSchildX::positionx = 0.01
 KerrSchildX::positiony = 0.01
 KerrSchildX::positionz = 0.01

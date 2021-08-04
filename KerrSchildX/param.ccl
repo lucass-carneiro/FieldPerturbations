@@ -20,8 +20,6 @@ EXTENDS KEYWORD initial_dtshift "Initial lapse value"
   "Kerr Schild" :: "A single Kerr black hole in Kerr-Schild coordinates"
 }
 
-
-
 CCTK_REAL positionx "Initial x position of the black hole"
 {
   *:* :: ""
@@ -106,3 +104,8 @@ CCTK_REAL a "Black hole spin parameter"
 {
   0.0:1.0 :: "Positivi and inside the interval (0,1)"
 } 0.0
+
+
+CCTK_BOOLEAN evolve "If true, enforces the metric to keep constant"
+{
+} no

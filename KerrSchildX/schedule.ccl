@@ -3,7 +3,7 @@ SCHEDULE KerrSchildX_Startup AT STARTUP
   LANG: C
 } "Register banner"
 
-if (CCTK_EQUALS(initial_data, "Kerr Schild") ||
+if (CCTK_EQUALS(initial_data, "Kerr Schild")  ||
     CCTK_EQUALS(initial_lapse, "Kerr Schild") ||
     CCTK_EQUALS(initial_shift, "Kerr Schild") ||
     CCTK_EQUALS(initial_dtshift, "Kerr Schild"))
@@ -24,4 +24,24 @@ if (CCTK_EQUALS(initial_data, "Kerr Schild") ||
     SYNC: ADMBase::dtshift
     SYNC: ADMBase::dtlapse
   } "Set up Kerr initial conditions"
+}
+
+if (evolve)
+{
+    SCHEDULE KerrSchildX_Initial AT CCTK_PRESTEP
+  {
+    LANG: C
+    WRITES: ADMBase::metric(everywhere)
+    WRITES: ADMBase::curv(everywhere)
+    WRITES: ADMBase::lapse(everywhere)
+    WRITES: ADMBase::shift(everywhere)
+    WRITES: ADMBase::dtshift(everywhere)
+    WRITES: ADMBase::dtlapse(everywhere)
+    SYNC: ADMBase::metric
+    SYNC: ADMBase::curv
+    SYNC: ADMBase::lapse
+    SYNC: ADMBase::shift
+    SYNC: ADMBase::dtshift
+    SYNC: ADMBase::dtlapse
+  } "Enforce that the Kerr metric stays constant"
 }
