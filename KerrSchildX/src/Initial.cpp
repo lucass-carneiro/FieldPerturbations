@@ -21,7 +21,7 @@
  *  Fill the ADM grid functions with Kerr initial data.
  */
 
-#include "KleinGordonX.hpp"
+#include "KerrSchildX.hpp"
 
 /**************************
  * Std. lib. includes     *

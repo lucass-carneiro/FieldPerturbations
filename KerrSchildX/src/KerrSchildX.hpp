@@ -45,6 +45,7 @@
 #include <loop.hxx>
 
 namespace KerrSchildX {
+
 extern "C" void KerrSchildX_Initial(CCTK_ARGUMENTS);
 extern "C" int KerrSchildX_Startup(void);
 

@@ -21,7 +21,7 @@
  *  Code executed at Cactus startup.
  */
 
-#include "KleinGordonX.hpp"
+#include "KerrSchildX.hpp"
 
 extern "C" int KerrSchildX::KerrSchildX_Startup(void) {
   const char *banner =
