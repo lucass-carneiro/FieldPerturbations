@@ -13,6 +13,7 @@ This arrangement contains Cactus thorns for the evolution of perturbation fields
 
 1. KleinGordon: Evolves the Klein-Gordon equation on top of an arbitrary background, without taking into account the geometry's back-reaction and thus having a null contribution to the energy-momentum tensor. This thorn is compatible with the [Carpet](https://bitbucket.org/eschnett/carpet/src/master/) AMR infrastructure.
 2. KleinGordonX: [CarpetX](https://bitbucket.org/eschnett/cactusamrex/src/master/) compatible version of KleinGordon.
+3. KerrSchildX: This is an adaptation of the [EinsteinExact](https://github.com/barrywardell/EinsteinExact) Kranc-generated thorn KerrSchild for the CarpetX driver. I'ts used to setup single BH geometric initial data for the perturbation thorns"
 
 All the tensorial quantities in this thorn were expanded/computed with the help of Wolfram Mathematica. The equations implemented can be found on the compressed notebook file *equations.nb.gz*
 
