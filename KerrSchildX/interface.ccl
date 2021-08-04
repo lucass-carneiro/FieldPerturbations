@@ -1,0 +1,5 @@
+IMPLEMENTS: KerrSchildX
+
+INHERITS: ADMBase
+
+USES INCLUDE HEADER: loop.hxx

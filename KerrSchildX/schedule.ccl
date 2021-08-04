@@ -1,0 +1,25 @@
+SCHEDULE KerrSchildX_Startup AT STARTUP
+{
+  LANG: C
+} "Register banner"
+
+if (CCTK_EQUALS(initial_data, "Kerr Schild") ||
+    CCTK_EQUALS(initial_lapse, "Kerr Schild") ||
+    CCTK_EQUALS(initial_shift, "Kerr Schild") ||
+    CCTK_EQUALS(initial_dtshift, "Kerr Schild"))
+{
+  SCHEDULE KerrSchildX_Initial IN ADMBase_InitialData
+  {
+    LANG: C
+    WRITES: ADMBase::metric(everywhere)
+    WRITES: ADMBase::curv(everywhere)
+    WRITES: ADMBase::lapse(everywhere)
+    WRITES: ADMBase::shift(everywhere)
+    WRITES: ADMBase::dtshift(everywhere)
+    SYNC: ADMBase::metric
+    SYNC: ADMBase::curv
+    SYNC: ADMBase::lapse
+    SYNC: ADMBase::shift
+    SYNC: ADMBase::dtshift
+  } "Set up Kerr initial conditions"
+}
