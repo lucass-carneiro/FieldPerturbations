@@ -37,7 +37,7 @@ using Loop::PointDesc;
 
 using namespace std;
 
-extern "C" void KerrSchildX::KerrSchild_Initial(CCTK_ARGUMENTS) {
+extern "C" void KerrSchildX::KerrSchildX_Initial(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
