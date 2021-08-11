@@ -24,6 +24,8 @@
 #include "Derivative.hpp"
 #include "KleinGordonX.hpp"
 
+namespace KleinGordonX {
+
 using Arith::vect;
 using Loop::dim;
 using Loop::GF3D2;
@@ -31,9 +33,7 @@ using Loop::GF3D2layout;
 using Loop::loop_int;
 using Loop::PointDesc;
 
-#define POW2(x) (x * x)
-
-extern "C" void KleinGordonX::KleinGordonX_Energy(CCTK_ARGUMENTS) {
+extern "C" void KleinGordonX_Energy(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Energy;
   DECLARE_CCTK_PARAMETERS;
 
@@ -55,8 +55,9 @@ extern "C" void KleinGordonX::KleinGordonX_Energy(CCTK_ARGUMENTS) {
     const CCTK_REAL dz_Phi = grad_Phi[2];
 
     gf_epsilon(p.I) =
-        POW2(dt_Phi) + POW2(dx_Phi) + POW2(dy_Phi) + POW2(dz_Phi) / 2;
+        pow2(dt_Phi) + pow2(dx_Phi) + pow2(dy_Phi) + pow2(dz_Phi) / 2;
   };
 
   loop_int<0, 0, 0>(cctkGH, error_lambda);
 }
+} // namespace KleinGordonX

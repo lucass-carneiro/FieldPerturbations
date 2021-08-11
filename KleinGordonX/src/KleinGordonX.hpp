@@ -47,66 +47,17 @@
 
 namespace KleinGordonX {
 
-// Linear interpolation between (i0, x0) and (i1, x1)
-template <typename Y, typename X> Y linterp(Y y0, Y y1, X x0, X x1, X x) {
-  return Y(x - x0) / Y(x1 - x0) * y0 + Y(x - x1) / Y(x0 - x1) * y1;
-}
-
-// Spline with compact support of radius 1 and volume 1
-template <typename T> T spline(T r) {
-  if (r >= 1.0)
-    return 0.0;
-  constexpr CCTK_REAL f =
-      Loop::dim == 1 ? 1.0
-                     : Loop::dim == 2 ? 24.0 / 7.0 / M_PI
-                                      : Loop::dim == 3 ? 4.0 / M_PI : -1;
-  const T r2 = pow(r, 2);
-  return f * (r <= 0.5 ? 1 - 2 * r2 : 2 + r * (-4 + 2 * r));
-}
-
-// The potential for the spline
-template <typename T> T spline_potential(T r) {
-  // \Laplace u = 4 \pi \rho
-  if (r >= 1.0)
-    return -1 / r;
-  static_assert(Loop::dim == 3, "");
-  const T r2 = pow(r, 2);
-  return r <= 0.5
-             ? -7 / T(3) + r2 * (8 / T(3) - 8 / T(5) * r2)
-             : (1 / T(15) +
-                r * (-40 / T(15) +
-                     r2 * (80 / T(15) + r * (-80 / T(15) + r * 24 / T(15))))) /
-                   r;
-}
-
-// Time derivative
-// TODO: Use dual numbers for derivative
-template <typename F, typename T> auto timederiv(const F &f, T dt) {
-  return [=](T t, T x, T y, T z) {
-    return (f(t, x, y, z) - f(t - dt, x, y, z)) / dt;
-  };
-}
-
-// Gradient
-template <typename T> auto xderiv(T f(T t, T x, T y, T z), T dx) {
-  return [=](T t, T x, T y, T z) {
-    return (f(t, x + dx, y, z) - f(t, x - dx, y, z)) / (2 * dx);
-  };
-}
-template <typename T> auto yderiv(T f(T t, T x, T y, T z), T dy) {
-  return [=](T t, T x, T y, T z) {
-    return (f(t, x, y + dy, z) - f(t, x, y - dy, z)) / (2 * dy);
-  };
-}
-template <typename T> auto zderiv(T f(T t, T x, T y, T z), T dz) {
-  return [=](T t, T x, T y, T z) {
-    return (f(t, x, y, z + dz) - f(t, x, y, z - dz)) / (2 * dz);
-  };
-}
-
-// Central potential
-CCTK_REAL central_potential(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z);
-
+/****************************************************************
+ * CCTK_REAL pow2(CCTK_REAL x)                                  *
+ *                                                              *
+ * This function computes the square of a number.               *
+ *                                                              *
+ * Input: A real number to be squered.                          *
+ *                                                              *
+ * Output: The squere of the number.                            *
+ ****************************************************************/
+  inline CCTK_REAL pow2(CCTK_REAL x) { return x * x; }
+  
 /****************************************************************
  * KleinGordonX_Startup()                                       *
  *                                                              *
@@ -175,8 +126,9 @@ extern "C" void KleinGordonX_Boundaries(CCTK_ARGUMENTS);
 /****************************************************************
  * KleinGordonX_EstimateError(CCTK_ARGUMENTS)                   *
  *                                                              *
- * This functions computes the error measure and store it the   *
- * CarpetX regrid GF. If the error estimate is above a certain  *
+ * This functions computes the error measure  of the evolved    *
+ * variables and stores it in the CarpetX regrid grid function. *
+ * If the error estimate is above a certain user specified      *
  * treshold, regrid occurs.                                     *
  *                                                              *
  * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl *

@@ -1,7 +1,7 @@
 ActiveThorns = "
     ADMBase
     CarpetX
-    ErrorEstimator
+#    ErrorEstimator
     IOUtil
     ODESolvers
     TmunuBase
@@ -16,7 +16,7 @@ Cactus::cctk_show_schedule = yes
 Cactus::presync_mode = "mixed-error"
 
 Cactus::terminate = "time"
-Cactus::cctk_final_time = 7.0
+Cactus::cctk_final_time = 1.0
 
 CarpetX::verbose = yes
 
@@ -38,8 +38,8 @@ CarpetX::max_num_levels = $nlevels
 CarpetX::regrid_every = 4
 CarpetX::regrid_error_threshold = 0.56
 
-ErrorEstimator::region_shape = "cube"
-ErrorEstimator::scale_by_resolution = yes
+#ErrorEstimator::region_shape = "sphere"
+#ErrorEstimator::scale_by_resolution = yes
 
 CarpetX::prolongation_type = "ddf" # interpolate in vertex, conservative in cell centered
 CarpetX::prolongation_order = 5

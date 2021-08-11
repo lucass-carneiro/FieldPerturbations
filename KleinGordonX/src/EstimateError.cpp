@@ -23,6 +23,8 @@
 
 #include "KleinGordonX.hpp"
 
+namespace KleinGordonX {
+
 using Arith::vect;
 using Loop::dim;
 using Loop::GF3D2;
@@ -30,15 +32,24 @@ using Loop::GF3D2layout;
 using Loop::loop_int;
 using Loop::PointDesc;
 
-extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
+extern "C" void KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_EstimateError;
   DECLARE_CCTK_PARAMETERS;
 
-  const vect<int, dim> indextype = {1, 1, 1};
+  /* Note that CarpetX's regrid_error grid function is cell centered.
+   * Because our own variables are vertex centered, we must define two
+   * separate grid layout objects: One cell centered and one vertex centered
+   * and pass each to the corresponding GF.
+   */
+  const vect<int, dim> indextypecc = {1, 1, 1};
+  const vect<int, dim> indextype = {0, 0, 0};
+
+  const GF3D2layout layoutcc(cctkGH, indextypecc);
   const GF3D2layout layout(cctkGH, indextype);
+
   const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
   const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
-  const GF3D2<CCTK_REAL> gf_regrid_error(layout, regrid_error);
+  const GF3D2<CCTK_REAL> gf_regrid_error(layoutcc, regrid_error);
 
   auto regriderror_lambda = [&](const PointDesc &p) {
     const CCTK_REAL base_Phi = fabs(gf_Phi(p.I)) + fabs(Phi_abs);
@@ -62,4 +73,6 @@ extern "C" void KleinGordonX::KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
   };
 
   loop_int<1, 1, 1>(cctkGH, regriderror_lambda);
+}
+
 }
