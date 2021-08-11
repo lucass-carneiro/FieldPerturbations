@@ -24,9 +24,11 @@
 
 #include "KleinGordonX.hpp"
 
+namespace KleinGordonX {
+
 using namespace Loop;
 
-extern "C" void KleinGordonX::KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
+extern "C" void KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Boundaries;
   DECLARE_CCTK_PARAMETERS;
 
@@ -50,7 +52,7 @@ extern "C" void KleinGordonX::KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
   }
 }
 
-extern "C" void KleinGordonX::KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
+extern "C" void KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHSBoundaries;
   DECLARE_CCTK_PARAMETERS;
 
@@ -66,3 +68,4 @@ extern "C" void KleinGordonX::KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
 
   loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
 }
+} // namespace KleinGordonX

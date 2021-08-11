@@ -25,6 +25,8 @@
 
 #include "KleinGordonX.hpp"
 
+namespace KleinGordonX {
+
 using Arith::vect;
 using Loop::dim;
 using Loop::GF3D2;
@@ -32,7 +34,7 @@ using Loop::GF3D2layout;
 using Loop::loop_int;
 using Loop::PointDesc;
 
-extern "C" void KleinGordonX::KleinGordonX_Error(CCTK_ARGUMENTS) {
+extern "C" void KleinGordonX_Error(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Error;
   DECLARE_CCTK_PARAMETERS;
 
@@ -56,3 +58,4 @@ extern "C" void KleinGordonX::KleinGordonX_Error(CCTK_ARGUMENTS) {
     loop_int<0, 0, 0>(cctkGH, exact_gaussian_lambda);
   }
 }
+} // namespace KleinGordonX

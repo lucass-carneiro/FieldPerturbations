@@ -23,7 +23,9 @@
 
 #include "KleinGordonX.hpp"
 
-extern "C" int KleinGordonX::KleinGordonX_Startup(void) {
+namespace KleinGordonX {
+
+extern "C" int KleinGordonX_Startup(void) {
   const char *banner =
       "KleinGordonX: Evolutions of a Scalar Klein-Gordon field over an "
       "arbitrary background";
@@ -31,3 +33,5 @@ extern "C" int KleinGordonX::KleinGordonX_Startup(void) {
 
   return 0;
 }
+
+} // namespace KleinGordonX

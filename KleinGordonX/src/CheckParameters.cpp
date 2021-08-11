@@ -23,7 +23,9 @@
 
 #include "KleinGordonX.hpp"
 
-extern "C" void KleinGordonX::KleinGordonX_CheckParameters(CCTK_ARGUMENTS) {
+namespace KleinGordonX {
+
+extern "C" void KleinGordonX_CheckParameters(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_CheckParameters;
   DECLARE_CCTK_PARAMETERS;
 
@@ -61,3 +63,4 @@ extern "C" void KleinGordonX::KleinGordonX_CheckParameters(CCTK_ARGUMENTS) {
         "evolving \"exact_gaussian\" data on top of a Minkowski background.");
   }
 }
+} // namespace KleinGordonX

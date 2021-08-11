@@ -23,7 +23,9 @@
 
 #include "KleinGordonX.hpp"
 
-extern "C" void KleinGordonX::KleinGordonX_Sync(CCTK_ARGUMENTS) {
+namespace KleinGordonX {
+
+extern "C" void KleinGordonX_Sync(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Sync;
   DECLARE_CCTK_PARAMETERS;
   // Do nothing
@@ -34,3 +36,4 @@ extern "C" void KleinGordonX_RHSSync(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
   // Do nothing
 }
+} // namespace KleinGordonX

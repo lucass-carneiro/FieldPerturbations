@@ -56,8 +56,8 @@ namespace KleinGordonX {
  *                                                              *
  * Output: The squere of the number.                            *
  ****************************************************************/
-  inline CCTK_REAL pow2(CCTK_REAL x) { return x * x; }
-  
+inline CCTK_REAL pow2(CCTK_REAL x) { return x * x; }
+
 /****************************************************************
  * KleinGordonX_Startup()                                       *
  *                                                              *

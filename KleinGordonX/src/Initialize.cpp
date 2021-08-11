@@ -32,6 +32,8 @@
 #include <gsl/gsl_sf_legendre.h>
 #include <memory>
 
+namespace KleinGordonX {
+
 using Arith::vect;
 using Loop::dim;
 using Loop::GF3D2;
@@ -41,8 +43,7 @@ using Loop::PointDesc;
 
 using namespace std;
 
-CCTK_REAL KleinGordonX::exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
-                                       CCTK_REAL z) {
+CCTK_REAL exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) {
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_REAL r = sqrt((x - gaussian_x0) * (x - gaussian_x0) +
@@ -59,8 +60,8 @@ CCTK_REAL KleinGordonX::exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
     return (f(r - t) - f(r + t)) / r;
 }
 
-CCTK_REAL KleinGordonX::dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
-                                          CCTK_REAL z) {
+CCTK_REAL dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y,
+                            CCTK_REAL z) {
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_REAL r = sqrt((x - gaussian_x0) * (x - gaussian_x0) +
@@ -156,7 +157,7 @@ CCTK_REAL multipolar_gaussian(CCTK_REAL *buffer, CCTK_INT lmax, CCTK_REAL x,
   return result;
 }
 
-extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
+extern "C" void KleinGordonX_Initialize(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_Initialize;
   DECLARE_CCTK_PARAMETERS;
 
@@ -188,3 +189,4 @@ extern "C" void KleinGordonX::KleinGordonX_Initialize(CCTK_ARGUMENTS) {
     loop_int<0, 0, 0>(cctkGH, multipolar_gaussian_lambda);
   }
 }
+} // namespace KleinGordonX

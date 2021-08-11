@@ -75,4 +75,4 @@ extern "C" void KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
   loop_int<1, 1, 1>(cctkGH, regriderror_lambda);
 }
 
-}
+} // namespace KleinGordonX
