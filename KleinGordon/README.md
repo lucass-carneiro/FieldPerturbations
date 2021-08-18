@@ -1,9 +1,9 @@
 # Cactus Code Thorn "KleinGordon"
 ## Author(s):
-* Lucas Tinotheo Sanches <lucas.t@ufabc.edu.br>
+* Lucas Timotheo Sanches <lucas.t@ufabc.edu.br>
 
 ## Maintainer(s):
-* Lucas Tinotheo Sanches <lucas.t@ufabc.edu.br>
+* Lucas Timotheo Sanches <lucas.t@ufabc.edu.br>
 
 ## Licence:
 GNU GPLv3+ (see <https://www.gnu.org/licenses/>).
