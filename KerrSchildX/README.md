@@ -1,9 +1,9 @@
 # Cactus Code Thorn "KerrSchildX
 ## Author(s):
-* Lucas Tinotheo Sahches <lucas.t@ufabc.edu.br>
+* Lucas Tinotheo Sanches <lucas.t@ufabc.edu.br>
 
 ## Maintainer(s):
-* Lucas Tinotheo Sahches <lucas.t@ufabc.edu.br>
+* Lucas Tinotheo Sanches <lucas.t@ufabc.edu.br>
 
 ## Licence:
 GNU GPLv3+ (see <https://www.gnu.org/licenses/>).

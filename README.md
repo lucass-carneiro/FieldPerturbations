@@ -1,9 +1,9 @@
 # Cactus Framework Arrangement "FieldPerturbations"
 ## Author(s):
-* Lucas Timotheo Sahches <lucas.t@ufabc.edu.br>
+* Lucas Timotheo Sanches <lucas.t@ufabc.edu.br>
 
 ## Maintainer(s):
-* Lucas Timotheo Sahches <lucas.t@ufabc.edu.br>
+* Lucas Timotheo Sanches <lucas.t@ufabc.edu.br>
 
 ## Licence:
 GNU GPLv3+ (see <https://www.gnu.org/licenses/>).
