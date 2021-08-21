@@ -21,8 +21,8 @@
  * Compute the energy density of the wave equation.
  */
 
-#include "Derivative.hpp"
 #include "KleinGordonX.hpp"
+#include "Derivative.hpp"
 
 namespace KleinGordonX {
 

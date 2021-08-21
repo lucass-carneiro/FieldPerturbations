@@ -9,6 +9,9 @@
 
 namespace KleinGordonX {
 
+using Arith::vect;
+using Loop::PointDesc;
+  
 /* Stencil naming convention:
  * 1) Bias: Does the stencil has more points to the left (l), right (r) or is
  * centered?
@@ -29,14 +32,8 @@ public:
   const Arith::vect<CCTK_REAL, 6> lapl(const Loop::PointDesc &) const;
 };
 
-template <>
-const Arith::vect<CCTK_REAL, 3>
-Derivative<Stencil::c3>::grad(const Loop::PointDesc &) const;
-
-template <>
-const Arith::vect<CCTK_REAL, 6>
-Derivative<Stencil::c3>::lapl(const Loop::PointDesc &) const;
-
+#include "c3.hpp"
+  
 } // namespace KleinGordonX
 
 #endif // DERIVATIVE_HPP
