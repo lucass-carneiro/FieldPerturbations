@@ -19,7 +19,7 @@ public:
     return vals;
   }
 
-  const Arith::vect<CCTK_REAL, 6> lapl(const Loop::PointDesc &p) const {
+  const Arith::vect<CCTK_REAL, 6> hess(const Loop::PointDesc &p) const {
     const vect<CCTK_REAL, 6> h = {p.dx * p.dx, p.dy * p.dy, p.dz * p.dz,
                                   p.dx * p.dy, p.dx * p.dz, p.dy * p.dz};
 

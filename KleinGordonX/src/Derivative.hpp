@@ -11,7 +11,7 @@ namespace KleinGordonX {
 
 using Arith::vect;
 using Loop::PointDesc;
-  
+
 /* Stencil naming convention:
  * 1) Bias: Does the stencil has more points to the left (l), right (r) or is
  * centered?
@@ -29,11 +29,11 @@ public:
       : gf(gridFunction) {}
 
   const Arith::vect<CCTK_REAL, 3> grad(const Loop::PointDesc &) const;
-  const Arith::vect<CCTK_REAL, 6> lapl(const Loop::PointDesc &) const;
+  const Arith::vect<CCTK_REAL, 6> hess(const Loop::PointDesc &) const;
 };
 
 #include "c3.hpp"
-  
+
 } // namespace KleinGordonX
 
 #endif // DERIVATIVE_HPP

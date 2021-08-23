@@ -125,19 +125,19 @@ extern "C" void KleinGordonX_RHS(CCTK_ARGUMENTS) {
 
     // Derivatives of Phi
     auto grad_Phi = d_Phi.grad(p);
-    auto lapl_Phi = d_Phi.lapl(p);
+    auto hess_Phi = d_Phi.hess(p);
 
     const CCTK_REAL d_x_Phi = grad_Phi[0];
     const CCTK_REAL d_y_Phi = grad_Phi[1];
     const CCTK_REAL d_z_Phi = grad_Phi[2];
 
-    const CCTK_REAL d_xx_Phi = lapl_Phi[0];
-    const CCTK_REAL d_yy_Phi = lapl_Phi[1];
-    const CCTK_REAL d_zz_Phi = lapl_Phi[2];
+    const CCTK_REAL d_xx_Phi = hess_Phi[0];
+    const CCTK_REAL d_yy_Phi = hess_Phi[1];
+    const CCTK_REAL d_zz_Phi = hess_Phi[2];
 
-    const CCTK_REAL d_xy_Phi = lapl_Phi[3];
-    const CCTK_REAL d_xz_Phi = lapl_Phi[4];
-    const CCTK_REAL d_yz_Phi = lapl_Phi[5];
+    const CCTK_REAL d_xy_Phi = hess_Phi[3];
+    const CCTK_REAL d_xz_Phi = hess_Phi[4];
+    const CCTK_REAL d_yz_Phi = hess_Phi[5];
 
     // Derivatives of the metric
     auto grad_gxx = d_gxx.grad(p);
