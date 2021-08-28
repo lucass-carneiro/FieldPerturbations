@@ -7,6 +7,11 @@
 #include <loop.hxx>
 #include <vect.hxx>
 
+/*************************
+ * This thorn's includes *
+ *************************/
+#include "Arithmetic.hpp"
+
 namespace KleinGordonX {
 
 using Arith::vect;
@@ -33,6 +38,9 @@ public:
 };
 
 #include "c3.hpp"
+#include "c5.hpp"
+#include "c7.hpp"
+#include "c9.hpp"
 
 } // namespace KleinGordonX
 

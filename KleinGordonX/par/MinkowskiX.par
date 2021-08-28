@@ -15,8 +15,11 @@ Cactus::cctk_show_schedule = yes
 
 Cactus::presync_mode = "mixed-error"
 
-Cactus::terminate = "time"
-Cactus::cctk_final_time = 1.0
+#Cactus::terminate = "time"
+#Cactus::cctk_final_time = 1.0
+
+Cactus::terminate = "iteration"
+Cactus::cctk_itlast = 10
 
 CarpetX::verbose = yes
 
@@ -61,7 +64,7 @@ KleinGordonX::gaussian_x0    = 0.0
 KleinGordonX::gaussian_y0    = 0.0
 KleinGordonX::gaussian_z0    = 0.0
 
-KleinGordonX::fd_order = 6
+KleinGordonX::fd_order = 4
 
 KleinGordonX::compute_error  = no
 KleinGordonX::compute_energy = no

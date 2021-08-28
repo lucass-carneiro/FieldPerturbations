@@ -55,7 +55,7 @@ extern "C" void KleinGordonX_Energy(CCTK_ARGUMENTS) {
     const CCTK_REAL dz_Phi = grad_Phi[2];
 
     gf_epsilon(p.I) =
-        pow2(dt_Phi) + pow2(dx_Phi) + pow2(dy_Phi) + pow2(dz_Phi) / 2;
+        power<2>(dt_Phi) + power<2>(dx_Phi) + power<2>(dy_Phi) + power<2>(dz_Phi) / 2;
   };
 
   loop_int<0, 0, 0>(cctkGH, error_lambda);

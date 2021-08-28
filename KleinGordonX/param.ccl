@@ -11,7 +11,7 @@ CCTK_KEYWORD bc_type "Type of boundary condition to apply"
 
 INT fd_order "Order of accuracy" STEERABLE=always
 {
-  4:8:2 :: "Only even orders in the range(4,8) are implemented"
+  2:8:2 :: "Only even orders in the range(2,8) are implemented"
 } 4
 
 

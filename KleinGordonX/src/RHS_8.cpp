@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with KleinGordonX.  If not, see <https://www.gnu.org/licenses/>.
  *
- * RHS.cpp
- * Compute the RHS of the wave equation
+ * RHS_8.cpp
+ * Compute the RHS of the wave equation using 8th order accurate stencils
  */
 
 #include "Derivative.hpp"
@@ -33,8 +33,8 @@ using Loop::GF3D2layout;
 using Loop::loop_int;
 using Loop::PointDesc;
 
-extern "C" void KleinGordonX_RHS(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHS;
+extern "C" void KleinGordonX_RHS_8(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHS_8;
   DECLARE_CCTK_PARAMETERS;
 
   // Grid layout -----------------------------------------------
@@ -71,15 +71,15 @@ extern "C" void KleinGordonX_RHS(CCTK_ARGUMENTS) {
   const GF3D2<CCTK_REAL> gf_K_Phi_rhs(layout, K_Phi_rhs);
 
   // Derivative objects -----------------------------------------
-  const Derivative<Stencil::c3> d_Phi(gf_Phi);
-  const Derivative<Stencil::c3> d_K_Phi(gf_K_Phi);
-  const Derivative<Stencil::c3> d_alp(gf_alp);
-  const Derivative<Stencil::c3> d_gxx(gf_gxx);
-  const Derivative<Stencil::c3> d_gxy(gf_gxy);
-  const Derivative<Stencil::c3> d_gxz(gf_gxz);
-  const Derivative<Stencil::c3> d_gyy(gf_gyy);
-  const Derivative<Stencil::c3> d_gyz(gf_gyz);
-  const Derivative<Stencil::c3> d_gzz(gf_gzz);
+  const Derivative<Stencil::c9> d_Phi(gf_Phi);
+  const Derivative<Stencil::c9> d_K_Phi(gf_K_Phi);
+  const Derivative<Stencil::c9> d_alp(gf_alp);
+  const Derivative<Stencil::c9> d_gxx(gf_gxx);
+  const Derivative<Stencil::c9> d_gxy(gf_gxy);
+  const Derivative<Stencil::c9> d_gxz(gf_gxz);
+  const Derivative<Stencil::c9> d_gyy(gf_gyy);
+  const Derivative<Stencil::c9> d_gyz(gf_gyz);
+  const Derivative<Stencil::c9> d_gzz(gf_gzz);
 
   auto rhs_lambda = [&](const PointDesc &p) {
     // Local ADM variables

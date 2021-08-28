@@ -48,17 +48,6 @@
 namespace KleinGordonX {
 
 /****************************************************************
- * CCTK_REAL pow2(CCTK_REAL x)                                  *
- *                                                              *
- * This function computes the square of a number.               *
- *                                                              *
- * Input: A real number to be squered.                          *
- *                                                              *
- * Output: The squere of the number.                            *
- ****************************************************************/
-inline CCTK_REAL pow2(CCTK_REAL x) { return x * x; }
-
-/****************************************************************
  * KleinGordonX_Startup()                                       *
  *                                                              *
  * This functions registers a banner in Cactus's startup        *
@@ -146,7 +135,40 @@ extern "C" void KleinGordonX_EstimateError(CCTK_ARGUMENTS);
  *                                                              *
  * Output: Nothing                                              *
  ****************************************************************/
-extern "C" void KleinGordonX_RHS(CCTK_ARGUMENTS);
+extern "C" void KleinGordonX_RHS_2(CCTK_ARGUMENTS);
+
+/****************************************************************
+ * KleinGordonX_RHS(CCTK_ARGUMENTS)                             *
+ *                                                              *
+ * This function computes te RHS of the wave equation.          *
+ *                                                              *
+ * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl *
+ *                                                              *
+ * Output: Nothing                                              *
+ ****************************************************************/
+extern "C" void KleinGordonX_RHS_4(CCTK_ARGUMENTS);
+
+/****************************************************************
+ * KleinGordonX_RHS(CCTK_ARGUMENTS)                             *
+ *                                                              *
+ * This function computes te RHS of the wave equation.          *
+ *                                                              *
+ * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl *
+ *                                                              *
+ * Output: Nothing                                              *
+ ****************************************************************/
+extern "C" void KleinGordonX_RHS_6(CCTK_ARGUMENTS);
+
+/****************************************************************
+ * KleinGordonX_RHS(CCTK_ARGUMENTS)                             *
+ *                                                              *
+ * This function computes te RHS of the wave equation.          *
+ *                                                              *
+ * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl *
+ *                                                              *
+ * Output: Nothing                                              *
+ ****************************************************************/
+extern "C" void KleinGordonX_RHS_8(CCTK_ARGUMENTS);
 
 /****************************************************************
  * KleinGordonX_RHSSync(CCTK_ARGUMENTS)                         *
