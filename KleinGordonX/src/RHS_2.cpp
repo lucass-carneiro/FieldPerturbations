@@ -37,6 +37,14 @@ extern "C" void KleinGordonX_RHS_2(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHS_2;
   DECLARE_CCTK_PARAMETERS;
 
+  // Ghost zone size checking ----------------------------------
+  for (CCTK_INT d = 0; d < 3; d++) {
+    if (cctk_nghostzones[d] < 1) {
+      CCTK_VERROR("Too few ghost zones in direction %c. Found: %d. Required: 1",
+                  todir(d), cctk_nghostzones[d]);
+    }
+  }
+
   // Grid layout -----------------------------------------------
   const vect<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout(cctkGH, indextype);
