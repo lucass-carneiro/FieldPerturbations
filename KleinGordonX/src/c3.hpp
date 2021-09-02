@@ -10,7 +10,7 @@ public:
       : gf(gridFunction) {}
 
   const Arith::vect<CCTK_REAL, 3> grad(const Loop::PointDesc &p) const {
-    const vect<CCTK_REAL, 3> vals = {
+    const Arith::vect<CCTK_REAL, 3> vals = {
         (-gf(-p.DI[0] + p.I) + gf(p.DI[0] + p.I)) * (1.0 / (2 * p.dx)),
         (-gf(-p.DI[1] + p.I) + gf(p.DI[1] + p.I)) * (1.0 / (2 * p.dy)),
         (-gf(-p.DI[2] + p.I) + gf(p.DI[2] + p.I)) * (1.0 / (2 * p.dz))};
@@ -18,7 +18,7 @@ public:
   }
 
   const Arith::vect<CCTK_REAL, 6> hess(const Loop::PointDesc &p) const {
-    const vect<CCTK_REAL, 6> vals = {
+    const Arith::vect<CCTK_REAL, 6> vals = {
         (-2 * gf(p.I) + gf(-p.DI[0] + p.I) + gf(p.DI[0] + p.I)) *
             (1.0 / (power<2>(p.dx))),
         (-2 * gf(p.I) + gf(-p.DI[1] + p.I) + gf(p.DI[1] + p.I)) *

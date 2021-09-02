@@ -33,7 +33,7 @@ SCHEDULE GROUP KleinGordonX_PostStepGroup AT postregrid
 
 
 
-SCHEDULE GROUP KleinGordonX_PostStepGroup IN ODESolvers_PostStep
+SCHEDULE GROUP KleinGordonX_PostStepGroup IN ODESolvers_PostStep BEFORE ADMBase_SetADMVars
 {
 } "Post-process state variables"
 
@@ -74,7 +74,20 @@ SCHEDULE KleinGordonX_Sync IN KleinGordonX_PostStepGroup
   SYNC: evolved_group
 } "Boundary conditions for the wave equation"
 
-SCHEDULE KleinGordonX_Boundaries IN KleinGordonX_PostStepGroup AFTER KleinGordonX_Sync
+SCHEDULE KleinGordonX_Sync AT initial
+{
+  LANG: C
+  SYNC: evolved_group
+} "Boundary conditions for the wave equation"
+
+SCHEDULE KleinGordonX_Boundaries IN KleinGordonX_PostStepGroup BEFORE TmunuBase_SetTmunuVars AFTER KleinGordonX_Sync
+{
+  LANG: C
+  READS: evolved_group(interior)
+  WRITES: evolved_group(boundary)
+} "Boundary conditions for the wave equation"
+
+SCHEDULE KleinGordonX_Boundaries AT initial BEFORE TmunuBase_SetTmunuVars AFTER KleinGordonX_Sync
 {
   LANG: C
   READS: evolved_group(interior)
@@ -101,7 +114,7 @@ if(fd_order == 2)
 	READS: ADMBase::curv(everywhere)
 	READS: ADMBase::lapse(everywhere)
 	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
+	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 2nd order finite differences"
 }
@@ -116,7 +129,7 @@ if(fd_order == 4)
 	READS: ADMBase::curv(everywhere)
 	READS: ADMBase::lapse(everywhere)
 	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
+	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 4th order finite differences"
 }
@@ -131,7 +144,7 @@ if(fd_order == 6)
 	READS: ADMBase::curv(everywhere)
 	READS: ADMBase::lapse(everywhere)
 	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
+	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 6th order finite differences"
 }
@@ -146,7 +159,7 @@ if(fd_order == 8)
 	READS: ADMBase::curv(everywhere)
 	READS: ADMBase::lapse(everywhere)
 	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
+	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 8th order finite differences"
 }
@@ -167,13 +180,15 @@ SCHEDULE KleinGordonX_RHSBoundaries IN KleinGordonX_RHSGroup AFTER KleinGordonX_
 
 if(compute_energy)
 {
-  SCHEDULE KleinGordonX_Energy IN KleinGordonX_AnalysisGroup
+  SCHEDULE KleinGordonX_CalcTmunu IN TmunuBase_AddToTmunu
   {
     LANG: C
-    READS: Phi(interior) K_phi(interior)
-    WRITES: epsilon(interior)
-    SYNC: epsilon_group
-  } "Calculate energy density for the wave equation"
+	READS: Phi(everywhere) K_Phi(everywhere)
+    READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+	READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
+  } "Calculate energy momentum tensor for the scalar field"
 }
 
 if(compute_error)

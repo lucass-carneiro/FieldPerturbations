@@ -14,9 +14,6 @@
 
 namespace KleinGordonX {
 
-using Arith::vect;
-using Loop::PointDesc;
-
 /* Stencil naming convention:
  * 1) Bias: Does the stencil has more points to the left (l), right (r) or is
  * centered?

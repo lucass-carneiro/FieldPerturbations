@@ -198,15 +198,16 @@ extern "C" void KleinGordonX_RHSSync(CCTK_ARGUMENTS);
 extern "C" void KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS);
 
 /****************************************************************
- * KleinGordonX_RHS(CCTK_ARGUMENTS)                             *
+ * KleinGordonX_CalcTmunu(CCTK_ARGUMENTS)                       *
  *                                                              *
- * This function computes the energy density of the wave eq.    *
+ * This function computes the stress emergy momentum tensor of  *
+ * the scalar field.                                            *
  *                                                              *
  * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl)*
  *                                                              *
  * Output: Nothing                                              *
  ****************************************************************/
-extern "C" void KleinGordonX_Energy(CCTK_ARGUMENTS);
+extern "C" void KleinGordonX_CalcTmunu(CCTK_ARGUMENTS);
 
 /****************************************************************
  * KleinGordonX_Error(CCTK_ARGUMENTS)                           *

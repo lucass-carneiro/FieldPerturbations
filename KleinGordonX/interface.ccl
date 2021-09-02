@@ -2,9 +2,8 @@
 
 IMPLEMENTS: KleinGordonX
 
-# Warning: This only works if the implementation of ADMBase provides cowling, that is, ADMBase::cowling = yes works
-# Reasong: Without cowling, the ADM variables are not set and CarpetX cannot continue evolution.
 INHERITS: ADMBase
+INHERITS: TmunuBase
 INHERITS: CarpetX
 
 USES INCLUDE HEADER: fixmath.hxx
@@ -24,11 +23,6 @@ CCTK_REAL rhs_group TYPE=gf tags='index={0 0 0} checkpoint="no"'
   Phi_rhs
   K_Phi_rhs
 } "Right hand side of the evolution equations"
-
-CCTK_REAL epsilon_group TYPE=gf TAGS='index={0 0 0} checkpoint="no"'
-{
-  epsilon
-} "Energy density of the wave equation"
 
 CCTK_REAL error_group TYPE=gf TAGS='index={0 0 0} checkpoint="no"'
 {
