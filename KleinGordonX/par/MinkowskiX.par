@@ -1,48 +1,53 @@
 ActiveThorns = "
     ADMBase
     CarpetX
-#    ErrorEstimator
     IOUtil
     ODESolvers
     TmunuBase
-    Z4c
+    z4c
 "
  
-$nlevels = 3
-$ncells = 64
+$nlevels = 1
+$ncells = 64 
 
 Cactus::cctk_show_schedule = yes
 
 Cactus::presync_mode = "mixed-error"
 
-#Cactus::terminate = "time"
-#Cactus::cctk_final_time = 1.0
+Cactus::terminate = "time"
+Cactus::cctk_final_time = 12
 
-Cactus::terminate = "iteration"
-Cactus::cctk_itlast = 10
+#Cactus::terminate = "iteration"
+#Cactus::cctk_itlast = 1
 
 CarpetX::verbose = yes
 
-CarpetX::xmin = -10.0
-CarpetX::ymin = -10.0
-CarpetX::zmin = -10.0
+CarpetX::xmin = -12.0
+CarpetX::ymin = -12.0
+CarpetX::zmin = -12.0
 
-CarpetX::xmax = +10.0
-CarpetX::ymax = +10.0
-CarpetX::zmax = +10.0
+CarpetX::xmax = 12.0
+CarpetX::ymax = 12.0
+CarpetX::zmax = 12.0
 
 CarpetX::ncells_x = $ncells
 CarpetX::ncells_y = $ncells
 CarpetX::ncells_z = $ncells
 
-CarpetX::ghost_size = 3
+#CarpetX::periodic_x = no
+#CarpetX::periodic_y = no
+#CarpetX::periodic_z = no
+#CarpetX::periodic   = no
+#CarpetX::reflection_x = yes
+#CarpetX::reflection_y = yes
+#CarpetX::reflection_z = yes
+#CarpetX::reflection_upper_x = yes
+#CarpetX::reflection_upper_y = yes
+#CarpetX::reflection_upper_z = yes
 
 CarpetX::max_num_levels = $nlevels
 CarpetX::regrid_every = 4
 CarpetX::regrid_error_threshold = 0.56
-
-#ErrorEstimator::region_shape = "sphere"
-#ErrorEstimator::scale_by_resolution = yes
 
 CarpetX::prolongation_type = "ddf" # interpolate in vertex, conservative in cell centered
 CarpetX::prolongation_order = 5
@@ -57,30 +62,33 @@ KleinGordonX::field_mass     = 0.0
 
 KleinGordonX::initial_data   = "multipolar_gaussian"
 
-KleinGordonX::gaussian_sigma = 0.25
-KleinGordonX::gaussian_R0    = 1.5
+KleinGordonX::gaussian_sigma = 1.0
+KleinGordonX::gaussian_R0    = 0.0
 
 KleinGordonX::gaussian_x0    = 0.0
 KleinGordonX::gaussian_y0    = 0.0
 KleinGordonX::gaussian_z0    = 0.0
 
-KleinGordonX::fd_order = 4
+KleinGordonX::fd_order = 2
+CarpetX::ghost_size = 3
 
 KleinGordonX::compute_error  = no
-KleinGordonX::compute_energy = no
+KleinGordonX::compute_energy = yes
 
-KleinGordonX::multipoles[0] = 0.0
-KleinGordonX::multipoles[1] = -0.57735026919
+KleinGordonX::multipoles[0] = 3.0
+KleinGordonX::multipoles[1] = 0.0
 KleinGordonX::multipoles[2] = 0.0
-KleinGordonX::multipoles[3] = -0.57735026919
+KleinGordonX::multipoles[3] = 0.0
 KleinGordonX::multipoles[4] = 0.0
-KleinGordonX::multipoles[5] = -0.4472135955
+KleinGordonX::multipoles[5] = 0.0
 KleinGordonX::multipoles[6] = 0.0
-KleinGordonX::multipoles[7] = 0.4472135955
+KleinGordonX::multipoles[7] = 0.0
 KleinGordonX::multipoles[8] = 0.0
 
 KleingordonX::Phi_abs   = 0.3989422804014327
 KleinGordonX::K_Phi_abs = 0.3989422804014327
+
+KleinGordonX::bc_type = "reflecting"
 
 #####################################
 
@@ -95,4 +103,11 @@ CarpetX::dtfac = 0.25
 
 IO::out_dir = $parfile
 IO::out_every = 1
-CarpetX::out_silo_vars = "KleinGordonX::Phi"
+CarpetX::out_silo_vars = "
+    KleinGordonX::Phi
+    TmunuBase::eTtt
+    TmunuBase::eTti
+    TmunuBase::eTij
+"
+
+CarpetX::out_tsv = no
