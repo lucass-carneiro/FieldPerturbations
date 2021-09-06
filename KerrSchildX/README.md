@@ -9,4 +9,4 @@
 GNU GPLv3+ (see <https://www.gnu.org/licenses/>).
 
 ## Purpose
-Set-up initial data for a single Kerr black hole in Kerr-Schild coordiantes. This thorn is intended to be used with CarpetX
+Set-up initial data for a single Kerr black hole in Kerr-Schild coordiantes. This thorn is intended to be used with the `CarpetX` driver.

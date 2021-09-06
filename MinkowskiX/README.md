@@ -9,4 +9,4 @@
 GNU GPLv3+ (see <https://www.gnu.org/licenses/>).
 
 ## Purpose
-Set-up initial data for the Minkowski spacetime. This thorn is intended to be used with CarpetX
+Set-up initial data for the Minkowski spacetime. This thorn is intended to be used with the `CarpetX` driver.
