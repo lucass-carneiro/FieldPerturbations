@@ -33,46 +33,39 @@ using Loop::loop_int;
 using Loop::PointDesc;
 
 extern "C" void KleinGordonX_EstimateError(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_KleinGordonX_EstimateError;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS_KleinGordonX_EstimateError;
+    DECLARE_CCTK_PARAMETERS;
 
-  /* Note that CarpetX's regrid_error grid function is cell centered.
-   * Because our own variables are vertex centered, we must define two
-   * separate grid layout objects: One cell centered and one vertex centered
-   * and pass each to the corresponding GF.
-   */
-  const vect<int, dim> indextypecc = {1, 1, 1};
-  const vect<int, dim> indextype = {0, 0, 0};
+    /* Note that CarpetX's regrid_error grid function is cell centered.
+     * Because our own variables are vertex centered, we must define two
+     * separate grid layout objects: One cell centered and one vertex centered
+     * and pass each to the corresponding GF.
+     */
+    const vect<int, dim> indextypecc = {1, 1, 1};
+    const vect<int, dim> indextype = {0, 0, 0};
 
-  const GF3D2layout layoutcc(cctkGH, indextypecc);
-  const GF3D2layout layout(cctkGH, indextype);
+    const GF3D2layout layoutcc(cctkGH, indextypecc);
+    const GF3D2layout layout(cctkGH, indextype);
 
-  const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
-  const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
-  const GF3D2<CCTK_REAL> gf_regrid_error(layoutcc, regrid_error);
+    const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
+    const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
+    const GF3D2<CCTK_REAL> gf_regrid_error(layoutcc, regrid_error);
 
-  auto regriderror_lambda = [&](const PointDesc &p) {
-    const CCTK_REAL base_Phi = fabs(gf_Phi(p.I)) + fabs(Phi_abs);
-    const CCTK_REAL errx_Phi =
-        fabs(gf_Phi(p.I + p.DI[0]) - gf_Phi(p.I)) / base_Phi;
-    const CCTK_REAL erry_Phi =
-        fabs(gf_Phi(p.I + p.DI[1]) - gf_Phi(p.I)) / base_Phi;
-    const CCTK_REAL errz_Phi =
-        fabs(gf_Phi(p.I + p.DI[2]) - gf_Phi(p.I)) / base_Phi;
+    auto regriderror_lambda = [&](const PointDesc &p) {
+        const CCTK_REAL base_Phi = fabs(gf_Phi(p.I)) + fabs(Phi_abs);
+        const CCTK_REAL errx_Phi = fabs(gf_Phi(p.I + p.DI[0]) - gf_Phi(p.I)) / base_Phi;
+        const CCTK_REAL erry_Phi = fabs(gf_Phi(p.I + p.DI[1]) - gf_Phi(p.I)) / base_Phi;
+        const CCTK_REAL errz_Phi = fabs(gf_Phi(p.I + p.DI[2]) - gf_Phi(p.I)) / base_Phi;
 
-    const CCTK_REAL base_K_Phi = fabs(gf_K_Phi(p.I)) + fabs(K_Phi_abs);
-    const CCTK_REAL errx_K_Phi =
-        fabs(gf_K_Phi(p.I + p.DI[0]) - gf_K_Phi(p.I)) / base_K_Phi;
-    const CCTK_REAL erry_K_Phi =
-        fabs(gf_K_Phi(p.I + p.DI[1]) - gf_K_Phi(p.I)) / base_K_Phi;
-    const CCTK_REAL errz_K_Phi =
-        fabs(gf_K_Phi(p.I + p.DI[2]) - gf_K_Phi(p.I)) / base_K_Phi;
+        const CCTK_REAL base_K_Phi = fabs(gf_K_Phi(p.I)) + fabs(K_Phi_abs);
+        const CCTK_REAL errx_K_Phi = fabs(gf_K_Phi(p.I + p.DI[0]) - gf_K_Phi(p.I)) / base_K_Phi;
+        const CCTK_REAL erry_K_Phi = fabs(gf_K_Phi(p.I + p.DI[1]) - gf_K_Phi(p.I)) / base_K_Phi;
+        const CCTK_REAL errz_K_Phi = fabs(gf_K_Phi(p.I + p.DI[2]) - gf_K_Phi(p.I)) / base_K_Phi;
 
-    gf_regrid_error(p.I) =
-        errx_Phi + erry_Phi + errz_Phi + errx_K_Phi + erry_K_Phi + errz_K_Phi;
-  };
+        gf_regrid_error(p.I) = errx_Phi + erry_Phi + errz_Phi + errx_K_Phi + erry_K_Phi + errz_K_Phi;
+    };
 
-  loop_int<1, 1, 1>(cctkGH, regriderror_lambda);
+    loop_int<1, 1, 1>(cctkGH, regriderror_lambda);
 }
 
 } // namespace KleinGordonX

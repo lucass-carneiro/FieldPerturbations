@@ -29,43 +29,43 @@ namespace KleinGordonX {
 using namespace Loop;
 
 extern "C" void KleinGordonX_Boundaries(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_KleinGordonX_Boundaries;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS_KleinGordonX_Boundaries;
+    DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {0, 0, 0};
-  const GF3D2layout layout(cctkGH, indextype);
-  const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
-  const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);
+    const array<int, dim> indextype = {0, 0, 0};
+    const GF3D2layout layout(cctkGH, indextype);
+    const GF3D2<CCTK_REAL> gf_Phi(layout, Phi);
+    const GF3D2<CCTK_REAL> gf_K_Phi(layout, K_Phi);
 
-  if (CCTK_EQUALS(bc_type, "NewRad")) {
-    // Apply NewRad
-  } else if (CCTK_EQUALS(bc_type, "none")) {
-    // Do nothing
-  } else if (CCTK_EQUALS(bc_type, "reflecting")) {
+    if (CCTK_EQUALS(bc_type, "NewRad")) {
+        // Apply NewRad
+    } else if (CCTK_EQUALS(bc_type, "none")) {
+        // Do nothing
+    } else if (CCTK_EQUALS(bc_type, "reflecting")) {
 
-    auto dirichilet_lambda = [&](const PointDesc &p) {
-      gf_Phi(p.I) = CCTK_REAL(0);
-      gf_K_Phi(p.I) = CCTK_REAL(0);
-    };
+        auto dirichilet_lambda = [&](const PointDesc &p) {
+            gf_Phi(p.I) = CCTK_REAL(0);
+            gf_K_Phi(p.I) = CCTK_REAL(0);
+        };
 
-    loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
-  }
+        loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
+    }
 }
 
 extern "C" void KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHSBoundaries;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHSBoundaries;
+    DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {0, 0, 0};
-  const GF3D2layout layout(cctkGH, indextype);
-  const GF3D2<CCTK_REAL> gf_Phi_rhs(layout, Phi_rhs);
-  const GF3D2<CCTK_REAL> gf_K_Phi_rhs(layout, K_Phi_rhs);
+    const array<int, dim> indextype = {0, 0, 0};
+    const GF3D2layout layout(cctkGH, indextype);
+    const GF3D2<CCTK_REAL> gf_Phi_rhs(layout, Phi_rhs);
+    const GF3D2<CCTK_REAL> gf_K_Phi_rhs(layout, K_Phi_rhs);
 
-  auto dirichilet_lambda = [&](const PointDesc &p) {
-    gf_Phi_rhs(p.I) = CCTK_REAL(0);
-    gf_K_Phi_rhs(p.I) = CCTK_REAL(0);
-  };
+    auto dirichilet_lambda = [&](const PointDesc &p) {
+        gf_Phi_rhs(p.I) = CCTK_REAL(0);
+        gf_K_Phi_rhs(p.I) = CCTK_REAL(0);
+    };
 
-  loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
+    loop_bnd<0, 0, 0>(cctkGH, dirichilet_lambda);
 }
 } // namespace KleinGordonX

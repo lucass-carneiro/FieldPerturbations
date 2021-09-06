@@ -43,6 +43,7 @@
  * This include order is important *
  ***********************************/
 #include <loop.hxx>
+#include <mat.hxx>
 #include <vect.hxx>
 
 namespace KleinGordonX {

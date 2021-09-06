@@ -23,15 +23,14 @@ namespace KleinGordonX {
 enum class Stencil { c3, c5, c7, c9 };
 
 template <Stencil stencil> class Derivative {
-private:
-  const Loop::GF3D2<const CCTK_REAL> &gf;
+  private:
+    const Loop::GF3D2<const CCTK_REAL> &gf;
 
-public:
-  Derivative(const Loop::GF3D2<const CCTK_REAL> &gridFunction)
-      : gf(gridFunction) {}
+  public:
+    Derivative(const Loop::GF3D2<const CCTK_REAL> &gridFunction) : gf(gridFunction) {}
 
-  const Arith::vect<CCTK_REAL, 3> grad(const Loop::PointDesc &) const;
-  const Arith::vect<CCTK_REAL, 6> hess(const Loop::PointDesc &) const;
+    const Arith::vect<CCTK_REAL, 3> grad(const Loop::PointDesc &) const;
+    const Arith::vect<CCTK_REAL, 6> hess(const Loop::PointDesc &) const;
 };
 
 #include "c3.hpp"

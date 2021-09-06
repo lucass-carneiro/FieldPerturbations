@@ -18,12 +18,9 @@ namespace KleinGordonX {
  *                                                              *
  * Output: The Nth power of the  number x.                      *
  ****************************************************************/
-template <size_t N>
-constexpr inline CCTK_REAL power(CCTK_REAL x) { return x * power<N-1>(x); }
+template <size_t N> constexpr inline CCTK_REAL power(CCTK_REAL x) { return x * power<N - 1>(x); }
 
-template <>
-constexpr inline CCTK_REAL power<0>(CCTK_REAL x) { return 1.0; }
-
+template <> constexpr inline CCTK_REAL power<0>(CCTK_REAL x) { return 1.0; }
 
 /****************************************************************
  * inline char todir(CCTK_INT d)                                *
@@ -36,14 +33,14 @@ constexpr inline CCTK_REAL power<0>(CCTK_REAL x) { return 1.0; }
  * Output: The direction                                        *
  ****************************************************************/
 inline char todir(CCTK_INT d) {
-  if (d == 0)
-    return 'x';
-  else if (d == 1)
-    return 'y';
-  else
-    return 'z';
+    if (d == 0)
+        return 'x';
+    else if (d == 1)
+        return 'y';
+    else
+        return 'z';
 }
 
-}
+} // namespace KleinGordonX
 
 #endif // ARITHMETIC_HPP

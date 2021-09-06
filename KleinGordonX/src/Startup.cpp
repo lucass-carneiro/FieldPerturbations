@@ -26,12 +26,11 @@
 namespace KleinGordonX {
 
 extern "C" int KleinGordonX_Startup(void) {
-  const char *banner =
-      "KleinGordonX: Evolutions of a Scalar Klein-Gordon field over an "
-      "arbitrary background";
-  CCTK_RegisterBanner(banner);
+    const char *banner = "KleinGordonX: Evolutions of a Scalar Klein-Gordon field over an "
+                         "arbitrary background";
+    CCTK_RegisterBanner(banner);
 
-  return 0;
+    return 0;
 }
 
 } // namespace KleinGordonX

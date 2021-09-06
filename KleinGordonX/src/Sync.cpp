@@ -26,14 +26,14 @@
 namespace KleinGordonX {
 
 extern "C" void KleinGordonX_Sync(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_KleinGordonX_Sync;
-  DECLARE_CCTK_PARAMETERS;
-  // Do nothing
+    DECLARE_CCTK_ARGUMENTS_KleinGordonX_Sync;
+    DECLARE_CCTK_PARAMETERS;
+    // Do nothing
 }
 
 extern "C" void KleinGordonX_RHSSync(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHSSync;
-  DECLARE_CCTK_PARAMETERS;
-  // Do nothing
+    DECLARE_CCTK_ARGUMENTS_KleinGordonX_RHSSync;
+    DECLARE_CCTK_PARAMETERS;
+    // Do nothing
 }
 } // namespace KleinGordonX

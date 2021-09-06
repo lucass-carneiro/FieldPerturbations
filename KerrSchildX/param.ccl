@@ -102,7 +102,7 @@ CCTK_REAL M "Black hole mass"
 
 CCTK_REAL a "Black hole spin parameter"
 {
-  0.0:1.0 :: "Positivi and inside the interval (0,1)"
+  0.0:1.0 :: "Positive and inside the interval (0,1)"
 } 0.0
 
 
