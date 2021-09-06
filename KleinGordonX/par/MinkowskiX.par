@@ -4,11 +4,11 @@ ActiveThorns = "
     IOUtil
     ODESolvers
     TmunuBase
-    z4c
+    MinkowskiX
 "
  
 $nlevels = 1
-$ncells = 64 
+$ncells = 128 
 
 Cactus::cctk_show_schedule = yes
 
@@ -92,9 +92,15 @@ KleinGordonX::bc_type = "reflecting"
 
 #####################################
 
-ADMBase::initial_data = "Cartesian Minkowski"
-ADMBase::initial_lapse = "one"
-ADMBase::initial_shift = "zero"
+#ADMBase::initial_data = "Cartesian Minkowski"
+#ADMBase::initial_lapse = "one"
+#ADMBase::initial_shift = "zero"
+
+ADMBase::initial_lapse    = "Minkowski"
+ADMBase::initial_shift    = "Minkowski"
+ADMBase::initial_dtshift  = "Minkowski"
+
+MinkowskiX::evolve    = yes
 
 #####################################
 
