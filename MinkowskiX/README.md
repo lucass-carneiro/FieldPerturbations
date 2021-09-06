@@ -1,4 +1,4 @@
-# Cactus Code Thorn "KerrSchildX"
+# Cactus Code Thorn "MinkowskiX"
 ## Author(s):
 * Lucas Timotheo Sanches <lucas.t@ufabc.edu.br>
 
@@ -9,4 +9,4 @@
 GNU GPLv3+ (see <https://www.gnu.org/licenses/>).
 
 ## Purpose
-Set-up initial data for a single Kerr black hole in Kerr-Schild coordiantes. This thorn is intended to be used with CarpetX
+Set-up initial data for the Minkowski spacetime. This thorn is intended to be used with CarpetX

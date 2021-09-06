@@ -1,0 +1,26 @@
+SHARES: ADMBase
+
+EXTENDS KEYWORD initial_data "Initial metric and extrinsic curvature datasets"
+{
+  "Minkowski" :: "Minkowski's flat spacetime"
+}
+
+EXTENDS KEYWORD initial_lapse "Initial lapse value"
+{
+  "Minkowski" :: "Minkowski's flat spacetime"
+}
+
+EXTENDS KEYWORD initial_shift "Initial lapse value"
+{
+  "Minkowski" :: "Minkowski's flat spacetime"
+}
+
+EXTENDS KEYWORD initial_dtshift "Initial lapse value"
+{
+  "Minkowski" :: "Minkowski's flat spacetime"
+}
+
+
+CCTK_BOOLEAN evolve "If true, enforces the metric to keep constant"
+{
+} no

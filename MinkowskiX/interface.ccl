@@ -1,0 +1,5 @@
+IMPLEMENTS: MinkowskiX
+
+INHERITS: ADMBase
+
+USES INCLUDE HEADER: loop.hxx vect.hxx
