@@ -27,13 +27,13 @@
 #include "KleinGordon.h"
 
 void KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS;
+    DECLARE_CCTK_PARAMETERS;
 
-  CCTK_LOOP3_ALL(loop_epsilon, cctkGH, i, j, k) {
-    const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+    CCTK_LOOP3_ALL(loop_epsilon, cctkGH, i, j, k) {
+        const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-    epsilon[ijk] = 0.0;
-  }
-  CCTK_ENDLOOP3_ALL(loop_epsilon);
+        epsilon[ijk] = 0.0;
+    }
+    CCTK_ENDLOOP3_ALL(loop_epsilon);
 }

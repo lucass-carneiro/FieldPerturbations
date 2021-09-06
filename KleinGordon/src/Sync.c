@@ -27,14 +27,14 @@
 #include "KleinGordon.h"
 
 void KleinGordon_RHSSync(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-  /* Do nothing */
+    DECLARE_CCTK_ARGUMENTS;
+    DECLARE_CCTK_PARAMETERS;
+    /* Do nothing */
 }
 
 void KleinGordon_Sync(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS;
+    DECLARE_CCTK_PARAMETERS;
 
-  /* Do nothing */
+    /* Do nothing */
 }

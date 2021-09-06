@@ -28,50 +28,50 @@
 #include "KleinGordon.h"
 
 void KleinGordon_RHSBoundaries(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS;
+    DECLARE_CCTK_PARAMETERS;
 
-  if (CCTK_EQUALS(bc_type, "NewRad")) {
-    CCTK_INT ierr = 0;
+    if (CCTK_EQUALS(bc_type, "NewRad")) {
+        CCTK_INT ierr = 0;
 
-    ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, Phi0, 1.0, nPhi);
-    ierr += NewRad_Apply(cctkGH, K_Phi, K_Phi_rhs, K_Phi0, 1.0, nK_Phi);
+        ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, Phi0, 1.0, nPhi);
+        ierr += NewRad_Apply(cctkGH, K_Phi, K_Phi_rhs, K_Phi0, 1.0, nK_Phi);
 
-    if (ierr < 0)
-      CCTK_ERROR("Failed to register NewRad boundary conditions");
-  } else if (CCTK_EQUALS(bc_type, "reflecting")) {
+        if (ierr < 0)
+            CCTK_ERROR("Failed to register NewRad boundary conditions");
+    } else if (CCTK_EQUALS(bc_type, "reflecting")) {
 
-    CCTK_LOOP3_INTBND(loop_reflecting, cctkGH, i, j, k, ni, nj, nk) {
-      const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-      Phi_rhs[ijk] = K_Phi[ijk];
-      K_Phi_rhs[ijk] = 0.0;
+        CCTK_LOOP3_INTBND(loop_reflecting, cctkGH, i, j, k, ni, nj, nk) {
+            const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            Phi_rhs[ijk] = K_Phi[ijk];
+            K_Phi_rhs[ijk] = 0.0;
+        }
+        CCTK_ENDLOOP3_INTBND(loop_reflecting);
     }
-    CCTK_ENDLOOP3_INTBND(loop_reflecting);
-  }
 }
 
 void KleinGordon_Boundaries(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
+    DECLARE_CCTK_ARGUMENTS;
+    DECLARE_CCTK_PARAMETERS;
 
-  if (CCTK_EQUALS(bc_type, "reflecting")) {
+    if (CCTK_EQUALS(bc_type, "reflecting")) {
 
-    CCTK_LOOP3_INTBND(loop_reflecting, cctkGH, i, j, k, ni, nj, nk) {
-      const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-      Phi[ijk] = 0.0;
-      K_Phi[ijk] = 0.0;
+        CCTK_LOOP3_INTBND(loop_reflecting, cctkGH, i, j, k, ni, nj, nk) {
+            const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+            Phi[ijk] = 0.0;
+            K_Phi[ijk] = 0.0;
+        }
+        CCTK_ENDLOOP3_INTBND(loop_reflecting);
+    } else {
+        // Do nothing
     }
-    CCTK_ENDLOOP3_INTBND(loop_reflecting);
-  } else {
-    // Do nothing
-  }
 }
 
 void KleinGordon_EnforceSymBound(CCTK_ARGUMENTS) {
-  if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
-    int ierr = Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
-                                         "KleinGordon::evolved_group", "none");
-    if (ierr)
-      CCTK_ERROR("Error applaying BCs in KleinGordon::evolved_group");
-  }
+    if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
+        int ierr = Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
+                                             "KleinGordon::evolved_group", "none");
+        if (ierr)
+            CCTK_ERROR("Error applaying BCs in KleinGordon::evolved_group");
+    }
 }
