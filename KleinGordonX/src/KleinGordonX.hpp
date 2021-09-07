@@ -202,13 +202,49 @@ extern "C" void KleinGordonX_RHSBoundaries(CCTK_ARGUMENTS);
  * KleinGordonX_CalcTmunu(CCTK_ARGUMENTS)                       *
  *                                                              *
  * This function computes the stress emergy momentum tensor of  *
- * the scalar field.                                            *
+ * the scalar field using second order finite differencing.     *
  *                                                              *
  * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl)*
  *                                                              *
  * Output: Nothing                                              *
  ****************************************************************/
-extern "C" void KleinGordonX_CalcTmunu(CCTK_ARGUMENTS);
+extern "C" void KleinGordonX_CalcTmunu_2(CCTK_ARGUMENTS);
+
+/****************************************************************
+ * KleinGordonX_CalcTmunu(CCTK_ARGUMENTS)                       *
+ *                                                              *
+ * This function computes the stress emergy momentum tensor of  *
+ * the scalar field using fourth order finite differencing.     *
+ *                                                              *
+ * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl)*
+ *                                                              *
+ * Output: Nothing                                              *
+ ****************************************************************/
+extern "C" void KleinGordonX_CalcTmunu_4(CCTK_ARGUMENTS);
+
+/****************************************************************
+ * KleinGordonX_CalcTmunu(CCTK_ARGUMENTS)                       *
+ *                                                              *
+ * This function computes the stress emergy momentum tensor of  *
+ * the scalar field using sixth order finite differencing.      *
+ *                                                              *
+ * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl)*
+ *                                                              *
+ * Output: Nothing                                              *
+ ****************************************************************/
+extern "C" void KleinGordonX_CalcTmunu_6(CCTK_ARGUMENTS);
+
+/****************************************************************
+ * KleinGordonX_CalcTmunu(CCTK_ARGUMENTS)                       *
+ *                                                              *
+ * This function computes the stress emergy momentum tensor of  *
+ * the scalar field using eigth order finite differencing.      *
+ *                                                              *
+ * Input: CCTK_ARGUMENTS (the grid functions from interface.ccl)*
+ *                                                              *
+ * Output: Nothing                                              *
+ ****************************************************************/
+extern "C" void KleinGordonX_CalcTmunu_8(CCTK_ARGUMENTS);
 
 /****************************************************************
  * KleinGordonX_Error(CCTK_ARGUMENTS)                           *

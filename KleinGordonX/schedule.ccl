@@ -180,15 +180,57 @@ SCHEDULE KleinGordonX_RHSBoundaries IN KleinGordonX_RHSGroup AFTER KleinGordonX_
 
 if(compute_energy)
 {
-  SCHEDULE KleinGordonX_CalcTmunu IN TmunuBase_AddToTmunu
+  if(fd_order == 2)
   {
-    LANG: C
-	READS: Phi(everywhere) K_Phi(everywhere)
-    READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
-	READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
-	WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
-	INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
-  } "Calculate energy momentum tensor for the scalar field"
+	SCHEDULE KleinGordonX_CalcTmunu_2 IN TmunuBase_AddToTmunu
+	{
+	  LANG: C
+	  READS: Phi(everywhere) K_Phi(everywhere)
+	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
+	} "Calculate energy momentum tensor for the scalar field"
+  }
+
+  if(fd_order == 4)
+  {
+	SCHEDULE KleinGordonX_CalcTmunu_4 IN TmunuBase_AddToTmunu
+	{
+	  LANG: C
+	  READS: Phi(everywhere) K_Phi(everywhere)
+	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
+	} "Calculate energy momentum tensor for the scalar field"
+  }
+
+  if(fd_order == 6)
+  {
+	SCHEDULE KleinGordonX_CalcTmunu_6 IN TmunuBase_AddToTmunu
+	{
+	  LANG: C
+	  READS: Phi(everywhere) K_Phi(everywhere)
+	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
+	} "Calculate energy momentum tensor for the scalar field"
+  }
+
+  if(fd_order == 8)
+  {
+	SCHEDULE KleinGordonX_CalcTmunu_8 IN TmunuBase_AddToTmunu
+	{
+	  LANG: C
+	  READS: Phi(everywhere) K_Phi(everywhere)
+	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
+	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
+	} "Calculate energy momentum tensor for the scalar field"
+  }
 }
 
 if(compute_error)

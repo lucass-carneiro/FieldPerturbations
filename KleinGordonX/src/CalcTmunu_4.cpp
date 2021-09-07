@@ -35,8 +35,8 @@ using Loop::GF3D2layout;
 using Loop::loop_int;
 using Loop::PointDesc;
 
-extern "C" void KleinGordonX_CalcTmunu(CCTK_ARGUMENTS) {
-    DECLARE_CCTK_ARGUMENTS_KleinGordonX_CalcTmunu;
+extern "C" void KleinGordonX_CalcTmunu_4(CCTK_ARGUMENTS) {
+    DECLARE_CCTK_ARGUMENTS_KleinGordonX_CalcTmunu_4;
     DECLARE_CCTK_PARAMETERS;
 
     // Grid layout -----------------------------------------------
@@ -74,7 +74,7 @@ extern "C" void KleinGordonX_CalcTmunu(CCTK_ARGUMENTS) {
     const GF3D2<CCTK_REAL> gf_Tzz(layout, eTzz);
 
     // Derivative objects -----------------------------------------
-    const Derivative<Stencil::c3> d_Phi(gf_Phi);
+    const Derivative<Stencil::c5> d_Phi(gf_Phi);
 
     auto Tmunu_lambda = [&](const PointDesc &p) {
         // Local ADM variables
