@@ -7,47 +7,36 @@ ActiveThorns = "
     MinkowskiX
 "
  
-$nlevels = 1
-$ncells = 128 
+$nlevels = 2
+$ncells = 64 
 
 Cactus::cctk_show_schedule = yes
 
 Cactus::presync_mode = "mixed-error"
 
 Cactus::terminate = "time"
-Cactus::cctk_final_time = 12
+Cactus::cctk_final_time = 8
 
 #Cactus::terminate = "iteration"
-#Cactus::cctk_itlast = 1
+#Cactus::cctk_itlast = 10
 
 CarpetX::verbose = yes
 
-CarpetX::xmin = -12.0
-CarpetX::ymin = -12.0
-CarpetX::zmin = -12.0
+CarpetX::xmin = -8.0
+CarpetX::ymin = -8.0
+CarpetX::zmin = -8.0
 
-CarpetX::xmax = 12.0
-CarpetX::ymax = 12.0
-CarpetX::zmax = 12.0
+CarpetX::xmax = 8.0
+CarpetX::ymax = 8.0
+CarpetX::zmax = 8.0
 
 CarpetX::ncells_x = $ncells
 CarpetX::ncells_y = $ncells
 CarpetX::ncells_z = $ncells
 
-#CarpetX::periodic_x = no
-#CarpetX::periodic_y = no
-#CarpetX::periodic_z = no
-#CarpetX::periodic   = no
-#CarpetX::reflection_x = yes
-#CarpetX::reflection_y = yes
-#CarpetX::reflection_z = yes
-#CarpetX::reflection_upper_x = yes
-#CarpetX::reflection_upper_y = yes
-#CarpetX::reflection_upper_z = yes
-
 CarpetX::max_num_levels = $nlevels
-CarpetX::regrid_every = 4
-CarpetX::regrid_error_threshold = 0.56
+CarpetX::regrid_every = 2
+CarpetX::regrid_error_threshold = 0.2
 
 CarpetX::prolongation_type = "ddf" # interpolate in vertex, conservative in cell centered
 CarpetX::prolongation_order = 5
@@ -69,7 +58,7 @@ KleinGordonX::gaussian_x0    = 0.0
 KleinGordonX::gaussian_y0    = 0.0
 KleinGordonX::gaussian_z0    = 0.0
 
-KleinGordonX::fd_order = 2
+KleinGordonX::fd_order = 4
 CarpetX::ghost_size = 3
 
 KleinGordonX::compute_error  = no
@@ -92,7 +81,7 @@ KleinGordonX::bc_type = "reflecting"
 
 #####################################
 
-#ADMBase::initial_data = "Cartesian Minkowski"
+#ADMBase::initial_data  = "Cartesian Minkowski"
 #ADMBase::initial_lapse = "one"
 #ADMBase::initial_shift = "zero"
 
@@ -100,7 +89,7 @@ ADMBase::initial_lapse    = "Minkowski"
 ADMBase::initial_shift    = "Minkowski"
 ADMBase::initial_dtshift  = "Minkowski"
 
-MinkowskiX::evolve    = yes
+MinkowskiX::evolve = yes
 
 #####################################
 
