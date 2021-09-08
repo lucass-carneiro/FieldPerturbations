@@ -109,12 +109,12 @@ if(fd_order == 2)
   SCHEDULE KleinGordonX_RHS_2 AS KleinGordonX_RHS IN KleinGordonX_RHSGroup
   {
 	LANG: C
-	READS: Phi(everywhere) K_Phi(everywhere)
-	READS: ADMBase::metric(everywhere)
-	READS: ADMBase::curv(everywhere)
-	READS: ADMBase::lapse(everywhere)
-	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
+	READS: Phi(interior) K_Phi(interior)
+	READS: ADMBase::metric(interior)
+	READS: ADMBase::curv(interior)
+	READS: ADMBase::lapse(interior)
+	READS: ADMBase::shift(interior)
+	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 2nd order finite differences"
 }
@@ -124,12 +124,12 @@ if(fd_order == 4)
   SCHEDULE KleinGordonX_RHS_4 AS KleinGordonX_RHS IN KleinGordonX_RHSGroup
   {
 	LANG: C
-	READS: Phi(everywhere) K_Phi(everywhere)
-	READS: ADMBase::metric(everywhere)
-	READS: ADMBase::curv(everywhere)
-	READS: ADMBase::lapse(everywhere)
-	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
+	READS: Phi(interior) K_Phi(interior)
+	READS: ADMBase::metric(interior)
+	READS: ADMBase::curv(interior)
+	READS: ADMBase::lapse(interior)
+	READS: ADMBase::shift(interior)
+	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 4th order finite differences"
 }
@@ -139,12 +139,12 @@ if(fd_order == 6)
   SCHEDULE KleinGordonX_RHS_6 AS KleinGordonX_RHS IN KleinGordonX_RHSGroup
   {
 	LANG: C
-	READS: Phi(everywhere) K_Phi(everywhere)
-	READS: ADMBase::metric(everywhere)
-	READS: ADMBase::curv(everywhere)
-	READS: ADMBase::lapse(everywhere)
-	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
+	READS: Phi(interior) K_Phi(interior)
+	READS: ADMBase::metric(interior)
+	READS: ADMBase::curv(interior)
+	READS: ADMBase::lapse(interior)
+	READS: ADMBase::shift(interior)
+	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 6th order finite differences"
 }
@@ -154,12 +154,12 @@ if(fd_order == 8)
   SCHEDULE KleinGordonX_RHS_8 AS KleinGordonX_RHS IN KleinGordonX_RHSGroup
   {
 	LANG: C
-	READS: Phi(everywhere) K_Phi(everywhere)
-	READS: ADMBase::metric(everywhere)
-	READS: ADMBase::curv(everywhere)
-	READS: ADMBase::lapse(everywhere)
-	READS: ADMBase::shift(everywhere)
-	WRITES: Phi_rhs(interiorwithboundary) K_Phi_rhs(interiorwithboundary)
+	READS: Phi(interior) K_Phi(interior)
+	READS: ADMBase::metric(interior)
+	READS: ADMBase::curv(interior)
+	READS: ADMBase::lapse(interior)
+	READS: ADMBase::shift(interior)
+	WRITES: Phi_rhs(interior) K_Phi_rhs(interior)
 	SYNC: rhs_group
   } "Compute the RHS of the field equations using 8th order finite differences"
 }
@@ -189,7 +189,6 @@ if(compute_energy)
 	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
 	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
 	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
-	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
 	} "Calculate energy momentum tensor for the scalar field"
   }
 
@@ -202,7 +201,6 @@ if(compute_energy)
 	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
 	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
 	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
-	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
 	} "Calculate energy momentum tensor for the scalar field"
   }
 
@@ -215,7 +213,6 @@ if(compute_energy)
 	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
 	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
 	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
-	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
 	} "Calculate energy momentum tensor for the scalar field"
   }
 
@@ -228,7 +225,6 @@ if(compute_energy)
 	  READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
 	  READS: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
 	  WRITES: TmunuBase::eTtt(interior) TmunuBase::eTti(interior) TmunuBase::eTij(interior)
-	  INVALIDATES: TmunuBase::eTtt(boundary) TmunuBase::eTti(boundary) TmunuBase::eTij(boundary)
 	} "Calculate energy momentum tensor for the scalar field"
   }
 }
