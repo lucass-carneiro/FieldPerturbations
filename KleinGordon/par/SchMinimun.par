@@ -1,42 +1,81 @@
-#######################################################################
-# Schwarzschild.par                                                   #
-#                                                                     #
-# Evolve the Klein gordon equation on top of a Schwarzschild          #
-# background                                                          #
-#######################################################################
+#=============================================================================#
+# SchMinimum.par                                                              #
+#                                                                             #
+# Evolve the Klein Gordon equation on top of a Schwarzschild  background.     #
+# This parameter file is the minimum required to produce meaningfull results. #
+#                                                                             #
+# It requires 632.265 GByte for the evolution plus extra for the checkpoint   #
+# and recovery.                                                               #
+#                                                                             #
+# It takes about 8 days with 200 cores to obtain meaningful results.          #
+#=============================================================================#
 
-#######################################################################
-# Script variables                                                    #
-#######################################################################
+#------------------------------------------------------------------------------
+# General settings:
+# These settings are common to evolutions with any resolution
+#------------------------------------------------------------------------------
 
-$title = "Schwarzschild multigrid evolution"
-
+# The absolute value of the domain corner.
+# The domain extends from -$abscorner to +$abscorner
 $abscorner = 250
-$cells = 620
-$zcells = $cells/2
 
-$fd_order = 8
-$ghosts = 6
+# The black hole mass
+$bh_m = 1.0
 
+# How often to check the evolution for NaNs
+$nan_check_every = 256
+
+# How often to report timers
+$timer_every = 10
+
+# How often to output information to stdout
+$info_every = 1
+
+# How often to output scalar data
+$scalar_every = 2
+
+# How often to save 0D data
+$out0D_every = 2
+
+# How often to save 3D data
+$out3D_every = 0
+
+# How often to save 2D data on the xy (z = 0) plane
+$out2D_every = 2
+
+# How often to extract multipolar decompositions for the field
+$multipole_every = 1
+
+# Evolution courant factor
 $courant_factor = 0.25
+
+# Final evolution time
 $final_time = 500.0
 
-$nan_check_every = 256
-$info_every      = 4
-$out3D_every     = 0
-$out2D_every     = 4
-$multipole_every = 4
+#------------------------------------------------------------------------------
+# Resolution settings
+#------------------------------------------------------------------------------
 
-$bh_m = 1.0
-$bh_x = 0.01
-$bh_y = 0.0
-$bh_z = 0.0
+$title = "KleinGordon on a Schwarzschild background (High resolution)"
+
+$cells      = 1000
+$fd_order   = 4
+$ghosts     = 3
+$diss_order = 2 * $ghosts - 1
+
+$time_integrator         = "RK4"
+$time_integrator_steps   = 4
+$time_integrator_scratch = 1
+
+$extraction_zone_size = 0.24 * $abscorner
 
 ################################################################################
 # General settings                                                             #
 ################################################################################
 
-Cactus::cctk_run_title = "KleinGordon on a Schwarzschild background"
+ActiveThorns = "SystemTopology SystemStatistics"
+
+Cactus::cctk_run_title             = $title
 Cactus::cctk_full_warnings         = yes
 Cactus::highlight_warning_messages = yes
 
@@ -51,10 +90,10 @@ CartGrid3D::type = "coordbase"
 CoordBase::domainsize = "minmax"
 CoordBase::spacing    = "numcells"
 
-CoordBase::xmin = -1.0 * $abscorner
+CoordBase::xmin = 0.0
 CoordBase::xmax = $abscorner
 
-CoordBase::ymin = -1.0 * $abscorner
+CoordBase::ymin = 0.0
 CoordBase::ymax = $abscorner
 
 CoordBase::zmin = 0.0
@@ -62,7 +101,7 @@ CoordBase::zmax = $abscorner
 
 CoordBase::ncells_x = $cells
 CoordBase::ncells_y = $cells
-CoordBase::ncells_z = $zcells
+CoordBase::ncells_z = $cells
 
 CoordBase::boundary_size_x_lower = $ghosts
 CoordBase::boundary_size_y_lower = $ghosts
@@ -72,21 +111,21 @@ CoordBase::boundary_size_y_upper = $ghosts
 CoordBase::boundary_size_z_upper = $ghosts
 
 CoordBase::boundary_internal_x_lower = no
-CoordBase::boundary_internal_x_upper = no
 CoordBase::boundary_internal_y_lower = no
-CoordBase::boundary_internal_y_upper = no
 CoordBase::boundary_internal_z_lower = no
+CoordBase::boundary_internal_x_upper = no
+CoordBase::boundary_internal_y_upper = no
 CoordBase::boundary_internal_z_upper = no
 
 CoordBase::boundary_staggered_x_lower = no
-CoordBase::boundary_staggered_x_upper = no
 CoordBase::boundary_staggered_y_lower = no
-CoordBase::boundary_staggered_y_upper = no
 CoordBase::boundary_staggered_z_lower = no
+CoordBase::boundary_staggered_x_upper = no
+CoordBase::boundary_staggered_y_upper = no
 CoordBase::boundary_staggered_z_upper = no
 
-CoordBase::boundary_shiftout_x_lower = 0
-CoordBase::boundary_shiftout_y_lower = 0
+CoordBase::boundary_shiftout_x_lower = 1
+CoordBase::boundary_shiftout_y_lower = 1
 CoordBase::boundary_shiftout_z_lower = 1
 CoordBase::boundary_shiftout_x_upper = 0
 CoordBase::boundary_shiftout_y_upper = 0
@@ -98,8 +137,8 @@ CoordBase::boundary_shiftout_z_upper = 0
 
 ActiveThorns = "ReflectionSymmetry SymBase"
 
-ReflectionSymmetry::reflection_x   = no
-ReflectionSymmetry::reflection_y   = no
+ReflectionSymmetry::reflection_x   = yes
+ReflectionSymmetry::reflection_y   = yes
 ReflectionSymmetry::reflection_z   = yes
 ReflectionSymmetry::avoid_origin_x = no
 ReflectionSymmetry::avoid_origin_y = no
@@ -113,7 +152,7 @@ ActiveThorns = "Carpet CarpetLib CarpetInterp CarpetInterp2 CarpetReduce CarpetS
 
 Carpet::domain_from_coordbase = yes
 Carpet::ghost_size            = $ghosts
-Carpet::max_refinement_levels = 4
+Carpet::max_refinement_levels = 3
 
 Carpet::use_buffer_zones         = yes
 Carpet::prolongation_order_space = 5
@@ -130,39 +169,35 @@ CarpetRegrid2::freeze_unaligned_levels = yes
 CarpetRegrid2::verbose                 = yes
 
 CarpetRegrid2::num_centres  = 1
-CarpetRegrid2::num_levels_1 = 4
-CarpetRegrid2::position_x_1 = 0.01
-CarpetRegrid2::position_y_1 = 0.01
+CarpetRegrid2::num_levels_1 = 3
+CarpetRegrid2::position_x_1 = 0.0
+CarpetRegrid2::position_y_1 = 0.0
 CarpetRegrid2::position_z_1 = 0.0
-CarpetRegrid2::radius_1     = [0, $abscorner/2, $abscorner/3, 2.0 * $bh_m + 0.5]
+CarpetRegrid2::radius_1     = [0, $extraction_zone_size, 2.0 * $bh_m * 3.0]
 
 ################################################################################
 # Background spacetime                                                         #
 ################################################################################
 
-ActiveThorns = "InitBase ADMBase KerrSchild"
+ActiveThorns = "InitBase ADMBase Exact CoordGauge"
 
-ADMBase::initial_data     = "KerrSchild"
-ADMBase::evolution_method = "KerrSchild"
-ADMBase::initial_lapse    = "KerrSchild"
-ADMBase::initial_shift    = "KerrSchild"
-ADMBase::initial_dtlapse  = "KerrSchild"
-ADMBase::initial_dtshift  = "KerrSchild"
+ADMBase::initial_data  = "exact"
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::lapse_evolution_method = "exact"
+ADMBase::shift_evolution_method = "exact"
 
 ADMBase::lapse_timelevels  = 3
 ADMBase::shift_timelevels  = 3
 ADMBase::metric_timelevels = 3
 
-InitBase::initial_data_setup_method = "init_some_levels"
-Carpet::init_fill_timelevels        = yes
-Carpet::init_3_timelevels           = no
+Exact::exact_model = "Schwarzschild/EF"
+Exact::Schwarzschild_EF__mass = $bh_m
+Exact::exact_eps = 1e-10
 
-KerrSchild::timelevels = 3
-KerrSchild::positionx  = $bh_x
-KerrSchild::positiony  = $bh_y
-KerrSchild::positionz  = $bh_z
-KerrSchild::m          = $bh_m
-KerrSchild::a          = 0.0
+InitBase::initial_data_setup_method = "init_all_levels"
+Carpet::init_fill_timelevels        = no
+Carpet::init_3_timelevels           = no
 
 ################################################################################
 # Scalar field initial data                                                    #
@@ -174,11 +209,11 @@ KleinGordon::field_mass     = 0.0
 
 KleinGordon::initial_data   = "multipolar_gaussian"
 
-KleinGordon::gaussian_sigma = 0.25
-KleinGordon::gaussian_R0    =1.0
+KleinGordon::gaussian_sigma = 1.0
+KleinGordon::gaussian_R0    = 6.0
 
-KleinGordon::gaussian_x0    = 3.5
-KleinGordon::gaussian_y0    = 3.5
+KleinGordon::gaussian_x0    = 0.0
+KleinGordon::gaussian_y0    = 0.0
 KleinGordon::gaussian_z0    = 0.0
 
 KleinGordon::fd_order = $fd_order
@@ -186,14 +221,14 @@ KleinGordon::fd_order = $fd_order
 KleinGordon::compute_error  = no
 KleinGordon::compute_energy = no
 
-KleinGordon::multipoles[0] = 0.0
-KleinGordon::multipoles[1] = -0.57735026919
+KleinGordon::multipoles[0] = 3.0
+KleinGordon::multipoles[1] = 0.0
 KleinGordon::multipoles[2] = 0.0
-KleinGordon::multipoles[3] = -0.57735026919
+KleinGordon::multipoles[3] = 0.0
 KleinGordon::multipoles[4] = 0.0
-KleinGordon::multipoles[5] = -0.4472135955
+KleinGordon::multipoles[5] = 0.0
 KleinGordon::multipoles[6] = 0.0
-KleinGordon::multipoles[7] = 0.4472135955
+KleinGordon::multipoles[7] = 0.0
 KleinGordon::multipoles[8] = 0.0
 
 ################################################################################
@@ -218,7 +253,7 @@ Multipole::nphi         = 240
 Multipole::variables    = "KleinGordon::Phi{sw=0 name='Phi'}"
 
 Multipole::out_every    = $multipole_every
-Multipole::l_max        = 2
+Multipole::l_max        = 4
 Multipole::output_hdf5  = yes
 
 # Disable ASCII output to avoid creating a large number of files
@@ -245,9 +280,9 @@ AHFinderDirect::surface_interpolator_pars                = "order=4"
 AHFinderDirect::verbose_level                            = "physics details"
 AHFinderDirect::move_origins                             = yes
 
-AHFinderDirect::origin_x                             [1] = $bh_x
-AHFinderDirect::origin_y                             [1] = $bh_y
-AHFinderDirect::origin_z                             [1] = $bh_z
+AHFinderDirect::origin_x                             [1] = 0.0
+AHFinderDirect::origin_y                             [1] = 0.0
+AHFinderDirect::origin_z                             [1] = 0.0
 AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0.0
 AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0.0
 AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 0.0
@@ -288,10 +323,10 @@ QuasiLocalMeasures::output_vtk_every     = 0
 ActiveThorns = "StaticConformal SphericalSurface NoExcision"
 
 NoExcision::num_regions        = 1
-NoExcision::centre_x       [0] = $bh_x
-NoExcision::centre_y       [0] = $bh_y
-NoExcision::centre_z       [0] = $bh_z
-NoExcision::radius         [0] = 0.5 * $bh_m
+NoExcision::centre_x       [0] = 0.0
+NoExcision::centre_y       [0] = 0.0
+NoExcision::centre_z       [0] = 0.0
+NoExcision::radius         [0] = 0.875
 NoExcision::Minkowski_scale[0] = 2.6637047122099 # value found at r=0.875
 NoExcision::reduce_rhs     [0] = yes
 
@@ -302,8 +337,8 @@ NoExcision::reduce_rhs     [0] = yes
 ActiveThorns = "NewRad"
 
 KleinGordon::bc_type = "NewRad"
-KleinGordon::nPhi    = 3
-KleinGordon::nK_Phi  = 3
+KleinGordon::nPhi    = 2
+KleinGordon::nK_Phi  = 2
 KleinGordon::Phi0    = 0.0
 KleinGordon::K_Phi0  = 0.0
 
@@ -314,7 +349,7 @@ KleinGordon::K_Phi0  = 0.0
 ActiveThorns = "Dissipation SpaceMask"
 
 Dissipation::verbose                         = no
-Dissipation::order                           = 9
+Dissipation::order                           = $diss_order
 Dissipation::epsdis                          = 0.25
 Dissipation::extra_Dissipation_in_horizons   = yes
 Dissipation::extra_Dissipation_at_outerbound = yes
@@ -336,9 +371,9 @@ Dissipation::vars                      = "KleinGordon::evolved_group"
 
 ActiveThorns = "MoL Time"
 
-MoL::ode_method              = "RK87"
-MoL::mol_intermediate_steps  = 13
-MoL::mol_num_scratch_levels  = 13
+MoL::ode_method              = $time_integrator
+MoL::mol_intermediate_steps  = $time_integrator_steps
+MoL::mol_num_scratch_levels  = $time_integrator_scratch
 MoL::initial_data_is_crap    = true
 
 Time::timestep_method = "courant_static"
@@ -362,6 +397,20 @@ NaNChecker::out_NaNmask     = yes
 NaNChecker::check_vars      = "KleinGordon::evolved_group"
 
 ################################################################################
+# Timers checks                                                                #
+################################################################################
+
+ActiveThorns = "TimerReport"
+
+TimerReport::out_every                  = $timer_every
+TimerReport::out_filename               = "TimerReport"
+TimerReport::output_all_timers          = "yes"
+TimerReport::output_all_timers_together = "yes"
+TimerReport::output_all_timers_readable = "yes"
+TimerReport::before_checkpoint          = "yes"
+TimerReport::n_top_timers               = 40
+
+################################################################################
 # Output                                                                       #
 ################################################################################
 
@@ -370,8 +419,38 @@ ActiveThorns = "IOUtil CarpetIOBasic CarpetIOScalar CarpetIOHDF5 CarpetIOASCII"
 IO::out_dir = $parfile
 
 IOBasic::outInfo_every      = $info_every
-IOBasic::outInfo_reductions = "norm2"
-IOBasic::outInfo_vars       = "KleinGordon::Phi Carpet::physical_time_per_hour"
+IOBasic::outInfo_reductions = "maximum"
+IOBasic::outInfo_vars       = "
+    KleinGordon::Phi
+    Carpet::physical_time_per_hour
+    SystemStatistics::maxrss_mb
+"
+
+IOScalar::outScalar_every      = $scalar_every
+IOScalar::one_file_per_group   = "yes"
+IOScalar::outScalar_reductions = "minimum maximum average norm1 norm2"
+IOScalar::outScalar_vars       = "
+    KleinGordon::Phi
+    KleinGordon::K_Phi
+    SystemStatistics::process_memory_mb
+    SphericalSurface::sf_radius
+"
+
+IOASCII::one_file_per_group     = "yes"
+IOASCII::output_symmetry_points = "no"
+IOASCII::out3D_ghosts           = "no"
+ 
+IOASCII::out0D_every     = $out0D_every
+IOASCII::out0D_vars      = "
+    Carpet::timing
+    QuasiLocalMeasures::qlm_scalars 
+    SphericalSurface::sf_active
+    SphericalSurface::sf_valid
+    SphericalSurface::sf_info
+    SphericalSurface::sf_radius
+    SphericalSurface::sf_origin
+    SphericalSurface::sf_coordinate_descriptors
+"
 
 IOHDF5::out_every = $out3D_every
 IOHDF5::out_vars  = "KleinGordon::Phi"
@@ -382,9 +461,6 @@ IOHDF5::out2d_xz        = no
 IOHDF5::out2d_yz        = no
 IOHDF5::out2d_xyplane_z = 0.0
 IOHDF5::out2D_vars      = "KleinGordon::Phi"
-
-IOASCII::out0D_every = 1000000000
-IOASCII::out0D_vars  = "QuasiLocalMeasures::qlm_scalars{out_every = 1000000000}"
 
 ################################################################################
 # Checkpointing and recovery
@@ -397,6 +473,7 @@ IO::out_proc_every                          = 2
 IO::checkpoint_on_terminate                 = yes
 IO::checkpoint_dir                          = "../checkpoints"
 IO::recover_dir                             = "../checkpoints"
+IO::recover_and_remove                      = yes
 IO::abort_on_io_errors                      = yes
 CarpetIOHDF5::open_one_input_file_at_a_time = yes
 CarpetIOHDF5::compression_level             = 9
@@ -407,7 +484,7 @@ CarpetIOHDF5::compression_level             = 9
 
 ActiveThorns = "TerminationTrigger"
 
-TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
+TerminationTrigger::max_walltime = 24.0
 
 # Trigger termination 30 minutes before the walltime is reached
 TerminationTrigger::on_remaining_walltime        = 30
@@ -420,4 +497,4 @@ Cactus::terminate       = "time"
 Cactus::cctk_final_time = $final_time
 
 #Cactus::terminate      = "iteration"
-#Cactus::cctk_itlast    = 2
+#Cactus::cctk_itlast    = 4
