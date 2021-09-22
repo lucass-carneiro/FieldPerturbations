@@ -1,7 +1,7 @@
 # Interface definition for thorn KleinGordon
 
 IMPLEMENTS: KleinGordon
-INHERITS: ADMBase Grid
+INHERITS: ADMBase Tmunubase Grid
 
 USES INCLUDE HEADER: KleinGordonX.h
 USES INCLUDE HEADER: Derivatives.h

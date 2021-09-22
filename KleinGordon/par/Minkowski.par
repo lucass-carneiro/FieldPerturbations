@@ -10,16 +10,15 @@
 
 $title = "Minkowski unigrid evolution"
 
-$cells = 80
-$zcells = $cells/2
+$cells = 160
 
 $fd_order = 8
 $ghosts = $fd_order - 1
 
 $courant_factor = 0.25
-$final_time = 1
+$final_time = 5
 
-$nan_check_every = 256
+$nan_check_every = 1
 $info_every = 1
 $out_every = 1
 
@@ -49,12 +48,12 @@ CoordBase::xmax = 5.0
 CoordBase::ymin = -5.0
 CoordBase::ymax = 5.0
 
-CoordBase::zmin = 0.0
+CoordBase::zmin = -5.0
 CoordBase::zmax = 5.0
 
 CoordBase::ncells_x = $cells
 CoordBase::ncells_y = $cells
-CoordBase::ncells_z = $zcells
+CoordBase::ncells_z = $cells
 
 CoordBase::boundary_size_x_lower = $ghosts
 CoordBase::boundary_size_y_lower = $ghosts
@@ -79,7 +78,7 @@ CoordBase::boundary_staggered_z_upper = no
 
 CoordBase::boundary_shiftout_x_lower = 0
 CoordBase::boundary_shiftout_y_lower = 0
-CoordBase::boundary_shiftout_z_lower = 1
+CoordBase::boundary_shiftout_z_lower = 0
 CoordBase::boundary_shiftout_x_upper = 0
 CoordBase::boundary_shiftout_y_upper = 0
 CoordBase::boundary_shiftout_z_upper = 0
@@ -92,7 +91,7 @@ ActiveThorns = "ReflectionSymmetry SymBase"
 
 ReflectionSymmetry::reflection_x   = no
 ReflectionSymmetry::reflection_y   = no
-ReflectionSymmetry::reflection_z   = yes
+ReflectionSymmetry::reflection_z   = no
 ReflectionSymmetry::avoid_origin_x = no
 ReflectionSymmetry::avoid_origin_y = no
 ReflectionSymmetry::avoid_origin_z = no
@@ -146,6 +145,16 @@ Carpet::init_3_timelevels           = no
 # Scalar field initial data                                           #
 #######################################################################
 
+ActiveThorns = "TmunuBase StaticConformal"
+
+TmunuBase::stress_energy_storage = yes
+TmunuBase::timelevels            = 3
+TmunuBase::stress_energy_at_RHS  = yes
+
+#######################################################################
+# Scalar field initial data                                           #
+#######################################################################
+
 ActiveThorns = "KleinGordon"
 
 KleinGordon::field_mass     = 0.0
@@ -162,7 +171,7 @@ KleinGordon::gaussian_z0    = 0.0
 KleinGordon::fd_order = $fd_order
 
 KleinGordon::compute_error  = no
-KleinGordon::compute_energy = no
+KleinGordon::compute_energy = yes
 
 KleinGordon::multipoles[0] = 0.0
 KleinGordon::multipoles[1] = -0.57735026919
@@ -207,9 +216,9 @@ Dissipation::vars                      = "KleinGordon::evolved_group"
 
 ActiveThorns = "MoL Time"
 
-MoL::ode_method              = "RK87"
-MoL::mol_intermediate_steps  = 13
-MoL::mol_num_scratch_levels  = 13
+MoL::ode_method              = "RK4"
+MoL::mol_intermediate_steps  = 4
+MoL::mol_num_scratch_levels  = 1
 MoL::initial_data_is_crap    = true
 
 Time::timestep_method = "courant_static"
@@ -230,7 +239,7 @@ ActiveThorns = "NaNChecker"
 
 NaNChecker::check_every     = $nan_check_every
 NaNChecker::action_if_found = "terminate"
-NaNChecker::check_vars      = "KleinGordon::evolved_group KleinGordon::rhs_group"
+NaNChecker::check_vars      = "KleinGordon::evolved_group KleinGordon::rhs_group TmunuBase::eTtt"
 
 #######################################################################
 # Output                                                              #
@@ -245,4 +254,4 @@ CarpetIOBasic::outInfo_vars     = "KleinGordon::evolved_group"
 
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9
-CarpetIOHDF5::out_vars          = "KleinGordon::Phi"
+CarpetIOHDF5::out_vars          = "KleinGordon::Phi TmunuBase::eTtt"
