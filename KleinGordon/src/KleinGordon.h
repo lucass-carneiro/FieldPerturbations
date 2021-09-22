@@ -163,6 +163,51 @@ void KleinGordon_RHS_6(CCTK_ARGUMENTS);
  **********************************************/
 void KleinGordon_RHS_8(CCTK_ARGUMENTS);
 
+/***********************************************
+ * KleinGordon_CalcTmunu_4(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy momentum  *
+ * tensor of the scalar field using 4-th order *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcTmunu_4(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcTmunu_6(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy momentum  *
+ * tensor of the scalar field using 6-th order *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcTmunu_6(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy momentum  *
+ * tensor of the scalar field using 8-th order *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS);
+
 /****************************************************************
  * KleinGordon_RHSSync(CCTK_ARGUMENTS)                          *
  *                                                              *
@@ -240,19 +285,6 @@ void KleinGordon_Sync(CCTK_ARGUMENTS);
  * Output: Nothing                             *
  ***********************************************/
 void KleinGordon_Boundaries(CCTK_ARGUMENTS);
-
-/**********************************************
- * KleinGordon_Energy(CCTK_ARGUMENTS)         *
- *                                            *
- * This function computes the PDE energy for  *
- * the wave equation.                         *
- *                                            *
- * Input: CCTK_ARGUMENTS (the grid functions  *
- * from interface.ccl                         *
- *                                            *
- * Output: Nothing                            *
- **********************************************/
-void KleinGordon_Energy(CCTK_ARGUMENTS);
 
 /****************************************************
  * KleinGordon_Energy(CCTK_ARGUMENTS)               *
