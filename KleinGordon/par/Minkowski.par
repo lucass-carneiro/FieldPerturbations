@@ -142,7 +142,7 @@ Carpet::init_fill_timelevels        = yes
 Carpet::init_3_timelevels           = no
 
 #######################################################################
-# Scalar field initial data                                           #
+# Energy momentum tensor config                                       #
 #######################################################################
 
 ActiveThorns = "TmunuBase StaticConformal"
