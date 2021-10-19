@@ -1,7 +1,8 @@
 # Interface definition for thorn KleinGordon
 
 IMPLEMENTS: KleinGordon
-INHERITS: ADMBase Tmunubase Grid
+INHERITS: ADMBase Tmunubase Grid Coordinates Interpolate
+
 
 USES INCLUDE HEADER: KleinGordonX.h
 USES INCLUDE HEADER: Derivatives.h

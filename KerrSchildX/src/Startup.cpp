@@ -24,8 +24,7 @@
 #include "KerrSchildX.hpp"
 
 extern "C" int KerrSchildX::KerrSchildX_Startup(void) {
-  const char *banner =
-      "KerrSchildX: Kerr black hole initial data in Kerr-Schild coordinates";
+  const char *banner = "KerrSchildX: Kerr black hole initial data in Kerr-Schild coordinates";
   CCTK_RegisterBanner(banner);
 
   return 0;

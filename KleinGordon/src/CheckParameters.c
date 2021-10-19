@@ -27,36 +27,36 @@
 #include "KleinGordon.h"
 
 void KleinGordon_CheckParameters(CCTK_ARGUMENTS) {
-    DECLARE_CCTK_ARGUMENTS;
-    DECLARE_CCTK_PARAMETERS;
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
-    if (gaussian_sigma * gaussian_sigma < 1.0e-3)
-        CCTK_PARAMWARN("The gaussian parameter sigma is too small. Increase it in "
-                       "order to avoid singularities.");
+  if (gaussian_sigma * gaussian_sigma < 1.0e-3)
+    CCTK_PARAMWARN("The gaussian parameter sigma is too small. Increase it in "
+                   "order to avoid singularities.");
 
-    switch (fd_order) {
-    case 4: {
-        CCTK_INFO("Using 4th order finite differencing. Make sure that you have at "
-                  "least 2 ghost zones");
-        break;
-    }
+  switch (fd_order) {
+  case 4: {
+    CCTK_INFO("Using 4th order finite differencing. Make sure that you have at "
+              "least 2 ghost zones");
+    break;
+  }
 
-    case 6: {
-        CCTK_INFO("Using 6th order finite differencing. Make sure that you have at "
-                  "least 3 ghost zones");
-        break;
-    }
+  case 6: {
+    CCTK_INFO("Using 6th order finite differencing. Make sure that you have at "
+              "least 3 ghost zones");
+    break;
+  }
 
-    case 8: {
-        CCTK_INFO("Using 8th order finite differencing. Make sure that you have at "
-                  "least 4 ghost zones");
-        break;
-    }
-    }
+  case 8: {
+    CCTK_INFO("Using 8th order finite differencing. Make sure that you have at "
+              "least 4 ghost zones");
+    break;
+  }
+  }
 
-    if (compute_error && !CCTK_Equals(initial_data, "exact_gaussian")) {
-        CCTK_PARAMWARN("Error computing was requested with an initial condition other than "
-                       "\"exact_gaussian\". The error estimate is only significant when "
-                       "evolving \"exact_gaussian\" data on top of a Minkowski background.");
-    }
+  if (compute_error && !CCTK_Equals(initial_data, "exact_gaussian")) {
+    CCTK_PARAMWARN("Error computing was requested with an initial condition other than "
+                   "\"exact_gaussian\". The error estimate is only significant when "
+                   "evolving \"exact_gaussian\" data on top of a Minkowski background.");
+  }
 }

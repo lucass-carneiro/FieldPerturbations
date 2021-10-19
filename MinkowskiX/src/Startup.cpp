@@ -24,7 +24,7 @@
 #include "MinkowskiX.hpp"
 
 extern "C" int MinkowskiX::MinkowskiX_Startup(void) {
-    const char *banner = "MinkowskiX: Minkowski's flat spacetime";
-    CCTK_RegisterBanner(banner);
-    return 0;
+  const char *banner = "MinkowskiX: Minkowski's flat spacetime";
+  CCTK_RegisterBanner(banner);
+  return 0;
 }
