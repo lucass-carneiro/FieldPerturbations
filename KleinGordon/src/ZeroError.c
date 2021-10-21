@@ -27,14 +27,14 @@
 #include "KleinGordon.h"
 
 void KleinGordon_ZeroError(CCTK_ARGUMENTS) {
-    DECLARE_CCTK_ARGUMENTS;
-    DECLARE_CCTK_PARAMETERS;
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
-    CCTK_LOOP3_ALL(loop_error, cctkGH, i, j, k) {
-        const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+  CCTK_LOOP3_ALL(loop_error, cctkGH, i, j, k) {
+    const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-        Phi_err[ijk] = 0.0;
-        K_Phi_err[ijk] = 0.0;
-    }
-    CCTK_ENDLOOP3_ALL(loop_error);
+    Phi_err[ijk] = 0.0;
+    K_Phi_err[ijk] = 0.0;
+  }
+  CCTK_ENDLOOP3_ALL(loop_error);
 }

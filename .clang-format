@@ -1,5 +1,16 @@
 ---
   BasedOnStyle: LLVM
-  IndentWidth: 4
-  ColumnLimit: 102
+  AccessModifierOffset: '-2'
+  AlignTrailingComments: 'true'
+  AllowAllParametersOfDeclarationOnNextLine: 'false'
+  AlwaysBreakTemplateDeclarations: 'No'
+  BreakBeforeBraces: Attach
+  ColumnLimit: '100'
+  ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+  IncludeBlocks: Regroup
+  IndentPPDirectives: AfterHash
+  IndentWidth: '2'
+  NamespaceIndentation: None
+  BreakBeforeBinaryOperators: All
+  BreakBeforeTernaryOperators: 'true'
 ...

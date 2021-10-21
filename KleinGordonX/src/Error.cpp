@@ -35,27 +35,27 @@ using Loop::loop_int;
 using Loop::PointDesc;
 
 extern "C" void KleinGordonX_Error(CCTK_ARGUMENTS) {
-    DECLARE_CCTK_ARGUMENTS_KleinGordonX_Error;
-    DECLARE_CCTK_PARAMETERS;
+  DECLARE_CCTK_ARGUMENTS_KleinGordonX_Error;
+  DECLARE_CCTK_PARAMETERS;
 
-    const CCTK_REAL t = cctk_time;
+  const CCTK_REAL t = cctk_time;
 
-    const vect<int, dim> indextype = {0, 0, 0};
-    const GF3D2layout layout(cctkGH, indextype);
+  const vect<int, dim> indextype = {0, 0, 0};
+  const GF3D2layout layout(cctkGH, indextype);
 
-    const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
-    const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
-    const GF3D2<CCTK_REAL> gf_Phi_err(layout, Phi_err);
-    const GF3D2<CCTK_REAL> gf_K_Phi_err(layout, K_Phi_err);
+  const GF3D2<const CCTK_REAL> gf_Phi(layout, Phi);
+  const GF3D2<const CCTK_REAL> gf_K_Phi(layout, K_Phi);
+  const GF3D2<CCTK_REAL> gf_Phi_err(layout, Phi_err);
+  const GF3D2<CCTK_REAL> gf_K_Phi_err(layout, K_Phi_err);
 
-    if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
+  if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
 
-        auto exact_gaussian_lambda = [&](const PointDesc &p) {
-            gf_Phi_err(p.I) = gf_Phi(p.I) - exact_gaussian(t, p.x, p.y, p.z);
-            gf_K_Phi_err(p.I) = gf_K_Phi(p.I) - dt_exact_gaussian(t, p.x, p.y, p.z);
-        };
+    auto exact_gaussian_lambda = [&](const PointDesc &p) {
+      gf_Phi_err(p.I) = gf_Phi(p.I) - exact_gaussian(t, p.x, p.y, p.z);
+      gf_K_Phi_err(p.I) = gf_K_Phi(p.I) - dt_exact_gaussian(t, p.x, p.y, p.z);
+    };
 
-        loop_int<0, 0, 0>(cctkGH, exact_gaussian_lambda);
-    }
+    loop_int<0, 0, 0>(cctkGH, exact_gaussian_lambda);
+  }
 }
 } // namespace KleinGordonX
