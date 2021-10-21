@@ -55,6 +55,9 @@ SCHEDULE GROUP KleinGordon_RHSGroup IN MoL_CalcRHS
 {
 } "Calculate RHS"
 
+SCHEDULE GROUP KleinGordon_RHSBoundaries IN MoL_RHSBoundaries
+{
+} "Calculate RHS"
 
 
 SCHEDULE GROUP KleinGordon_AnalysisGroup AT analysis
@@ -137,13 +140,14 @@ SCHEDULE KleinGordon_RHSSync IN KleinGordon_RHSGroup AFTER KleinGordon_RHS
 {
   LANG: C
   SYNC: rhs_group
-} "Boundary conditions for the RHS of the wave equation"
+} "Synchronize the RHS group"
 
-SCHEDULE KleinGordon_RHSBoundaries IN KleinGordon_RHSGroup AFTER KleinGordon_RHSSync
+SCHEDULE KleinGordon_RHSBoundaries IN KleinGordon_RHSBoundaries AFTER KleinGordon_RHSSync
 {
   LANG: C
   WRITES: Phi_rhs(boundary) K_Phi_rhs(boundary)
-} "Apply outer boundary conditions"
+} "Apply outer boundary conditions to the RHS grid functions"
+
 
 
 SCHEDULE KleinGordon_EnforceSymBound IN MoL_PostStep
@@ -152,17 +156,17 @@ SCHEDULE KleinGordon_EnforceSymBound IN MoL_PostStep
   OPTIONS: LEVEL
 } "Enforce symmetry boundary conditions"
 
-SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup AFTER KleinGordon_EnforceSymBound
-{
-  LANG: C
-  SYNC: evolved_group
-} "Boundary conditions for the wave equation"
-
-SCHEDULE KleinGordon_Boundaries IN KleinGordon_PostStepGroup AFTER KleinGordon_Sync
+SCHEDULE KleinGordon_Boundaries IN KleinGordon_PostStepGroup AFTER KleinGordon_EnforceSymBound
 {
   LANG: C
   READS: Phi(interior) K_Phi(interior)
   WRITES: evolved_group(boundary)
+} "Boundary conditions for the wave equation"
+
+SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup AFTER KleinGordon_Boundaries
+{
+  LANG: C
+  SYNC: evolved_group
 } "Boundary conditions for the wave equation"
 
 

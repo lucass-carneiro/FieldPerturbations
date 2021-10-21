@@ -68,6 +68,9 @@ void KleinGordon_Boundaries(CCTK_ARGUMENTS) {
 }
 
 void KleinGordon_EnforceSymBound(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
   if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
     int ierr = Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
                                          "KleinGordon::evolved_group", "none");

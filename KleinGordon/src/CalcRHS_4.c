@@ -163,6 +163,41 @@ void KleinGordon_RHS_4(CCTK_ARGUMENTS) {
   CCTK_REAL Gamma_zyz = 0.0;
   CCTK_REAL Gamma_zzz = 0.0;
 
+  /* Coordinate transformation jacobians */
+  CCTK_REAL J11L = 0;
+  CCTK_REAL J12L = 0;
+  CCTK_REAL J13L = 0;
+
+  CCTK_REAL J21L = 0;
+  CCTK_REAL J22L = 0;
+  CCTK_REAL J23L = 0;
+
+  CCTK_REAL J31L = 0;
+  CCTK_REAL J32L = 0;
+  CCTK_REAL J33L = 0;
+
+  /* Jacobian derivatives */
+  CCTK_REAL dJ111L = 0;
+  CCTK_REAL dJ112L = 0;
+  CCTK_REAL dJ113L = 0;
+  CCTK_REAL dJ122L = 0;
+  CCTK_REAL dJ123L = 0;
+  CCTK_REAL dJ133L = 0;
+
+  CCTK_REAL dJ211L = 0;
+  CCTK_REAL dJ212L = 0;
+  CCTK_REAL dJ213L = 0;
+  CCTK_REAL dJ222L = 0;
+  CCTK_REAL dJ223L = 0;
+  CCTK_REAL dJ233L = 0;
+
+  CCTK_REAL dJ311L = 0;
+  CCTK_REAL dJ312L = 0;
+  CCTK_REAL dJ313L = 0;
+  CCTK_REAL dJ322L = 0;
+  CCTK_REAL dJ323L = 0;
+  CCTK_REAL dJ333L = 0;
+
 #pragma omp parallel for
   for (k = gz; k < cctk_lsh[2] - gz; k++) {
     for (j = gy; j < cctk_lsh[1] - gy; j++) {
@@ -194,6 +229,41 @@ void KleinGordon_RHS_4(CCTK_ARGUMENTS) {
         PhiL = Phi[ijk];
         K_PhiL = K_Phi[ijk];
 
+        /* Assign Jacobias */
+        J11L = J11[ijk];
+        J12L = J12[ijk];
+        J13L = J13[ijk];
+
+        J21L = J21[ijk];
+        J22L = J22[ijk];
+        J23L = J23[ijk];
+
+        J31L = J31[ijk];
+        J32L = J32[ijk];
+        J33L = J33[ijk];
+
+        /* Assign jacobian derivatives */
+        dJ111L = dJ111[ijk];
+        dJ112L = dJ112[ijk];
+        dJ113L = dJ113[ijk];
+        dJ122L = dJ122[ijk];
+        dJ123L = dJ123[ijk];
+        dJ133L = dJ133[ijk];
+
+        dJ211L = dJ211[ijk];
+        dJ212L = dJ212[ijk];
+        dJ213L = dJ213[ijk];
+        dJ222L = dJ222[ijk];
+        dJ223L = dJ223[ijk];
+        dJ233L = dJ233[ijk];
+
+        dJ311L = dJ311[ijk];
+        dJ312L = dJ312[ijk];
+        dJ313L = dJ313[ijk];
+        dJ322L = dJ322[ijk];
+        dJ323L = dJ323[ijk];
+        dJ333L = dJ333[ijk];
+
         /* Computing the inverse metric */
         gdetL = -(gxzL * gxzL * gyyL) + 2 * gxyL * gxzL * gyzL - gxxL * gyzL * gyzL
                 - gxyL * gxyL * gzzL + gxxL * gyyL * gzzL;
@@ -209,53 +279,53 @@ void KleinGordon_RHS_4(CCTK_ARGUMENTS) {
                   + 2 * igyzL * kyzL;
 
         /* Derivatives of Phi */
-        d_x_Phi = D4x(Phi);
-        d_y_Phi = D4y(Phi);
-        d_z_Phi = D4z(Phi);
+        d_x_Phi = global_Dx(4, Phi);
+        d_y_Phi = global_Dy(4, Phi);
+        d_z_Phi = global_Dz(4, Phi);
 
-        d_xx_Phi = D4xx(Phi);
-        d_xy_Phi = D4xy(Phi);
-        d_xz_Phi = D4xz(Phi);
+        d_xx_Phi = global_Dxx(4, Phi);
+        d_xy_Phi = global_Dxy(4, Phi);
+        d_xz_Phi = global_Dxz(4, Phi);
 
-        d_yy_Phi = D4yy(Phi);
-        d_yz_Phi = D4yz(Phi);
+        d_yy_Phi = global_Dyy(4, Phi);
+        d_yz_Phi = global_Dyz(4, Phi);
 
-        d_zz_Phi = D4zz(Phi);
+        d_zz_Phi = global_Dzz(4, Phi);
 
         /* Derivatives of the metric */
-        d_x_gxx = D4x(gxx);
-        d_y_gxx = D4y(gxx);
-        d_z_gxx = D4z(gxx);
+        d_x_gxx = global_Dx(4, gxx);
+        d_y_gxx = global_Dy(4, gxx);
+        d_z_gxx = global_Dz(4, gxx);
 
-        d_x_gxy = D4x(gxy);
-        d_y_gxy = D4y(gxy);
-        d_z_gxy = D4z(gxy);
+        d_x_gxy = global_Dx(4, gxy);
+        d_y_gxy = global_Dy(4, gxy);
+        d_z_gxy = global_Dz(4, gxy);
 
-        d_x_gxz = D4x(gxz);
-        d_y_gxz = D4y(gxz);
-        d_z_gxz = D4z(gxz);
+        d_x_gxz = global_Dx(4, gxz);
+        d_y_gxz = global_Dy(4, gxz);
+        d_z_gxz = global_Dz(4, gxz);
 
-        d_x_gyy = D4x(gyy);
-        d_y_gyy = D4y(gyy);
-        d_z_gyy = D4z(gyy);
+        d_x_gyy = global_Dx(4, gyy);
+        d_y_gyy = global_Dy(4, gyy);
+        d_z_gyy = global_Dz(4, gyy);
 
-        d_x_gyz = D4x(gyz);
-        d_y_gyz = D4y(gyz);
-        d_z_gyz = D4z(gyz);
+        d_x_gyz = global_Dx(4, gyz);
+        d_y_gyz = global_Dy(4, gyz);
+        d_z_gyz = global_Dz(4, gyz);
 
-        d_x_gzz = D4x(gzz);
-        d_y_gzz = D4y(gzz);
-        d_z_gzz = D4z(gzz);
+        d_x_gzz = global_Dx(4, gzz);
+        d_y_gzz = global_Dy(4, gzz);
+        d_z_gzz = global_Dz(4, gzz);
 
         /* Derivatives of Alpha */
-        d_x_alp = D4x(alp);
-        d_y_alp = D4y(alp);
-        d_z_alp = D4z(alp);
+        d_x_alp = global_Dx(4, alp);
+        d_y_alp = global_Dy(4, alp);
+        d_z_alp = global_Dz(4, alp);
 
         /* Derivatives of K_Phi */
-        d_x_K_Phi = D4x(K_Phi);
-        d_y_K_Phi = D4y(K_Phi);
-        d_z_K_Phi = D4z(K_Phi);
+        d_x_K_Phi = global_Dx(4, K_Phi);
+        d_y_K_Phi = global_Dy(4, K_Phi);
+        d_z_K_Phi = global_Dz(4, K_Phi);
 
         /* Christoffell symbols */
         Gamma_xxx = 0.5
