@@ -376,6 +376,12 @@
  **************************************************************************/
 
 /**************************
+ * Some definitions from  *
+ * mathematica            *
+ **************************/
+#define Power(x, y)	(pow((double)(x), (double)(y)))
+
+/**************************
  * Derivative Order: 1    *
  **************************/
 #define global_Dx(order, f) (J11L * D##order##x(f) + J21L * D##order##y(f) + J31L * D##order##z(f))
@@ -386,52 +392,57 @@
  * Derivative Order: 2    *
  **************************/
 #define global_Dxx(order, f)                                                                       \
-  ((dJ111L * J11L + dJ211L * J21L + dJ311L * J31L) * D##order##x(f)                                \
-   + J11L * J11L * D##order##xx(f) + 2 * J11L * J21L * D##order##xy(f)                             \
-   + 2 * J11L * J31L * D##order##xz(f) + J21L * J21L * D##order##yy(f)                             \
-   + 2 * J21L * J31L * D##order##yz(f) + J31L * J31L * D##order##zz(f))
+  ((dJ111L * J11L + dJ112L * J21L + dJ113L * J31L) * D##order##x(f)                                \
+   + Power(J11L, 2) * D##order##xx(f) + 2 * J11L * J21L * D##order##xy(f)                          \
+   + 2 * J11L * J31L * D##order##xz(f)                                                             \
+   + (dJ211L * J11L + dJ212L * J21L + dJ213L * J31L) * D##order##y(f)                              \
+   + Power(J21L, 2) * D##order##yy(f) + 2 * J21L * J31L * D##order##yz(f)                          \
+   + (dJ311L * J11L + dJ312L * J21L + dJ313L * J31L) * D##order##z(f)                              \
+   + Power(J31L, 2) * D##order##zz(f))
 
 #define global_Dxy(order, f)                                                                       \
-  ((dJ112L * J11L + dJ212L * J21L + dJ312L * J31L) * D##order##x(f)                                \
+  ((dJ112L * J11L + dJ122L * J21L + dJ123L * J31L) * D##order##x(f)                                \
    + J11L * J12L * D##order##xx(f) + (J12L * J21L + J11L * J22L) * D##order##xy(f)                 \
    + (J12L * J31L + J11L * J32L) * D##order##xz(f)                                                 \
-   + (dJ122L * J11L + dJ222L * J21L + dJ322L * J31L) * D##order##y(f)                              \
+   + (dJ212L * J11L + dJ222L * J21L + dJ223L * J31L) * D##order##y(f)                              \
    + J21L * J22L * D##order##yy(f) + (J22L * J31L + J21L * J32L) * D##order##yz(f)                 \
+   + (dJ312L * J11L + dJ322L * J21L + dJ323L * J31L) * D##order##z(f)                              \
    + J31L * J32L * D##order##zz(f))
 
 #define global_Dxz(order, f)                                                                       \
-  ((dJ113L * J11L + dJ213L * J21L + dJ313L * J31L) * D##order##x(f)                                \
+  ((dJ113L * J11L + dJ123L * J21L + dJ133L * J31L) * D##order##x(f)                                \
    + J11L * J13L * D##order##xx(f) + (J13L * J21L + J11L * J23L) * D##order##xy(f)                 \
    + (J13L * J31L + J11L * J33L) * D##order##xz(f)                                                 \
-   + (dJ123L * J11L + dJ223L * J21L + dJ323L * J31L) * D##order##y(f)                              \
+   + (dJ213L * J11L + dJ223L * J21L + dJ233L * J31L) * D##order##y(f)                              \
    + J21L * J23L * D##order##yy(f) + (J23L * J31L + J21L * J33L) * D##order##yz(f)                 \
-   + (dJ133L * J11L + dJ233L * J21L + dJ333L * J31L) * D##order##z(f)                              \
+   + (dJ313L * J11L + dJ323L * J21L + dJ333L * J31L) * D##order##z(f)                              \
    + J31L * J33L * D##order##zz(f))
 
 #define global_Dyy(order, f)                                                                       \
-  ((dJ112L * J12L + dJ212L * J22L + dJ312L * J32L) * D##order##x(f)                                \
-   + J12L * J12L * D##order##xx(f) + 2 * J12L * J22L * D##order##xy(f)                             \
+  ((dJ112L * J12L + dJ122L * J22L + dJ123L * J32L) * D##order##x(f)                                \
+   + Power(J12L, 2) * D##order##xx(f) + 2 * J12L * J22L * D##order##xy(f)                          \
    + 2 * J12L * J32L * D##order##xz(f)                                                             \
-   + (dJ122L * J12L + dJ222L * J22L + dJ322L * J32L) * D##order##y(f)                              \
-   + J22L * J22L * D##order##yy(f) + 2 * J22L * J32L * D##order##yz(f)                             \
-   + J32L * J32L * D##order##zz(f))
+   + (dJ212L * J12L + dJ222L * J22L + dJ223L * J32L) * D##order##y(f)                              \
+   + Power(J22L, 2) * D##order##yy(f) + 2 * J22L * J32L * D##order##yz(f)                          \
+   + (dJ312L * J12L + dJ322L * J22L + dJ323L * J32L) * D##order##z(f)                              \
+   + Power(J32L, 2) * D##order##zz(f))
 
 #define global_Dyz(order, f)                                                                       \
-  ((dJ113L * J12L + dJ213L * J22L + dJ313L * J32L) * D##order##x(f)                                \
+  ((dJ113L * J12L + dJ123L * J22L + dJ133L * J32L) * D##order##x(f)                                \
    + J12L * J13L * D##order##xx(f) + (J13L * J22L + J12L * J23L) * D##order##xy(f)                 \
    + (J13L * J32L + J12L * J33L) * D##order##xz(f)                                                 \
-   + (dJ123L * J12L + dJ223L * J22L + dJ323L * J32L) * D##order##y(f)                              \
+   + (dJ213L * J12L + dJ223L * J22L + dJ233L * J32L) * D##order##y(f)                              \
    + J22L * J23L * D##order##yy(f) + (J23L * J32L + J22L * J33L) * D##order##yz(f)                 \
-   + (dJ133L * J12L + dJ233L * J22L + dJ333L * J32L) * D##order##z(f)                              \
+   + (dJ313L * J12L + dJ323L * J22L + dJ333L * J32L) * D##order##z(f)                              \
    + J32L * J33L * D##order##zz(f))
 
 #define global_Dzz(order, f)                                                                       \
-  ((dJ113L * J13L + dJ213L * J23L + dJ313L * J33L) * D##order##x(f)                                \
-   + J13L * J13L * D##order##xx(f) + 2 * J13L * J23L * D##order##xy(f)                             \
+  ((dJ113L * J13L + dJ123L * J23L + dJ133L * J33L) * D##order##x(f)                                \
+   + Power(J13L, 2) * D##order##xx(f) + 2 * J13L * J23L * D##order##xy(f)                          \
    + 2 * J13L * J33L * D##order##xz(f)                                                             \
-   + (dJ123L * J13L + dJ223L * J23L + dJ323L * J33L) * D##order##y(f)                              \
-   + J23L * J23L * D##order##yy(f) + 2 * J23L * J33L * D##order##yz(f)                             \
-   + (dJ133L * J13L + dJ233L * J23L + dJ333L * J33L) * D##order##z(f)                              \
-   + J33L * J33L * D##order##zz(f))
+   + (dJ213L * J13L + dJ223L * J23L + dJ233L * J33L) * D##order##y(f)                              \
+   + Power(J23L, 2) * D##order##yy(f) + 2 * J23L * J33L * D##order##yz(f)                          \
+   + (dJ313L * J13L + dJ323L * J23L + dJ333L * J33L) * D##order##z(f)                              \
+   + Power(J33L, 2) * D##order##zz(f))
 
 #endif /* DERIVATIVES_H */
