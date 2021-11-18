@@ -27,7 +27,7 @@
 #include "KleinGordon.h"
 
 int KleinGordon_Startup(void) {
-  const char *banner = "KleinGordon: Evolutions of a Scalar Klein gordn field over an "
+  const char *banner = "KleinGordon: Evolutions of a Klein gordon field over an "
                        "arbitrary background";
   CCTK_RegisterBanner(banner);
 

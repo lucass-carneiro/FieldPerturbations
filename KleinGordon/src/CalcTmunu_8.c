@@ -102,6 +102,19 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
   // The scalar quantity g^{ab} \nabla_{a} \phi \nabla_{b} \phi
   CCTK_REAL nabladot = 0.0;
 
+  /* Coordinate transformation jacobians */
+  CCTK_REAL J11L = 0;
+  CCTK_REAL J12L = 0;
+  CCTK_REAL J13L = 0;
+
+  CCTK_REAL J21L = 0;
+  CCTK_REAL J22L = 0;
+  CCTK_REAL J23L = 0;
+
+  CCTK_REAL J31L = 0;
+  CCTK_REAL J32L = 0;
+  CCTK_REAL J33L = 0;
+
 #pragma omp parallel for
   for (k = gz; k < cctk_lsh[2] - gz; k++) {
     for (j = gy; j < cctk_lsh[1] - gy; j++) {
@@ -125,6 +138,19 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
         /* Assing wave eq. local variables */
         PhiL = Phi[ijk];
         K_PhiL = K_Phi[ijk];
+
+        /* Assign Jacobias */
+        J11L = J11[ijk];
+        J12L = J12[ijk];
+        J13L = J13[ijk];
+
+        J21L = J21[ijk];
+        J22L = J22[ijk];
+        J23L = J23[ijk];
+
+        J31L = J31[ijk];
+        J32L = J32[ijk];
+        J33L = J33[ijk];
 
         /* Computing the inverse 3-metric */
         hdetL = -(hxzL * hxzL * hyyL) + 2 * hxyL * hxzL * hyzL - hxxL * hyzL * hyzL
@@ -157,9 +183,9 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
         igzzL = ihzzL + igttL * betazL * betazL;
 
         /* Derivatives of Phi */
-        d_x_Phi = D8x(Phi);
-        d_y_Phi = D8y(Phi);
-        d_z_Phi = D8z(Phi);
+        d_x_Phi = global_Dx(8, Phi);
+        d_y_Phi = global_Dy(8, Phi);
+        d_z_Phi = global_Dz(8, Phi);
         d_t_Phi = (betaxL * d_x_Phi + betayL * d_y_Phi + betazL * d_z_Phi) - 2.0 * alpL * K_PhiL;
 
         // The scalar quantity g^{ab} \nabla_{a} \phi \nabla_{b} \phi

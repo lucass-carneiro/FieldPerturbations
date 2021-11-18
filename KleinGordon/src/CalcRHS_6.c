@@ -188,26 +188,26 @@ void KleinGordon_RHS_6(CCTK_ARGUMENTS) {
   CCTK_REAL J33L = 0;
 
   /* Jacobian derivatives */
-  CCTK_REAL dJ111L = 0;
-  CCTK_REAL dJ112L = 0;
-  CCTK_REAL dJ113L = 0;
-  CCTK_REAL dJ122L = 0;
-  CCTK_REAL dJ123L = 0;
-  CCTK_REAL dJ133L = 0;
+  CCTK_REAL J111L = 0;
+  CCTK_REAL J112L = 0;
+  CCTK_REAL J113L = 0;
+  CCTK_REAL J122L = 0;
+  CCTK_REAL J123L = 0;
+  CCTK_REAL J133L = 0;
 
-  CCTK_REAL dJ211L = 0;
-  CCTK_REAL dJ212L = 0;
-  CCTK_REAL dJ213L = 0;
-  CCTK_REAL dJ222L = 0;
-  CCTK_REAL dJ223L = 0;
-  CCTK_REAL dJ233L = 0;
+  CCTK_REAL J211L = 0;
+  CCTK_REAL J212L = 0;
+  CCTK_REAL J213L = 0;
+  CCTK_REAL J222L = 0;
+  CCTK_REAL J223L = 0;
+  CCTK_REAL J233L = 0;
 
-  CCTK_REAL dJ311L = 0;
-  CCTK_REAL dJ312L = 0;
-  CCTK_REAL dJ313L = 0;
-  CCTK_REAL dJ322L = 0;
-  CCTK_REAL dJ323L = 0;
-  CCTK_REAL dJ333L = 0;
+  CCTK_REAL J311L = 0;
+  CCTK_REAL J312L = 0;
+  CCTK_REAL J313L = 0;
+  CCTK_REAL J322L = 0;
+  CCTK_REAL J323L = 0;
+  CCTK_REAL J333L = 0;
 
 #pragma omp parallel for
   for (k = gz; k < cctk_lsh[2] - gz; k++) {
@@ -254,26 +254,26 @@ void KleinGordon_RHS_6(CCTK_ARGUMENTS) {
         J33L = J33[ijk];
 
         /* Assign jacobian derivatives */
-        dJ111L = dJ111[ijk];
-        dJ112L = dJ112[ijk];
-        dJ113L = dJ113[ijk];
-        dJ122L = dJ122[ijk];
-        dJ123L = dJ123[ijk];
-        dJ133L = dJ133[ijk];
+        J111L = dJ111[ijk];
+        J112L = dJ112[ijk];
+        J113L = dJ113[ijk];
+        J122L = dJ122[ijk];
+        J123L = dJ123[ijk];
+        J133L = dJ133[ijk];
 
-        dJ211L = dJ211[ijk];
-        dJ212L = dJ212[ijk];
-        dJ213L = dJ213[ijk];
-        dJ222L = dJ222[ijk];
-        dJ223L = dJ223[ijk];
-        dJ233L = dJ233[ijk];
+        J211L = dJ211[ijk];
+        J212L = dJ212[ijk];
+        J213L = dJ213[ijk];
+        J222L = dJ222[ijk];
+        J223L = dJ223[ijk];
+        J233L = dJ233[ijk];
 
-        dJ311L = dJ311[ijk];
-        dJ312L = dJ312[ijk];
-        dJ313L = dJ313[ijk];
-        dJ322L = dJ322[ijk];
-        dJ323L = dJ323[ijk];
-        dJ333L = dJ333[ijk];
+        J311L = dJ311[ijk];
+        J312L = dJ312[ijk];
+        J313L = dJ313[ijk];
+        J322L = dJ322[ijk];
+        J323L = dJ323[ijk];
+        J333L = dJ333[ijk];
 
         /* Computing the inverse metric */
         gdetL = -(gxzL * gxzL * gyyL) + 2 * gxyL * gxzL * gyzL - gxxL * gyzL * gyzL

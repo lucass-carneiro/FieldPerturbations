@@ -3,7 +3,6 @@
 # Storage allocations
 
 STORAGE: evolved_group[3]
-STORAGE: epsilon_group
 STORAGE: error_group
 STORAGE: rhs_group
 
@@ -105,11 +104,6 @@ SCHEDULE KleinGordon_ZeroError IN KleinGordon_BaseGridGroup
   LANG: C
 } "Set the error functions to zero to prevent spurious nans"
 
-SCHEDULE KleinGordon_ZeroEpsilon IN KleinGordon_BaseGridGroup
-{
-  LANG: C
-} "Set the PDE energy function to zero to prevent spurious nans"
-
 
 
 if(fd_order == 4)
@@ -179,9 +173,9 @@ if(compute_energy)
     {
        LANG: C
        READS: Phi(everywhere) K_Phi(everywhere)
-       READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
-       READS: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
-       WRITES: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
+       READS: ADMBase::metric(everywhere) ADMBase::lapse(everywhere) ADMBase::shift(everywhere)
+       READS: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
+       WRITES: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
        SYNC: TmunuBase::stress_energy_scalar TmunuBase::stress_energy_vector TmunuBase::stress_energy_tensor
     } "Calculate energy momentum tensor for the scalar field"
   }
@@ -216,11 +210,16 @@ if(compute_energy)
 
 if(compute_error)
 {
-  SCHEDULE KleinGordon_Error IN KleinGordon_AnalysisGroup
+  SCHEDULE KleinGordon_ZeroError IN KleinGordon_AnalysisGroup
+  {
+    LANG: C
+    WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
+  } "Set the error functions to zero to prevent spurious nans"
+  
+  SCHEDULE KleinGordon_Error IN KleinGordon_AnalysisGroup AFTER KleinGordon_ZeroError
   {
 	LANG: C
-	READS: Grid::coordinates(interior) Phi(interior) K_Phi(interior)
-	WRITES: Phi_err(interior) K_Phi_err(interior)
-	SYNC: error_group
+	READS: Grid::coordinates(everywhere) Phi(everywhere) K_Phi(everywhere)
+	WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
   } "Compute the error of the evolution of an exact gaussian"
 }

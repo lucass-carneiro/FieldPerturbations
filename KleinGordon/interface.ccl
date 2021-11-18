@@ -9,22 +9,17 @@ USES INCLUDE HEADER: Derivatives.h
 
 public:
 
-CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar" tensorweight=0'
+CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar"'
 {
   Phi, K_Phi
 } "The scalar and conjugate momemtum fields"
 
-CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 checkpoint="no"'
+CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="None" checkpoint="no"'
 {
   Phi_rhs, K_Phi_rhs
 } "Right hand side of the evolution equations"
 
-CCTK_REAL epsilon_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 checkpoint="no"'
-{
-  epsilon
-} "Energy density of the PDE"
-
-CCTK_REAL error_group type=gf tags='tensortypealias="Scalar" prolongation="none" tensorweight=0 checkpoint="no"'
+CCTK_REAL error_group type=gf tags='tensortypealias="Scalar" prolongation="None" checkpoint="no"'
 {
   Phi_err, K_Phi_err
 } "Error measure of the wave equation"
@@ -35,9 +30,11 @@ CCTK_REAL error_group type=gf tags='tensortypealias="Scalar" prolongation="none"
 
 CCTK_INT FUNCTION MoLRegisterEvolvedGroup(CCTK_INT IN EvolvedIndex, CCTK_INT IN RHSIndex)
 CCTK_INT FUNCTION MoLRegisterSaveAndRestoreGroup(CCTK_INT IN SandRIndex)
+CCTK_INT FUNCTION MoLRegisterConstrainedGroup(CCTK_INT IN ConstrainedIndex)
 
 USES FUNCTION MoLRegisterEvolvedGroup
 USES FUNCTION MoLRegisterSaveAndRestoreGroup
+USES FUNCTION MoLRegisterConstrainedGroup
 
 ###################################
 #  ALIASED FUNCTIONS FROM NewRad  #

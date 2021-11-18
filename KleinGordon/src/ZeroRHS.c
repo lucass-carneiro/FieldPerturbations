@@ -30,7 +30,7 @@ void KleinGordon_ZeroRHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  /* Loop over all points (ghostzones included) */
+#pragma omp parallel
   CCTK_LOOP3_ALL(loop_zero_rhs, cctkGH, i, j, k) {
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 

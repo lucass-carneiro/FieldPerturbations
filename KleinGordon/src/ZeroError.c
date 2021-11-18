@@ -30,6 +30,7 @@ void KleinGordon_ZeroError(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
+#pragma omp parallel
   CCTK_LOOP3_ALL(loop_error, cctkGH, i, j, k) {
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
