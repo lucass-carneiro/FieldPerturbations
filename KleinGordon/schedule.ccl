@@ -202,7 +202,6 @@ if(compute_energy)
     } "Calculate energy momentum tensor for the scalar field"
   }
 
-
   if(fd_order == 8)
   {
     SCHEDULE KleinGordon_CalcTmunu_8 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER KleinGordon_TmunuSync
@@ -226,8 +225,8 @@ if(compute_error)
   
   SCHEDULE KleinGordon_Error IN KleinGordon_AnalysisGroup AFTER KleinGordon_ZeroError
   {
-	LANG: C
-	READS: Grid::coordinates(everywhere) Phi(everywhere) K_Phi(everywhere)
-	WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
+    LANG: C
+    READS: Grid::coordinates(everywhere) Phi(everywhere) K_Phi(everywhere)
+    WRITES: Phi_err(everywhere) K_Phi_err(everywhere)
   } "Compute the error of the evolution of an exact gaussian"
 }

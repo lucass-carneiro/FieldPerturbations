@@ -1,9 +1,9 @@
-#######################################################################
-# Minkowski.par                                                       #
-#                                                                     #
-# Evolve the Klein gordon equation on top of a Minkowski background   #
-# using Llama with 7 patches Thornburg04 coordinates                  #
-#######################################################################
+ #######################################################################
+ # Minkowski.par                                                       #
+ #                                                                     #
+ # Evolve the Klein gordon equation on top of a Minkowski background   #
+ # using Llama with 7 patches Thornburg04 coordinates                  #
+ #######################################################################
 
 #######################################################################
 # Script variables                                                    #
@@ -11,24 +11,30 @@
 
 $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
 
-$h0 = 0.1
-$hr = 0.1
+$h_radial    = 0.1
+$h_cartesian = 0.1
+$n_angular   = 20
 
-$sphere_inner_radius  = 5.0
-$sphere_outer_radius = 20.0
-$n_angular            = 20
+$sphere_inner_radius = 2.0
+$sphere_outer_radius = 6.0
 
 $fd_order = 4
-$ghosts = $fd_order - 1
+$ghosts = 2
 
 $courant_factor = 0.25
-$final_time = 10
+$time_step      = $courant_factor * $h_cartesian
+$final_time     = 4.5
 
 $nan_check_every = 1
 $info_every = 1
 $out_every = 1
+$out2D_every = 0
 
 $compute_field_energy = no
+$compute_field_error  = yes
+
+$output_vars    = "KleinGordon::Phi KleinGordon::Phi_err Grid::coordinates{out_every=100000}"
+$nan_check_vars = "KleinGordon::Phi KleinGordon::Phi_err"
 
 #######################################################################
 # Thorns                                                              #
@@ -36,10 +42,7 @@ $compute_field_energy = no
 
 ActiveThorns = "
   ADMBase
-#  ADMCoupling
-#  ADMMacros
   AEILocalInterp
-#  AHFinderDirect
   Boundary
   Carpet
   CarpetIOASCII
@@ -54,45 +57,28 @@ ActiveThorns = "
   CarpetTracker
   CartGrid3D
   CoordBase
-#  CoordGauge
   Coordinates
-#  CoordinatesSymmetry
-  Dissipation
-#  Formaline
-#  GlobalDerivative
-#  hwloc
+#  Dissipation
   IOUtil
   InitBase
   Interpolate2
   QuasiLocalMeasures
   LocalInterp
-#  LoopControl
   Minkowski
   MoL
   NaNChecker
-#  PunctureTracker
   Slab
   SpaceMask
   SphericalSurface
   StaticConformal
-#  SummationByParts
   SymBase
   SystemStatistics
   SystemTopology
   TerminationTrigger
-#  TensorTypes
   Time
   TmunuBase
-#  TwoPunctures
   Vectors
-#  ML_BSSN
-#  ML_BSSN_Helper
   NewRad
-#  GenericFD
-#  WeylScal4
-#  Multipole
-#  WaveExtractCPM
-#  ADMDerivatives
   KleinGordon
 "
 
@@ -109,23 +95,27 @@ Cactus::highlight_warning_messages = yes
 # Grid setup                                                          #
 #######################################################################
 
-Carpet::domain_from_multipatch = yes
+Carpet::domain_from_multipatch       = yes
 CartGrid3D::type                     = "multipatch"
 CartGrid3D::set_coordinate_ranges_on = "all maps"
 
+Driver::ghost_size                   = $ghosts
+
 Coordinates::coordinate_system       = "Thornburg04"
-
-Coordinates::h_cartesian             = $hr
-Coordinates::h_radial                = $h0
-
+Coordinates::h_radial                = $h_radial
+Coordinates::h_cartesian             = $h_cartesian
 Coordinates::sphere_inner_radius     = $sphere_inner_radius
 Coordinates::sphere_outer_radius     = $sphere_outer_radius
 Coordinates::n_angular               = $n_angular
 
-Driver::ghost_size                   = $ghosts
-Coordinates::patch_boundary_size     = $ghosts
-Coordinates::additional_overlap_size = 3
-Coordinates::outer_boundary_size     = $ghosts
+#######################################################################
+# Interpatch boundary                                                 #
+#######################################################################
+
+Coordinates::patch_boundary_size         = $ghosts
+Coordinates::additional_overlap_size     = $fd_order - $ghosts
+Interpolate2::interpolator_order         = $ghosts
+Interpolate2::continue_if_selftest_fails = no
 
 #######################################################################
 # Grid symmetries                                                     #
@@ -168,6 +158,12 @@ ADMBase::initial_shift    = "Minkowski"
 ADMBase::initial_dtlapse  = "Minkowski"
 ADMBase::initial_dtshift  = "Minkowski"
 
+#ADMBase::evolution_method = "ID-apply-always"
+#ADMBase::dtlapse_evolution_method = "ID-apply-always"
+#ADMBase::dtshift_evolution_method = "ID-apply-always"
+#ADMBase::lapse_evolution_method   = "ID-apply-always"
+#ADMBase::shift_evolution_method   = "ID-apply-always"
+
 ADMBase::lapse_timelevels  = 3
 ADMBase::shift_timelevels  = 3
 ADMBase::metric_timelevels = 3
@@ -181,7 +177,7 @@ Carpet::init_3_timelevels           = no
 #######################################################################
 
 TmunuBase::timelevels            = 3
-TmunuBase::stress_energy_storage = $compute_field_energy
+TmunuBase::stress_energy_storage = yes
 TmunuBase::stress_energy_at_RHS  = yes
 
 #######################################################################
@@ -190,7 +186,7 @@ TmunuBase::stress_energy_at_RHS  = yes
 
 KleinGordon::field_mass     = 0.0
 
-KleinGordon::initial_data   = "multipolar_gaussian"
+KleinGordon::initial_data   = "exact_gaussian"
 
 KleinGordon::gaussian_sigma = 0.25
 KleinGordon::gaussian_R0    = 0.0
@@ -201,7 +197,7 @@ KleinGordon::gaussian_z0    = 0.0
 
 KleinGordon::fd_order = $fd_order
 
-KleinGordon::compute_error  = no
+KleinGordon::compute_error  = $compute_field_error
 KleinGordon::compute_energy = $compute_field_energy
 
 KleinGordon::multipoles[0] = 3.0
@@ -219,10 +215,13 @@ KleinGordon::multipoles[8] = 0.0
 #######################################################################
 
 KleinGordon::bc_type = "NewRad"
+NewRad::z_is_radial  = yes
 KleinGordon::nPhi    = 3
 KleinGordon::nK_Phi  = 3
 KleinGordon::Phi0    = 0.0
 KleinGordon::K_Phi0  = 0.0
+
+Coordinates::outer_boundary_size = $ghosts
 
 ################################################################################
 # Interpolation
@@ -231,21 +230,18 @@ KleinGordon::K_Phi0  = 0.0
 CarpetInterp::check_tree_search         = no
 CarpetInterp::tree_search               = yes
 
-# Use 5-th order interpatch interpolation on the Llama grid
-Interpolate::interpolator_order         = 5
-
 #######################################################################
 # Dissipation                                                         #
 #######################################################################
 
-Dissipation::verbose                         = no
-Dissipation::epsdis                          = 0.15
-Dissipation::extra_Dissipation_at_outerbound = yes
+#Dissipation::verbose                         = no
+#Dissipation::epsdis                          = 0.15
+#Dissipation::extra_Dissipation_at_outerbound = yes
 
-Dissipation::ob_slope                  = 0.1
-Dissipation::outer_boundary_max_epsdis = 0.3
-Dissipation::outer_bound_npoints       = $ghosts
-Dissipation::vars                      = "KleinGordon::evolved_group"
+#Dissipation::ob_slope                  = 0.1
+#Dissipation::outer_boundary_max_epsdis = 0.3
+#Dissipation::outer_bound_npoints       = $ghosts
+#Dissipation::vars                      = "KleinGordon::evolved_group"
 
 #######################################################################
 # Time integration                                                    #
@@ -256,8 +252,8 @@ MoL::mol_intermediate_steps  = 4
 MoL::mol_num_scratch_levels  = 1
 MoL::initial_data_is_crap    = true
 
-Time::timestep_method = "courant_static"
-Time::dtfac           = $courant_factor
+Time::timestep_method = "given"
+Time::timestep        = $time_step
 
 #######################################################################
 # Termination and final time                                          #
@@ -272,7 +268,7 @@ Cactus::cctk_final_time = $final_time
 
 NaNChecker::check_every     = $nan_check_every
 NaNChecker::action_if_found = "terminate"
-NaNChecker::check_vars      = "KleinGordon::evolved_group KleinGordon::rhs_group TmunuBase::eTtt"
+NaNChecker::check_vars      = $nan_check_vars
 
 #######################################################################
 # Output                                                              #
@@ -281,8 +277,15 @@ NaNChecker::check_vars      = "KleinGordon::evolved_group KleinGordon::rhs_group
 IO::out_dir                     = $parfile
 
 CarpetIOBasic::outInfo_every    = $info_every
-CarpetIOBasic::outInfo_vars     = "KleinGordon::evolved_group"
+CarpetIOBasic::outInfo_vars     = "KleinGordon::Phi"
 
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9
-CarpetIOHDF5::out_vars          = "KleinGordon::Phi Grid::coordinates{out_every=100000}" #"TmunuBase::eTtt"
+CarpetIOHDF5::out_vars          = $output_vars
+
+IOHDF5::out2D_every     = $out2D_every
+IOHDF5::out2d_xy        = yes
+IOHDF5::out2d_xz        = no
+IOHDF5::out2d_yz        = no
+IOHDF5::out2d_xyplane_z = 0
+IOHDF5::out2D_vars      = $output_vars
