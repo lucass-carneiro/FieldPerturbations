@@ -31,16 +31,11 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  /* Ghost zone indexes */
-  const CCTK_INT gx = cctk_nghostzones[0];
-  const CCTK_INT gy = cctk_nghostzones[1];
-  const CCTK_INT gz = cctk_nghostzones[2];
-
   /* Quantities required for the derivative macros to work */
   DECLARE_FIRST_DERIVATIVE_FACTORS_8;
 
-  /* Loop indexes */
-  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
+  /* Loop index */
+  CCTK_INT ijk = 0;
 
   /* Local ADM variables */
   CCTK_REAL alpL = 0.0;
@@ -115,107 +110,104 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
   CCTK_REAL J32L = 0;
   CCTK_REAL J33L = 0;
 
-#pragma omp parallel for
-  for (k = gz; k < cctk_lsh[2] - gz; k++) {
-    for (j = gy; j < cctk_lsh[1] - gy; j++) {
-      for (i = gx; i < cctk_lsh[0] - gx; i++) {
-        ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+#pragma omp parallel
+  CCTK_LOOP3_ALL(loop_Tmunu, cctkGH, i, j, k) {
+    ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-        /* Assing ADM local variables */
-        alpL = alp[ijk];
+    /* Assing ADM local variables */
+    alpL = alp[ijk];
 
-        betaxL = betax[ijk];
-        betayL = betay[ijk];
-        betazL = betaz[ijk];
+    betaxL = betax[ijk];
+    betayL = betay[ijk];
+    betazL = betaz[ijk];
 
-        hxxL = gxx[ijk];
-        hxyL = gxy[ijk];
-        hxzL = gxz[ijk];
-        hyyL = gyy[ijk];
-        hyzL = gyz[ijk];
-        hzzL = gzz[ijk];
+    hxxL = gxx[ijk];
+    hxyL = gxy[ijk];
+    hxzL = gxz[ijk];
+    hyyL = gyy[ijk];
+    hyzL = gyz[ijk];
+    hzzL = gzz[ijk];
 
-        /* Assing wave eq. local variables */
-        PhiL = Phi[ijk];
-        K_PhiL = K_Phi[ijk];
+    /* Assing wave eq. local variables */
+    PhiL = Phi[ijk];
+    K_PhiL = K_Phi[ijk];
 
-        /* Assign Jacobias */
-        J11L = J11[ijk];
-        J12L = J12[ijk];
-        J13L = J13[ijk];
+    /* Assign Jacobias */
+    J11L = J11[ijk];
+    J12L = J12[ijk];
+    J13L = J13[ijk];
 
-        J21L = J21[ijk];
-        J22L = J22[ijk];
-        J23L = J23[ijk];
+    J21L = J21[ijk];
+    J22L = J22[ijk];
+    J23L = J23[ijk];
 
-        J31L = J31[ijk];
-        J32L = J32[ijk];
-        J33L = J33[ijk];
+    J31L = J31[ijk];
+    J32L = J32[ijk];
+    J33L = J33[ijk];
 
-        /* Computing the inverse 3-metric */
-        hdetL = -(hxzL * hxzL * hyyL) + 2 * hxyL * hxzL * hyzL - hxxL * hyzL * hyzL
-                - hxyL * hxyL * hzzL + hxxL * hyyL * hzzL;
-        ihxxL = (-hyzL * hyzL + hyyL * hzzL) / hdetL;
-        ihxyL = (hxzL * hyzL - hxyL * hzzL) / hdetL;
-        ihxzL = (-(hxzL * hyyL) + hxyL * hyzL) / hdetL;
-        ihyyL = (-hxzL * hxzL + hxxL * hzzL) / hdetL;
-        ihyzL = (hxyL * hxzL - hxxL * hyzL) / hdetL;
-        ihzzL = (-hxyL * hxyL + hxxL * hyyL) / hdetL;
+    /* Computing the inverse 3-metric */
+    hdetL = -(hxzL * hxzL * hyyL) + 2 * hxyL * hxzL * hyzL - hxxL * hyzL * hyzL - hxyL * hxyL * hzzL
+            + hxxL * hyyL * hzzL;
+    ihxxL = (-hyzL * hyzL + hyyL * hzzL) / hdetL;
+    ihxyL = (hxzL * hyzL - hxyL * hzzL) / hdetL;
+    ihxzL = (-(hxzL * hyyL) + hxyL * hyzL) / hdetL;
+    ihyyL = (-hxzL * hxzL + hxxL * hzzL) / hdetL;
+    ihyzL = (hxyL * hxzL - hxxL * hyzL) / hdetL;
+    ihzzL = (-hxyL * hxyL + hxxL * hyyL) / hdetL;
 
-        /* Computing the covariant (lower) shift vector */
-        ibetaxL = hxxL * betaxL + hxyL * betayL + hxzL * betazL;
-        ibetayL = hxyL * betaxL + hyyL * betayL + hyzL * betazL;
-        ibetazL = hxzL * betaxL + hyzL * betayL + hzzL * betazL;
+    /* Computing the covariant (lower) shift vector */
+    ibetaxL = hxxL * betaxL + hxyL * betayL + hxzL * betazL;
+    ibetayL = hxyL * betaxL + hyyL * betayL + hyzL * betazL;
+    ibetazL = hxzL * betaxL + hyzL * betayL + hzzL * betazL;
 
-        /* Reconstructing the 4-metric (lower). */
-        gttL = -(alpL * alpL) + ibetaxL * betaxL + ibetayL * betayL + ibetazL * betazL;
+    /* Reconstructing the 4-metric (lower). */
+    gttL = -(alpL * alpL) + ibetaxL * betaxL + ibetayL * betayL + ibetazL * betazL;
 
-        // inverse 4-metric (upper)
-        igttL = -1.0 / (alpL * alpL);
-        igtxL = -1.0 * igttL * betaxL;
-        igtyL = -1.0 * igttL * betayL;
-        igtzL = -1.0 * igttL * betazL;
-        igxxL = ihxxL + igttL * betaxL * betaxL;
-        igxyL = ihxyL + igttL * betaxL * betayL;
-        igxzL = ihxzL + igttL * betaxL * betazL;
-        igyyL = ihyyL + igttL * betayL * betayL;
-        igyzL = ihyzL + igttL * betayL * betazL;
-        igzzL = ihzzL + igttL * betazL * betazL;
+    // inverse 4-metric (upper)
+    igttL = -1.0 / (alpL * alpL);
+    igtxL = -1.0 * igttL * betaxL;
+    igtyL = -1.0 * igttL * betayL;
+    igtzL = -1.0 * igttL * betazL;
+    igxxL = ihxxL + igttL * betaxL * betaxL;
+    igxyL = ihxyL + igttL * betaxL * betayL;
+    igxzL = ihxzL + igttL * betaxL * betazL;
+    igyyL = ihyyL + igttL * betayL * betayL;
+    igyzL = ihyzL + igttL * betayL * betazL;
+    igzzL = ihzzL + igttL * betazL * betazL;
 
-        /* Derivatives of Phi */
-        d_x_Phi = global_Dx(8, Phi);
-        d_y_Phi = global_Dy(8, Phi);
-        d_z_Phi = global_Dz(8, Phi);
-        d_t_Phi = (betaxL * d_x_Phi + betayL * d_y_Phi + betazL * d_z_Phi) - 2.0 * alpL * K_PhiL;
+    /* Derivatives of Phi */
+    d_x_Phi = global_Dx(8, Phi);
+    d_y_Phi = global_Dy(8, Phi);
+    d_z_Phi = global_Dz(8, Phi);
+    d_t_Phi = (betaxL * d_x_Phi + betayL * d_y_Phi + betazL * d_z_Phi) - 2.0 * alpL * K_PhiL;
 
-        // The scalar quantity g^{ab} \nabla_{a} \phi \nabla_{b} \phi
-        nabladot = (igttL * d_t_Phi * d_t_Phi) + 2.0 * (igtxL * d_t_Phi * d_x_Phi)
-                   + 2.0 * (igtyL * d_t_Phi * d_y_Phi) + 2.0 * (igtzL * d_t_Phi * d_z_Phi)
-                   + (igxxL * d_x_Phi * d_x_Phi) + 2.0 * (igxyL * d_x_Phi * d_y_Phi)
-                   + 2.0 * (igxzL * d_x_Phi * d_z_Phi) + (igyyL * d_y_Phi * d_y_Phi)
-                   + 2.0 * (igyzL * d_y_Phi * d_z_Phi) + (igzzL * d_z_Phi * d_z_Phi);
+    // The scalar quantity g^{ab} \nabla_{a} \phi \nabla_{b} \phi
+    nabladot = (igttL * d_t_Phi * d_t_Phi) + 2.0 * (igtxL * d_t_Phi * d_x_Phi)
+               + 2.0 * (igtyL * d_t_Phi * d_y_Phi) + 2.0 * (igtzL * d_t_Phi * d_z_Phi)
+               + (igxxL * d_x_Phi * d_x_Phi) + 2.0 * (igxyL * d_x_Phi * d_y_Phi)
+               + 2.0 * (igxzL * d_x_Phi * d_z_Phi) + (igyyL * d_y_Phi * d_y_Phi)
+               + 2.0 * (igyzL * d_y_Phi * d_z_Phi) + (igzzL * d_z_Phi * d_z_Phi);
 
-        eTtt[ijk] += (d_t_Phi * d_t_Phi)
-                     + 0.5 * gttL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTtx[ijk] += (d_t_Phi * d_x_Phi)
-                     + 0.5 * betaxL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTty[ijk] += (d_t_Phi * d_y_Phi)
-                     + 0.5 * betayL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTtz[ijk] += (d_t_Phi * d_z_Phi)
-                     + 0.5 * betazL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTxx[ijk] += (d_x_Phi * d_x_Phi)
-                     + 0.5 * hxxL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTxy[ijk] += (d_x_Phi * d_y_Phi)
-                     + 0.5 * hxyL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTxz[ijk] += (d_x_Phi * d_z_Phi)
-                     + 0.5 * hxzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTyy[ijk] += (d_y_Phi * d_y_Phi)
-                     + 0.5 * hyyL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTyz[ijk] += (d_y_Phi * d_z_Phi)
-                     + 0.5 * hyzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-        eTzz[ijk] += (d_z_Phi * d_z_Phi)
-                     + 0.5 * hzzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-      }
-    }
+    eTtt[ijk] += (d_t_Phi * d_t_Phi)
+                 + 0.5 * gttL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTtx[ijk] += (d_t_Phi * d_x_Phi)
+                 + 0.5 * betaxL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTty[ijk] += (d_t_Phi * d_y_Phi)
+                 + 0.5 * betayL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTtz[ijk] += (d_t_Phi * d_z_Phi)
+                 + 0.5 * betazL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTxx[ijk] += (d_x_Phi * d_x_Phi)
+                 + 0.5 * hxxL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTxy[ijk] += (d_x_Phi * d_y_Phi)
+                 + 0.5 * hxyL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTxz[ijk] += (d_x_Phi * d_z_Phi)
+                 + 0.5 * hxzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTyy[ijk] += (d_y_Phi * d_y_Phi)
+                 + 0.5 * hyyL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTyz[ijk] += (d_y_Phi * d_z_Phi)
+                 + 0.5 * hyzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    eTzz[ijk] += (d_z_Phi * d_z_Phi)
+                 + 0.5 * hzzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
   }
+  CCTK_ENDLOOP3_ALL(loop_Tmunu);
 }

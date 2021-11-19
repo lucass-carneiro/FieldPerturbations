@@ -27,20 +27,17 @@
 #include "Derivatives.h"
 #include "KleinGordon.h"
 
+#include <math.h>
+
 void KleinGordon_CalcTmunu_4(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  /* Ghost zone indexes */
-  const CCTK_INT gx = cctk_nghostzones[0];
-  const CCTK_INT gy = cctk_nghostzones[1];
-  const CCTK_INT gz = cctk_nghostzones[2];
-
   /* Quantities required for the derivative macros to work */
   DECLARE_FIRST_DERIVATIVE_FACTORS_4;
 
-  /* Loop indexes */
-  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
+  /* Loop index */
+  CCTK_INT ijk = 0;
 
   /* Local ADM variables */
   CCTK_REAL alpL = 0.0;
