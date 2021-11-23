@@ -92,3 +92,7 @@ CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with re
 CCTK_BOOLEAN compute_energy "Wether to compute the PDE energy"
 {
 } no
+
+CCTK_BOOLEAN test_multipatch "If true, the RHS is scheduled at the poststep bin. This only makes sense when testing the multipatch implementation. Do not set this to true in normal evolutions"
+{
+} no

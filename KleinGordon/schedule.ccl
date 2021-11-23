@@ -108,26 +108,62 @@ SCHEDULE KleinGordon_ZeroError IN KleinGordon_BaseGridGroup
 
 if(fd_order == 4)
 {
-  SCHEDULE KleinGordon_RHS_4 AS KleinGordon_RHS IN KleinGordon_RHSGroup
+  if(test_multipatch)
   {
-	LANG: C
-  } "Compute the RHS of the field equations using 4th order finite differences"
+    SCHEDULE KleinGordon_RHS_4 AS KleinGordon_RHS AT poststep
+    {
+      LANG: C
+      WRITES: KleinGordon::rhs_group(interior)
+      SYNC: KleinGordon::rhs_group
+    } "Compute the RHS of the field equations using 4th order finite differences"
+  }
+  else
+  {
+    SCHEDULE KleinGordon_RHS_4 AS KleinGordon_RHS IN KleinGordon_RHSGroup
+    {
+      LANG: C
+    } "Compute the RHS of the field equations using 4th order finite differences"
+  }
 }
 
 if(fd_order == 6)
 {
-  SCHEDULE KleinGordon_RHS_6 AS KleinGordon_RHS IN KleinGordon_RHSGroup
+  if(test_multipatch)
   {
-	LANG: C
-  } "Compute the RHS of the field equations using 6th order finite differences"
+    SCHEDULE KleinGordon_RHS_6 AS KleinGordon_RHS AT poststep
+    {
+      LANG: C
+      WRITES: KleinGordon::rhs_group(interior)
+      SYNC: KleinGordon::rhs_group
+    } "Compute the RHS of the field equations using 4th order finite differences"
+  }
+  else
+  {
+    SCHEDULE KleinGordon_RHS_6 AS KleinGordon_RHS IN KleinGordon_RHSGroup
+    {
+      LANG: C
+    } "Compute the RHS of the field equations using 6th order finite differences"
+  }
 }
 
 if(fd_order == 8)
 {
-  SCHEDULE KleinGordon_RHS_8 AS KleinGordon_RHS IN KleinGordon_RHSGroup
+  if(test_multipatch)
   {
-	LANG: C
-  } "Compute the RHS of the field equations using 8th order finite differences"
+    SCHEDULE KleinGordon_RHS_8 AS KleinGordon_RHS AT poststep
+    {
+      LANG: C
+      WRITES: KleinGordon::rhs_group(interior)
+      SYNC: KleinGordon::rhs_group
+    } "Compute the RHS of the field equations using 4th order finite differences"
+  }
+  else
+  {
+    SCHEDULE KleinGordon_RHS_8 AS KleinGordon_RHS IN KleinGordon_RHSGroup
+    {
+      LANG: C
+    } "Compute the RHS of the field equations using 8th order finite differences"
+  }
 }
 
 SCHEDULE KleinGordon_RHSSync IN KleinGordon_RHSGroup AFTER KleinGordon_RHS

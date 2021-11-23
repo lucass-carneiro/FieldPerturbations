@@ -1,19 +1,27 @@
- #######################################################################
- # Minkowski.par                                                       #
- #                                                                     #
- # Evolve the Klein gordon equation on top of a Minkowski background   #
- # using Llama with 7 patches Thornburg04 coordinates                  #
- #######################################################################
+ ########################################################################
+ # Test_Multipatch.par                                                  #
+ #                                                                      #
+ # Test that the coordinate transformations of the derivative operators #
+ # are correctly implemented. We do this by computing the initial con-  #
+ # dition with a analytic gaussian solution in flat spacetime.          #
+ #                                                                      #
+ # From such ID, the RHS grid functions are computed in iteration 0. In #
+ # order to do this, thy RHS routines should be scheduled at the        #
+ # poststep bin. We provide a parameter for doing that. Be sure not to  #
+ # set it in normal evolutions.                                         #
+ #                                                                      #
+ # The patch system used is the Llama with 7 patches system.            #
+ ########################################################################
 
 #######################################################################
 # Script variables                                                    #
 #######################################################################
 
-$title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
+$title = "Multipatch test with Llama on 7 patches (Thornburg04 coordinates)"
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 20
+$n_angular   = 80
 
 $sphere_inner_radius = 2.0
 $sphere_outer_radius = 6.0
@@ -23,18 +31,6 @@ $ghosts = 2
 
 $courant_factor = 0.25
 $time_step      = $courant_factor * $h_cartesian
-$final_time     = 4.5
-
-$nan_check_every = 1
-$info_every = 1
-$out_every = 1
-$out2D_every = 0
-
-$compute_field_energy = no
-$compute_field_error  = yes
-
-$output_vars    = "KleinGordon::Phi KleinGordon::Phi_err Grid::coordinates{out_every=100000}"
-$nan_check_vars = "KleinGordon::Phi KleinGordon::Phi_err"
 
 #######################################################################
 # Thorns                                                              #
@@ -53,20 +49,15 @@ ActiveThorns = "
   CarpetInterp2
   CarpetLib
   CarpetReduce
-  CarpetRegrid2
-  CarpetTracker
   CartGrid3D
   CoordBase
   Coordinates
-#  Dissipation
   IOUtil
   InitBase
   Interpolate2
-  QuasiLocalMeasures
   LocalInterp
   Minkowski
   MoL
-  NaNChecker
   Slab
   SpaceMask
   SphericalSurface
@@ -121,10 +112,6 @@ Interpolate2::continue_if_selftest_fails = no
 # Grid symmetries                                                     #
 #######################################################################
 
-# CoordinatesSymmetry::reflection_z       = yes
-# CoordinatesSymmetry::stagger            = no
-# Coordinates::symmetry                   = "+z bitant"
-# Coordinates::additional_symmetry_size   = 1
 Coordinates::verbose                    = no
 
 #######################################################################
@@ -143,10 +130,6 @@ Carpet::grid_coordinates_filename = "carpet-grid-coordinates.asc"
 Carpet::convergence_level = 0
 Carpet::time_refinement_factors = "[1,1,2,4,8,16,32,64,128,256]"
 
-CarpetRegrid2::regrid_every            = -1
-# CarpetRegrid2::freeze_unaligned_levels = yes
-CarpetRegrid2::verbose                 = no
-
 #######################################################################
 # Background spacetime                                                #
 #######################################################################
@@ -157,12 +140,6 @@ ADMBase::initial_lapse    = "Minkowski"
 ADMBase::initial_shift    = "Minkowski"
 ADMBase::initial_dtlapse  = "Minkowski"
 ADMBase::initial_dtshift  = "Minkowski"
-
-#ADMBase::evolution_method = "ID-apply-always"
-#ADMBase::dtlapse_evolution_method = "ID-apply-always"
-#ADMBase::dtshift_evolution_method = "ID-apply-always"
-#ADMBase::lapse_evolution_method   = "ID-apply-always"
-#ADMBase::shift_evolution_method   = "ID-apply-always"
 
 ADMBase::lapse_timelevels  = 3
 ADMBase::shift_timelevels  = 3
@@ -197,10 +174,10 @@ KleinGordon::gaussian_z0    = 0.0
 
 KleinGordon::fd_order = $fd_order
 
-KleinGordon::compute_error  = $compute_field_error
-KleinGordon::compute_energy = $compute_field_energy
+KleinGordon::compute_error  = no
+KleinGordon::compute_energy = no
 
-KleinGordon::multipoles[0] = 3.0
+KleinGordon::multipoles[0] = 0.0
 KleinGordon::multipoles[1] = 0.0
 KleinGordon::multipoles[2] = 0.0
 KleinGordon::multipoles[3] = 0.0
@@ -209,6 +186,9 @@ KleinGordon::multipoles[5] = 0.0
 KleinGordon::multipoles[6] = 0.0
 KleinGordon::multipoles[7] = 0.0
 KleinGordon::multipoles[8] = 0.0
+
+# WARNING: Never set this parameter in normal evolutions.
+KleinGordon::test_multipatch = yes
 
 #######################################################################
 # Outer Boundaries                                                    #
@@ -223,25 +203,12 @@ KleinGordon::K_Phi0  = 0.0
 
 Coordinates::outer_boundary_size = $ghosts
 
-################################################################################
-# Interpolation
-################################################################################
+########################################################################
+# Interpolation                                                        #
+########################################################################
 
 CarpetInterp::check_tree_search         = no
 CarpetInterp::tree_search               = yes
-
-#######################################################################
-# Dissipation                                                         #
-#######################################################################
-
-#Dissipation::verbose                         = no
-#Dissipation::epsdis                          = 0.15
-#Dissipation::extra_Dissipation_at_outerbound = yes
-
-#Dissipation::ob_slope                  = 0.1
-#Dissipation::outer_boundary_max_epsdis = 0.3
-#Dissipation::outer_bound_npoints       = $ghosts
-#Dissipation::vars                      = "KleinGordon::evolved_group"
 
 #######################################################################
 # Time integration                                                    #
@@ -259,16 +226,8 @@ Time::timestep        = $time_step
 # Termination and final time                                          #
 #######################################################################
 
-Cactus::terminate       = "time"
-Cactus::cctk_final_time = $final_time
-
-#######################################################################
-# Debugging checks                                                    #
-#######################################################################
-
-NaNChecker::check_every     = $nan_check_every
-NaNChecker::action_if_found = "terminate"
-NaNChecker::check_vars      = $nan_check_vars
+Cactus::terminate   = "iteration"
+Cactus::cctk_itlast = 0
 
 #######################################################################
 # Output                                                              #
@@ -276,16 +235,13 @@ NaNChecker::check_vars      = $nan_check_vars
 
 IO::out_dir                     = $parfile
 
-CarpetIOBasic::outInfo_every    = $info_every
+CarpetIOBasic::outInfo_every    = 1
 CarpetIOBasic::outInfo_vars     = "KleinGordon::Phi"
 
-CarpetIOHDF5::out_every         = $out_every
+CarpetIOHDF5::out_every         = 1
 CarpetIOHDF5::compression_level = 9
-CarpetIOHDF5::out_vars          = $output_vars
-
-IOHDF5::out2D_every     = $out2D_every
-IOHDF5::out2d_xy        = yes
-IOHDF5::out2d_xz        = no
-IOHDF5::out2d_yz        = no
-IOHDF5::out2d_xyplane_z = 0
-IOHDF5::out2D_vars      = $output_vars
+CarpetIOHDF5::out_vars          = "
+  KleinGordon::evolved_group
+  KleinGordon::rhs_group 
+  Grid::coordinates
+"
