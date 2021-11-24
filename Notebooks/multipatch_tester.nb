@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[   1172209,      19623]
-NotebookOptionsPosition[   1170825,      19591]
-NotebookOutlinePosition[   1171353,      19609]
-CellTagsIndexPosition[   1171310,      19606]
+NotebookDataLength[   1192799,      20038]
+NotebookOptionsPosition[   1191139,      20000]
+NotebookOutlinePosition[   1191667,      20018]
+CellTagsIndexPosition[   1191624,      20015]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -226,10 +226,9 @@ Cell["Invariants", "Section",
 Cell[BoxData[{
  RowBox[{
   RowBox[{"ClearAll", "[", 
-   RowBox[{"iteration", ",", "function"}], "]"}], 
-  ";"}], "\[IndentingNewLine]", 
+   RowBox[{"map", ",", "function"}], "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"iteration", "=", "0"}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"map", "=", "0"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"function", "=", "\"\<K_Phi_rhs\>\""}], ";"}], 
@@ -240,34 +239,13 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"xyPlane", "=", "0"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"xLine", "=", 
-   RowBox[{"{", 
-    RowBox[{"0", ",", "0"}], "}"}]}], ";"}]}], "Input",
- CellChangeTimes->{{3.846334744848386*^9, 3.846334756846092*^9}, {
-   3.846334877654159*^9, 3.846334913471827*^9}, {3.846335057069271*^9, 
-   3.846335063687505*^9}, 3.846335324252644*^9, {3.846335549691779*^9, 
-   3.846335550630522*^9}, {3.8463388913128843`*^9, 3.846338893944523*^9}, {
-   3.8463468315376577`*^9, 3.846346840428624*^9}, {3.846347566101542*^9, 
-   3.84634757264157*^9}, {3.846682992221005*^9, 3.84668299585847*^9}, {
-   3.846683077857777*^9, 3.846683080217286*^9}, {3.846715983233968*^9, 
-   3.8467159834627047`*^9}, {3.8467169019163923`*^9, 3.846716902836803*^9}, {
-   3.846717034883753*^9, 3.8467170698429947`*^9}, {3.8467172410588913`*^9, 
-   3.8467172505582237`*^9}},
- CellLabel->"In[15]:=",ExpressionUUID->"f30b3fb8-7508-4df3-81c6-a72bbd3f2a58"]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell["Coarse run", "Section",
- CellChangeTimes->{{3.846336098747624*^9, 3.846336099617429*^9}, {
-  3.8463368330815496`*^9, 
-  3.846336833621401*^9}},ExpressionUUID->"862e6d9a-f730-4728-8202-\
-35e5a32a202e"],
-
-Cell[BoxData[{
+  RowBox[{
+   RowBox[{"xLine", "=", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "0"}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"ClearAll", "[", 
-   RowBox[{"dirs", ",", "plots"}], "]"}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"ClearAll", "[", "dirs", "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"dirs", "=", 
    RowBox[{"{", "\[IndentingNewLine]", 
@@ -284,7 +262,36 @@ Cell[BoxData[{
      RowBox[{
       RowBox[{"NotebookDirectory", "[", "]"}], "<>", 
       "\"\<Test_Multipatch_finer\>\""}]}], "\[IndentingNewLine]", "}"}]}], 
-  ";"}], "\[IndentingNewLine]", 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.846334744848386*^9, 3.846334756846092*^9}, {
+   3.846334877654159*^9, 3.846334913471827*^9}, {3.846335057069271*^9, 
+   3.846335063687505*^9}, 3.846335324252644*^9, {3.846335549691779*^9, 
+   3.846335550630522*^9}, {3.8463388913128843`*^9, 3.846338893944523*^9}, {
+   3.8463468315376577`*^9, 3.846346840428624*^9}, {3.846347566101542*^9, 
+   3.84634757264157*^9}, {3.846682992221005*^9, 3.84668299585847*^9}, {
+   3.846683077857777*^9, 3.846683080217286*^9}, {3.846715983233968*^9, 
+   3.8467159834627047`*^9}, {3.8467169019163923`*^9, 3.846716902836803*^9}, {
+   3.846717034883753*^9, 3.8467170698429947`*^9}, {3.8467172410588913`*^9, 
+   3.8467172505582237`*^9}, {3.8467193037630777`*^9, 3.846719310291484*^9}, {
+   3.8467193546921177`*^9, 3.846719358022777*^9}, 3.846719472591625*^9, {
+   3.84671951388216*^9, 3.8467195483216887`*^9}, {3.846719684848771*^9, 
+   3.846719699198676*^9}, {3.8467198359884033`*^9, 3.846719836267544*^9}},
+ CellLabel->"In[15]:=",ExpressionUUID->"f30b3fb8-7508-4df3-81c6-a72bbd3f2a58"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Error plot", "Section",
+ CellChangeTimes->{{3.846336098747624*^9, 3.846336099617429*^9}, {
+  3.8463368330815496`*^9, 3.846336833621401*^9}, {3.846719468461217*^9, 
+  3.846719470260886*^9}},ExpressionUUID->"862e6d9a-f730-4728-8202-\
+35e5a32a202e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "plots", "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"plots", "=", 
@@ -304,80 +311,44 @@ Cell[BoxData[{
      RowBox[{"dirs", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}]}],
      ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
     RowBox[{"ClearAll", "[", 
-     RowBox[{"maps", ",", "iterations", ",", "refinamentLevels"}], "]"}], ";",
-     "\[IndentingNewLine]", 
-    RowBox[{"maps", "=", 
-     RowBox[{"ReadMaps", "[", 
-      RowBox[{"dir", ",", "function", ",", "\"\<xyz\>\""}], "]"}]}], ";", 
-    "\[IndentingNewLine]", 
-    RowBox[{"iterations", "=", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"ReadIterations", "[", 
-        RowBox[{"dir", ",", "function", ",", "\"\<xyz\>\"", ",", 
-         RowBox[{"Map", "\[Rule]", "#"}]}], "]"}], "&"}], "/@", "maps"}]}], 
-    ";", "\[IndentingNewLine]", 
-    RowBox[{"refinamentLevels", "=", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"ReadRefinementLevels", "[", 
-        RowBox[{"dir", ",", "function", ",", "\"\<xyz\>\"", ",", 
-         RowBox[{"Map", "\[Rule]", "#"}]}], "]"}], "&"}], "/@", "maps"}]}], 
-    ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-    RowBox[{"ClearAll", "[", 
      RowBox[{"sim3DGF", ",", "sim2DGF", ",", "sim1DGF"}], "]"}], ";", 
     "\[IndentingNewLine]", 
     RowBox[{"sim3DGF", "=", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"ReadGridFunction", "[", 
-        RowBox[{"dir", ",", "function", ",", "\"\<xyz\>\"", ",", 
-         RowBox[{"Iteration", "\[Rule]", "iteration"}], ",", 
-         RowBox[{"Map", "\[Rule]", "#"}]}], "]"}], "&"}], "/@", "maps"}]}], 
-    ";", "\[IndentingNewLine]", 
-    RowBox[{"sim2DGF", "=", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"Slab", "[", 
-        RowBox[{"#", ",", "All", ",", "All", ",", "xyPlane"}], "]"}], "&"}], "/@",
-       "sim3DGF"}]}], ";", "\[IndentingNewLine]", 
-    RowBox[{"sim1DGF", "=", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"Slab", "[", 
-        RowBox[{"#", ",", "All", ",", 
-         RowBox[{
-         "xLine", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ",", 
-         RowBox[{
-         "xLine", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
-        "]"}], "&"}], "/@", "sim3DGF"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"ReadGridFunction", "[", 
+      RowBox[{"dir", ",", "function", ",", "\"\<xyz\>\"", ",", 
+       RowBox[{"Iteration", "\[Rule]", "0"}], ",", 
+       RowBox[{"Map", "\[Rule]", "map"}]}], "]"}]}], ";", 
     "\[IndentingNewLine]", 
+    RowBox[{"sim2DGF", "=", 
+     RowBox[{"Slab", "[", 
+      RowBox[{"sim3DGF", ",", "All", ",", "All", ",", "xyPlane"}], "]"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"sim1DGF", "=", 
+     RowBox[{"Slab", "[", 
+      RowBox[{"sim2DGF", ",", "All", ",", 
+       RowBox[{
+       "xLine", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ",", 
+       RowBox[{
+       "xLine", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+      "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
     RowBox[{"ClearAll", "[", 
      RowBox[{
      "minx", ",", "maxx", ",", "points", ",", "analyticSolutionData"}], "]"}],
      ";", "\[IndentingNewLine]", 
     RowBox[{"minx", "=", 
      RowBox[{
-      RowBox[{"MinCoordinates", "[", 
-       RowBox[{
-       "sim1DGF", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-       "]"}], "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], ";", 
-    "\[IndentingNewLine]", 
+      RowBox[{"MinCoordinates", "[", "sim1DGF", "]"}], "\[LeftDoubleBracket]",
+       "1", "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
     RowBox[{"maxx", "=", 
      RowBox[{
-      RowBox[{"MaxCoordinates", "[", 
-       RowBox[{
-       "sim1DGF", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-       "]"}], "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], ";", 
-    "\[IndentingNewLine]", 
+      RowBox[{"MaxCoordinates", "[", "sim1DGF", "]"}], "\[LeftDoubleBracket]",
+       "1", "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
     RowBox[{"points", "=", 
      RowBox[{
       RowBox[{
-       RowBox[{"Dimensions", "[", 
-        RowBox[{
-        "sim1DGF", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-        "]"}], "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "-", 
-      "1"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Dimensions", "[", "sim1DGF", "]"}], "\[LeftDoubleBracket]", 
+       "1", "\[RightDoubleBracket]"}], "-", "1"}]}], ";", 
+    "\[IndentingNewLine]", 
     RowBox[{"dx", "=", 
      RowBox[{
       RowBox[{"(", 
@@ -407,26 +378,31 @@ Cell[BoxData[{
        RowBox[{"{", "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"ArrayPlot", "[", 
-          RowBox[{
-           RowBox[{
-           "sim2DGF", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-           ",", 
+          RowBox[{"sim2DGF", ",", 
            RowBox[{"ColorFunction", "\[Rule]", "\"\<TemperatureMap\>\""}], 
            ",", 
            RowBox[{"PlotRange", "\[Rule]", 
             RowBox[{"{", 
-             RowBox[{"Full", ",", "Full", ",", "Full"}], "}"}]}]}], "]"}], 
-         ",", "\[IndentingNewLine]", 
+             RowBox[{"Full", ",", "Full", ",", "Full"}], "}"}]}], ",", 
+           RowBox[{"FrameTicks", "\[Rule]", "Automatic"}], ",", 
+           RowBox[{"FrameLabel", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"\"\<x\>\"", ",", "\"\<y\>\""}], "}"}]}], ",", 
+           RowBox[{"PlotLabel", "\[Rule]", "function"}]}], "]"}], ",", 
+         "\[IndentingNewLine]", 
          RowBox[{"ListPlot", "[", 
-          RowBox[{
-           RowBox[{
-           "sim1DGF", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-           ",", 
+          RowBox[{"sim1DGF", ",", 
            RowBox[{"Axes", "\[Rule]", "False"}], ",", 
            RowBox[{"Frame", "\[Rule]", "True"}], ",", 
            RowBox[{"PlotRange", "\[Rule]", 
             RowBox[{"{", 
-             RowBox[{"Full", ",", "Full"}], "}"}]}]}], "]"}], ",", 
+             RowBox[{"Full", ",", "Full"}], "}"}]}], ",", 
+           RowBox[{"FrameLabel", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"\"\<x\>\"", ",", "function"}], "}"}]}], ",", 
+           RowBox[{"PlotLabel", "\[Rule]", 
+            RowBox[{"function", "<>", "\"\< {y,z} = \>\"", "<>", 
+             RowBox[{"ToString", "[", "xLine", "]"}]}]}]}], " ", "]"}], ",", 
          "\[IndentingNewLine]", 
          RowBox[{"ListPlot", "[", 
           RowBox[{"analyticSolutionData", ",", 
@@ -434,24 +410,32 @@ Cell[BoxData[{
            RowBox[{"Frame", "\[Rule]", "True"}], ",", 
            RowBox[{"PlotRange", "\[Rule]", 
             RowBox[{"{", 
-             RowBox[{"Full", ",", "Full"}], "}"}]}]}], "]"}], ",", 
+             RowBox[{"Full", ",", "Full"}], "}"}]}], ",", 
+           RowBox[{"FrameLabel", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"\"\<x\>\"", ",", "function"}], "}"}]}], ",", 
+           RowBox[{"PlotLabel", "\[Rule]", 
+            RowBox[{"function", "<>", "\"\< analytic\>\""}]}]}], "]"}], ",", 
          "\[IndentingNewLine]", 
          RowBox[{"ListPlot", "[", 
           RowBox[{
            RowBox[{
             RowBox[{"Abs", "[", 
-             RowBox[{
-              RowBox[{
-              "sim1DGF", "\[LeftDoubleBracket]", "1", 
-               "\[RightDoubleBracket]"}], "-", "analyticSolutionData"}], 
-             "]"}], "\[LeftDoubleBracket]", 
+             RowBox[{"sim1DGF", "-", "analyticSolutionData"}], "]"}], 
+            "\[LeftDoubleBracket]", 
             RowBox[{"3", ";;", 
              RowBox[{"-", "3"}]}], "\[RightDoubleBracket]"}], ",", 
            RowBox[{"Axes", "\[Rule]", "False"}], ",", 
            RowBox[{"Frame", "\[Rule]", "True"}], ",", 
            RowBox[{"PlotRange", "\[Rule]", 
             RowBox[{"{", 
-             RowBox[{"Full", ",", "Full"}], "}"}]}]}], "]"}]}], 
+             RowBox[{"Full", ",", "Full"}], "}"}]}], ",", 
+           RowBox[{"FrameLabel", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"\"\<x\>\"", ",", 
+              RowBox[{"function", "<>", "\"\< error\>\""}]}], "}"}]}], ",", 
+           RowBox[{"PlotLabel", "\[Rule]", 
+            RowBox[{"function", "<>", "\"\< error\>\""}]}]}], "]"}]}], 
         "\[IndentingNewLine]", "}"}], "\[IndentingNewLine]", "]"}]}], 
      "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
     "\[IndentingNewLine]", 
@@ -467,7 +451,14 @@ Cell[BoxData[{
      "minx", ",", "maxx", ",", "points", ",", "analyticSolutionData"}], "]"}],
      ";"}]}], "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"ClearAll", "[", "i", "]"}], ";"}]}], "Input",
+  RowBox[{
+   RowBox[{"ClearAll", "[", "i", "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"GraphicsColumn", "[", 
+  RowBox[{"plots", ",", 
+   RowBox[{"ImageSize", "\[Rule]", 
+    RowBox[{"1.2", "*", 
+     SuperscriptBox["10", "3"]}]}]}], "]"}]}], "Input",
  CellChangeTimes->{{3.846334920942355*^9, 3.846334972540299*^9}, 
    3.846335179997958*^9, {3.846335513459359*^9, 3.846335516948558*^9}, {
    3.846335747634635*^9, 3.846335805372449*^9}, 3.846335837064197*^9, {
@@ -494,20 +485,12 @@ Cell[BoxData[{
    3.8467171655624943`*^9, 3.846717209321487*^9}, {3.846717242502411*^9, 
    3.846717245819207*^9}, {3.8467172895396852`*^9, 3.84671746447304*^9}, {
    3.8467175257079573`*^9, 3.846717561887816*^9}, {3.846717626765564*^9, 
-   3.8467176301333637`*^9}},
- CellLabel->"In[28]:=",ExpressionUUID->"a454fdd3-f277-44c3-a497-5882e988ffbc"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"GraphicsColumn", "[", 
-  RowBox[{"plots", ",", 
-   RowBox[{"ImageSize", "\[Rule]", 
-    RowBox[{"1.2", "*", 
-     SuperscriptBox["10", "3"]}]}]}], "]"}]], "Input",
- CellChangeTimes->{{3.8467175898703737`*^9, 3.8467175908105707`*^9}, {
-  3.8467176850564947`*^9, 3.8467177588168573`*^9}},
- CellLabel->"In[44]:=",ExpressionUUID->"d862e1df-742c-4288-ad22-3d1b2d1fbf22"],
+   3.8467176301333637`*^9}, {3.846718631067247*^9, 3.8467186452819242`*^9}, {
+   3.846718676258546*^9, 3.8467188136956253`*^9}, {3.8467188736358232`*^9, 
+   3.84671900426262*^9}, {3.846719048891433*^9, 3.846719212148458*^9}, {
+   3.84671933465127*^9, 3.846719339898221*^9}, {3.846719370364373*^9, 
+   3.846719440702806*^9}, {3.846719691022534*^9, 3.846719694730157*^9}},
+ CellLabel->"In[23]:=",ExpressionUUID->"a454fdd3-f277-44c3-a497-5882e988ffbc"],
 
 Cell[BoxData[
  GraphicsBox[{{}, {InsetBox[
@@ -728,13 +711,43 @@ pbO0vxtGpzn7O5o+f8n8u/l38+/m382/m383/27+/f+33/8PtXtP2w==
            2.4500000000000006`, 2.4500000000000006`}}, {0, 1}],
           DisplayFunction->Identity,
           Frame->Automatic,
-          FrameLabel->{None, None},
-          FrameTicks->{{None, None}, {None, None}},
+          FrameLabel->{
+            FormBox["\"y\"", TraditionalForm], 
+            FormBox["\"x\"", TraditionalForm]},
+          FrameTicks->{{{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {-1., 
+               FormBox[
+                RowBox[{"-", "1.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1., 
+               FormBox["1.`", TraditionalForm]}, {2.0000000000000004`, 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {-1., 
+               FormBox[
+                RowBox[{"-", "1.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1., 
+               FormBox["1.`", TraditionalForm]}, {2.0000000000000004`, 
+               FormBox["2.`", TraditionalForm]}}}, {{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {-1., 
+               FormBox[
+                RowBox[{"-", "1.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1., 
+               FormBox["1.`", TraditionalForm]}, {2.0000000000000004`, 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {-1., 
+               FormBox[
+                RowBox[{"-", "1.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1., 
+               FormBox["1.`", TraditionalForm]}, {2.0000000000000004`, 
+               FormBox["2.`", TraditionalForm]}}}},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{0.5000000000000284, 0.5}, {13.17391304347828, 
-           0.5000000000000568}},
+          ImagePadding->{{33.04076086956525, 16.866847826086996`}, {
+           29.34782608695653, 27.086956521739125`}},
           
           Method->{
            "DefaultBoundaryStyle" -> Automatic, 
@@ -747,9 +760,10 @@ pbO0vxtGpzn7O5o+f8n8u/l38+/m382/m383/27+/f+33/8PtXtP2w==
                  "freeformCursorMode" -> True, 
                   "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
             "DefaultPlotStyle" -> Automatic},
+          PlotLabel->FormBox["\"K_Phi_rhs\"", TraditionalForm],
           PlotRange->{{-2.4, 2.400000000000001}, {-2.4, 2.400000000000001}},
-          PlotRangeClipping->True], {51.210189400218255, -54.254099341422794},
-          ImageScaled[{0.5, 0.5}], {90.66722855923177, 103.34114160271008}], 
+          PlotRangeClipping->True], {57.31010909477665, -58.536056678976465}, 
+         ImageScaled[{0.5, 0.5}], {104.97007690405461, 111.49725081709802}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -771,15 +785,16 @@ vsbPcqLqh3rLuVM/8G3HH/nf73Eq77sX77+a/wJjrnqh
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173907`, 0.5}, {13.17391304347828, 
-           0.5000000000000568}},
-          
+          ImagePadding->{{35.65760869565216, 0.4999999999998863}, {
+           29.34782608695653, 27.086956521739125`}},
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
             "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
@@ -791,6 +806,8 @@ vsbPcqLqh3rLuVM/8G3HH/nf73Eq77sX77+a/wJjrnqh
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs {y,z} = {0, 0}\"", TraditionalForm],
+          
           
           PlotRange->{{-2.4, 2.400000000000001}, {-59.11862710939464, 
            59.11862710939455}},
@@ -800,8 +817,8 @@ vsbPcqLqh3rLuVM/8G3HH/nf73Eq77sX77+a/wJjrnqh
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {190.83111349004696, -54.254099341422794},
-          ImageScaled[{0.5, 0.5}], {165.06831913801614, 103.34114160271008}], 
+          Ticks->{Automatic, Automatic}], {182.07056571295644, -58.536056678976465},
+          ImageScaled[{0.5, 0.5}], {125.2505537613076, 111.49725081709802}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -823,14 +840,16 @@ De3/B7rPmEE=
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.48369565217388, 0.5000000000000568}, {
-           13.17391304347828, 0.5000000000000568}},
+          ImagePadding->{{35.657608695652186`, 0.49999999999994316`}, {
+           29.34782608695653, 27.086956521739125`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -843,6 +862,7 @@ De3/B7rPmEE=
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs analytic\"", TraditionalForm],
           
           PlotRange->{{-2.4, 2.400000000000001}, {-59.21762640653615, 
            59.21762640653615}},
@@ -852,8 +872,8 @@ De3/B7rPmEE=
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {367.6525828692678, -54.254099341422794},
-          ImageScaled[{0.5, 0.5}], {165.06831913801616, 103.34114160271008}], 
+          Ticks->{Automatic, Automatic}], {316.9712607597628, -58.536056678976465},
+          ImageScaled[{0.5, 0.5}], {125.25055376130769, 111.49725081709802}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -875,14 +895,16 @@ IeSYX+X9DSFYs/o/dwpvzQ==
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs error\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{21.26902173913041, 0.5}, {13.17391304347828, 
-           0.5000000000000568}},
+          ImagePadding->{{37.44293478260872, 0.5}, {29.34782608695653, 
+           27.086956521739125`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -895,6 +917,7 @@ IeSYX+X9DSFYs/o/dwpvzQ==
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs error\"", TraditionalForm],
           
           PlotRange->{{-2.1999999999999997`, 2.2000000000000006`}, {
             0, 0.09899929714169531}},
@@ -904,18 +927,18 @@ IeSYX+X9DSFYs/o/dwpvzQ==
              Scaled[0.02]}, {
              Scaled[0.02], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {545.366715291967, -54.254099341422794},
+          Ticks->{Automatic, Automatic}], {452.7646188500474, -58.536056678976465},
           ImageScaled[{0.5, 0.5}], \
-{166.85364522497264, 103.34114160271008}]}, {}},
+{127.03587984826427, 111.49725081709802}]}, {}},
       DisplayFunction->Identity,
-      ImagePadding->{{8.881784197001252*^-16, 1.1368683772161603`*^-13}, {0., 
-       0.}},
+      ImagePadding->{{1.7763568394002505`*^-15, 1.1368683772161603`*^-13}, {
+       2.842170943040401*^-14, 1.4210854715202004`*^-14}},
       ImageSize->{
         UpTo[600], 
         UpTo[360]},
-      PlotRange->{{0, 634.6701130250557}, {-108.50819868284559`, 0}},
-      PlotRangePadding->{6, 5}], {315., -59.33}, 
-     ImageScaled[{0.5, 0.5}], {600, 110}], InsetBox[
+      PlotRange->{{0, 521.1076294169288}, {-117.07211335795293`, 0}},
+      PlotRangePadding->{6, 5}], {315., -77.13}, 
+     ImageScaled[{0.5, 0.5}], {600, 143}], InsetBox[
      GraphicsBox[{{}, {InsetBox[
          GraphicsBox[RasterBox[CompressedData["
 1:eJzsvXdUlMnzPSyiIqiIiiJmXVEUTJgFLXUNmLNiAsSIOWfMLuasGDBnZNV1
@@ -1659,12 +1682,31 @@ f+DlL3jxB57/EBe08vYQAd/3Gd3qhwn4pmX0beifXvv1KxT/K/5X/K/4X/G/
            "], {{-2.225, -2.225}, {2.225, 2.225}}, {0, 1}],
           DisplayFunction->Identity,
           Frame->Automatic,
-          FrameLabel->{None, None},
-          FrameTicks->{{None, None}, {None, None}},
+          FrameLabel->{
+            FormBox["\"y\"", TraditionalForm], 
+            FormBox["\"x\"", TraditionalForm]},
+          FrameTicks->{{{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}}, {{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}}},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
-          ImagePadding->{{0.5, 0.5}, {13.17391304347828, 0.5000000000000284}},
           
+          ImagePadding->{{33.04076086956522, 16.866847826086996`}, {
+           29.34782608695653, 27.086956521739154`}},
           
           Method->{
            "DefaultBoundaryStyle" -> Automatic, 
@@ -1677,9 +1719,10 @@ f+DlL3jxB57/EBe08vYQAd/3Gd3qhwn4pmX0beifXvv1KxT/K/5X/K/4X/G/
                  "freeformCursorMode" -> True, 
                   "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
             "DefaultPlotStyle" -> Automatic},
+          PlotLabel->FormBox["\"K_Phi_rhs\"", TraditionalForm],
           PlotRange->{{-2.2, 2.2}, {-2.2, 2.2}},
-          PlotRangeClipping->True], {51.11857163729525, -54.11890420502161}, 
-         ImageScaled[{0.5, 0.5}], {90.40971401370571, 103.08362705718402}], 
+          PlotRangeClipping->True], {57.180315165882746, -58.36497789852919}, 
+         ImageScaled[{0.5, 0.5}], {104.64421256034547, 111.17138647338894}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -1708,14 +1751,16 @@ Rs4wf3y/pHAtzs/3Tfb48+eWkx/mO27K17+O+6E0f31gIbd8fxe+/wIRgWmf
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173935`, 0.49999999999994316`}, {
-           13.17391304347828, 0.5000000000000284}},
+          ImagePadding->{{35.657608695652186`, 0.5000000000000568}, {
+           29.34782608695653, 27.086956521739154`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -1728,6 +1773,8 @@ Rs4wf3y/pHAtzs/3Tfb48+eWkx/mO27K17+O+6E0f31gIbd8fxe+/wIRgWmf
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs {y,z} = {0, 0}\"", TraditionalForm],
+          
           PlotRange->{{-2.2, 2.2}, {-59.21127336524904, 59.21127336524911}},
           PlotRangeClipping->True,
           PlotRangePadding->{{
@@ -1735,8 +1782,8 @@ Rs4wf3y/pHAtzs/3Tfb48+eWkx/mO27K17+O+6E0f31gIbd8fxe+/wIRgWmf
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {190.47668383041162, -54.11890420502161},
-          ImageScaled[{0.5, 0.5}], {164.6516518507575, 103.08362705718402}], 
+          Ticks->{Automatic, Automatic}], {181.5804863062079, -58.36497789852919},
+          ImageScaled[{0.5, 0.5}], {124.72329417746478, 111.17138647338894}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -1764,14 +1811,16 @@ vF90HvXjfQv+oP2s+ifnjS2k5tfYi6n4yGZS70Nk9f39B/OJpr0=
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173907`, 0.5}, {13.17391304347828, 
-           0.5000000000000284}},
+          ImagePadding->{{35.65760869565213, 0.5000000000000568}, {
+           29.34782608695653, 27.086956521739154`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -1784,6 +1833,7 @@ vF90HvXjfQv+oP2s+ifnjS2k5tfYi6n4yGZS70Nk9f39B/OJpr0=
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs analytic\"", TraditionalForm],
           PlotRange->{{-2.2, 2.2}, {-59.21762640653615, 59.21762640653615}},
           PlotRangeClipping->True,
           PlotRangePadding->{{
@@ -1791,8 +1841,8 @@ vF90HvXjfQv+oP2s+ifnjS2k5tfYi6n4yGZS70Nk9f39B/OJpr0=
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {366.95576494205386, -54.11890420502161},
-          ImageScaled[{0.5, 0.5}], {164.65165185075753, 103.08362705718402}], 
+          Ticks->{Automatic, Automatic}], {316.0201982550927, -58.36497789852919},
+          ImageScaled[{0.5, 0.5}], {124.72329417746472, 111.17138647338894}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -1821,14 +1871,16 @@ P5mv8qnEqLG/iD3vyf8L8sBbGQ==
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs error\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{26.49048913043478, 0.4999999999998863}, {
-           13.17391304347828, 0.5000000000000284}},
+          ImagePadding->{{42.66440217391303, 0.5}, {29.34782608695653, 
+           27.086956521739154`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -1841,6 +1893,7 @@ P5mv8qnEqLG/iD3vyf8L8sBbGQ==
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs error\"", TraditionalForm],
           PlotRange->{{-2.1, 2.1}, {0, 0.006353041287404437}},
           PlotRangeClipping->True,
           PlotRangePadding->{{
@@ -1848,18 +1901,18 @@ P5mv8qnEqLG/iD3vyf8L8sBbGQ==
              Scaled[0.02]}, {
              Scaled[0.02], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {546.9382427928265, -54.11890420502161},
-          ImageScaled[{0.5, 0.5}], {171.6584453290183, 103.08362705718402}]}, \
-{}},
+          Ticks->{Automatic, Automatic}], {453.9633069431078, -58.36497789852919},
+          ImageScaled[{0.5, 0.5}], \
+{131.73008765572558, 111.17138647338894}]}, {}},
       DisplayFunction->Identity,
-      ImagePadding->{{8.881784197001252*^-16, 1.1368683772161603`*^-13}, {0., 
-       2.842170943040401*^-14}},
+      ImagePadding->{{1.7763568394002505`*^-15, 1.1368683772161603`*^-13}, {
+       0., 0.}},
       ImageSize->{
         UpTo[600], 
-        UpTo[360]},
-      PlotRange->{{0, 638.6811800877781}, {-108.23780841004321`, 0}},
-      PlotRangePadding->{6, 5}], {315., -177.48999999999998}, 
-     ImageScaled[{0.5, 0.5}], {600, 109}], InsetBox[
+        UpTo[361]},
+      PlotRange->{{0, 524.6865596566806}, {-116.72995579705838`, 0}},
+      PlotRangePadding->{6, 5}], {315., -230.89}, 
+     ImageScaled[{0.5, 0.5}], {600, 142}], InsetBox[
      GraphicsBox[{{}, {InsetBox[
          GraphicsBox[RasterBox[CompressedData["
 1:eJzsvXlcTu/2Pk4Zi0zJkCJTSciUUFaGDEnKmHkOpZQGyRQiMkUhZSqiEhkS
@@ -4046,13 +4099,31 @@ xxxzzDHHHHPMMcccc8wxxxxzzDH/7/xfZA23SQ==
            2.1125000000000003`, 2.1125000000000003`}}, {0, 1}],
           DisplayFunction->Identity,
           Frame->Automatic,
-          FrameLabel->{None, None},
-          FrameTicks->{{None, None}, {None, None}},
+          FrameLabel->{
+            FormBox["\"y\"", TraditionalForm], 
+            FormBox["\"x\"", TraditionalForm]},
+          FrameTicks->{{{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1.9999999999999996`, 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1.9999999999999996`, 
+               FormBox["2.`", TraditionalForm]}}}, {{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1.9999999999999996`, 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {1.9999999999999996`, 
+               FormBox["2.`", TraditionalForm]}}}},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{0.5, 0.49999999999994316`}, {13.17391304347828, 
-           0.5000000000000142}},
+          ImagePadding->{{33.04076086956519, 16.866847826087053`}, {
+           29.34782608695653, 27.086956521739154`}},
           
           Method->{
            "DefaultBoundaryStyle" -> Automatic, 
@@ -4065,9 +4136,10 @@ xxxzzDHHHHPMMcccc8wxxxxzzDH/7/xfZA23SQ==
                  "freeformCursorMode" -> True, 
                   "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
             "DefaultPlotStyle" -> Automatic},
+          PlotLabel->FormBox["\"K_Phi_rhs\"", TraditionalForm],
           PlotRange->{{-2.1, 2.1}, {-2.1, 2.1}},
-          PlotRangeClipping->True], {51.027668921188095, -53.98438117606665}, 
-         ImageScaled[{0.5, 0.5}], {90.15347967283907, 102.82739271631742}], 
+          PlotRangeClipping->True], {57.066566218126944, -58.208980579963765},
+          ImageScaled[{0.5, 0.5}], {104.34707481069707, 110.87424872374051}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -4108,14 +4180,16 @@ f0/oPEs=
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173935`, 0.5}, {13.17391304347828, 
-           0.5000000000000142}},
+          ImagePadding->{{35.657608695652186`, 0.5000000000000568}, {
+           29.34782608695653, 27.086956521739154`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -4128,6 +4202,8 @@ f0/oPEs=
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs {y,z} = {0, 0}\"", TraditionalForm],
+          
           PlotRange->{{-2.1, 2.1}, {-59.21722670917978, 59.21722670917976}},
           PlotRangeClipping->True,
           PlotRangePadding->{{
@@ -4135,8 +4211,8 @@ f0/oPEs=
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {190.12479491621997, -53.98438117606665},
-          ImageScaled[{0.5, 0.5}], {164.2370559781505, 102.82739271631742}], 
+          Ticks->{Automatic, Automatic}], {181.14741884862877, -58.208980579963765},
+          ImageScaled[{0.5, 0.5}], {124.24251519919297, 110.87424872374051}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -4174,14 +4250,16 @@ Nn/BW5Cf6R++70J/4/sv+I/vw9T8B/8maXs0f5P0TDR/k9Ten/8DPnAmYg==
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173907`, 0.5}, {13.17391304347828, 
-           0.5000000000000142}},
+          ImagePadding->{{35.657608695652186`, 0.5000000000000568}, {
+           29.34782608695653, 27.086956521739154`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -4194,6 +4272,7 @@ Nn/BW5Cf6R++70J/4/sv+I/vw9T8B/8maXs0f5P0TDR/k9Ten/8DPnAmYg==
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs analytic\"", TraditionalForm],
           PlotRange->{{-2.1, 2.1}, {-59.21762640653615, 59.21762640653615}},
           PlotRangeClipping->True,
           PlotRangePadding->{{
@@ -4201,8 +4280,8 @@ Nn/BW5Cf6R++70J/4/sv+I/vw9T8B/8maXs0f5P0TDR/k9Ten/8DPnAmYg==
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {366.2637090639076, -53.98438117606665},
-          ImageScaled[{0.5, 0.5}], {164.23705597815047, 102.82739271631742}], 
+          Ticks->{Automatic, Automatic}], {315.1759916733786, -58.208980579963765},
+          ImageScaled[{0.5, 0.5}], {124.24251519919297, 110.87424872374051}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -4243,14 +4322,16 @@ aq1/5LKA5/svz3HSxD/zfQheELD3L7lJ5v8L0OL5iw==
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs error\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{31.711956521739097`, 0.5}, {13.17391304347828, 
-           0.5000000000000142}},
+          ImagePadding->{{47.88586956521738, 0.5}, {29.34782608695653, 
+           27.086956521739154`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -4263,7 +4344,7 @@ aq1/5LKA5/svz3HSxD/zfQheELD3L7lJ5v8L0OL5iw==
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
-          
+          PlotLabel->FormBox["\"K_Phi_rhs error\"", TraditionalForm],
           PlotRange->{{-2.0500000000000003`, 2.0500000000000003`}, {
             0, 0.0003996973571176454}},
           PlotRangeClipping->True,
@@ -4272,18 +4353,18 @@ aq1/5LKA5/svz3HSxD/zfQheELD3L7lJ5v8L0OL5iw==
              Scaled[0.02]}, {
              Scaled[0.02], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {548.5167536463778, -53.98438117606665},
+          Ticks->{Automatic, Automatic}], {455.31869493291094, -58.208980579963765},
           ImageScaled[{0.5, 0.5}], \
-{176.46531684771566, 102.82739271631742}]}, {}},
+{136.47077606875808, 110.87424872374051}]}, {}},
       DisplayFunction->Identity,
-      ImagePadding->{{8.881784197001252*^-16, 1.1368683772161603`*^-13}, {0., 
-       7.105427357601002*^-15}},
+      ImagePadding->{{1.7763568394002505`*^-15, 1.1368683772161603`*^-13}, {
+       2.842170943040401*^-14, 1.4210854715202004`*^-14}},
       ImageSize->{
         UpTo[600], 
-        UpTo[360]},
-      PlotRange->{{0, 642.7003411550041}, {-107.9687623521333, 0}},
-      PlotRangePadding->{6, 5}], {315., -294.65000000000003}, 
-     ImageScaled[{0.5, 0.5}], {600, 108}], InsetBox[
+        UpTo[361]},
+      PlotRange->{{0, 528.4471117800684}, {-116.41796115992753`, 0}},
+      PlotRangePadding->{6, 5}], {315., -383.15}, 
+     ImageScaled[{0.5, 0.5}], {600, 140}], InsetBox[
      GraphicsBox[{{}, {InsetBox[
          GraphicsBox[RasterBox[CompressedData["
 1:eJzsvHk4Vv+3/2+MKEUylFSGBikkaZCFMhQhRYmI0KCBojRSVMY0GUuEEimF
@@ -19254,13 +19335,31 @@ p3Eap3Eap3Eap3Eap3Eap3Eap3Eap/H/4P8DN1/8jA==
            2.056250000000001}}, {0, 1}],
           DisplayFunction->Identity,
           Frame->Automatic,
-          FrameLabel->{None, None},
-          FrameTicks->{{None, None}, {None, None}},
+          FrameLabel->{
+            FormBox["\"y\"", TraditionalForm], 
+            FormBox["\"x\"", TraditionalForm]},
+          FrameTicks->{{{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}}, {{{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}, {{-2., 
+               FormBox[
+                RowBox[{"-", "2.`"}], TraditionalForm]}, {0., 
+               FormBox["0.`", TraditionalForm]}, {2., 
+               FormBox["2.`", TraditionalForm]}}}},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{0.5, 0.5000000000000568}, {13.17391304347828, 
-           0.500000000000071}},
+          ImagePadding->{{33.04076086956519, 16.866847826086996`}, {
+           29.34782608695653, 27.086956521739182`}},
           
           Method->{
            "DefaultBoundaryStyle" -> Automatic, 
@@ -19273,11 +19372,12 @@ p3Eap3Eap3Eap3Eap3Eap3Eap3Eap/H/4P8DN1/8jA==
                  "freeformCursorMode" -> True, 
                   "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
             "DefaultPlotStyle" -> Automatic},
+          PlotLabel->FormBox["\"K_Phi_rhs\"", TraditionalForm],
           
           PlotRange->{{-2.05, 2.0500000000000007`}, {-2.05, 
            2.0500000000000007`}},
-          PlotRangeClipping->True], {50.847987406280026, -53.717331491827565},
-          ImageScaled[{0.5, 0.5}], {89.64481360762183, 102.31872665110012}], 
+          PlotRangeClipping->True], {56.85472769009459, -57.91170494759215}, 
+         ImageScaled[{0.5, 0.5}], {103.78083551094151, 110.30800942398504}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -19347,14 +19447,16 @@ Dw==
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173907`, 0.5}, {13.17391304347828, 
-           0.500000000000071}},
+          ImagePadding->{{35.657608695652186`, 0.5}, {29.34782608695653, 
+           27.086956521739182`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -19367,6 +19469,8 @@ Dw==
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs {y,z} = {0, 0}\"", TraditionalForm],
+          
           
           PlotRange->{{-2.05, 2.0500000000000007`}, {-59.217601384144345`, 
            59.21760138414419}},
@@ -19376,8 +19480,8 @@ Dw==
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {189.4285639128817, -53.717331491827565},
-          ImageScaled[{0.5, 0.5}], {163.4140169957051, 102.31872665110012}], 
+          Ticks->{Automatic, Automatic}], {180.3369256980243, -57.91170494759215},
+          ImageScaled[{0.5, 0.5}], {123.32632076642257, 110.30800942398504}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -19441,14 +19545,16 @@ j2Pvf/8Hd6x1hg==
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{19.483695652173907`, 0.5}, {13.17391304347828, 
-           0.500000000000071}},
+          ImagePadding->{{35.657608695652186`, 0.5}, {29.34782608695653, 
+           27.086956521739182`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -19461,6 +19567,7 @@ j2Pvf/8Hd6x1hg==
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
+          PlotLabel->FormBox["\"K_Phi_rhs analytic\"", TraditionalForm],
           
           PlotRange->{{-2.05, 2.0500000000000007`}, {-59.21762640653615, 
            59.21762640653615}},
@@ -19470,8 +19577,8 @@ j2Pvf/8Hd6x1hg==
              Scaled[0.02]}, {
              Scaled[0.05], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {364.89374211352504, -53.717331491827565},
-          ImageScaled[{0.5, 0.5}], {163.4140169957051, 102.31872665110012}], 
+          Ticks->{Automatic, Automatic}], {313.59186633369455, -57.91170494759215},
+          ImageScaled[{0.5, 0.5}], {123.32632076642257, 110.30800942398504}], 
         InsetBox[
          GraphicsBox[{{}, 
            {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
@@ -19539,14 +19646,16 @@ EJU=
           AxesOrigin->{0, 0},
           DisplayFunction->Identity,
           Frame->{{True, True}, {True, True}},
-          FrameLabel->{{None, None}, {None, None}},
+          FrameLabel->{{
+             FormBox["\"K_Phi_rhs error\"", TraditionalForm], None}, {
+             FormBox["\"x\"", TraditionalForm], None}},
           FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
           GridLines->{None, None},
           GridLinesStyle->Directive[
             GrayLevel[0.5, 0.4]],
           
-          ImagePadding->{{42.15489130434784, 0.5}, {13.17391304347828, 
-           0.500000000000071}},
+          ImagePadding->{{58.32880434782609, 0.5}, {29.34782608695653, 
+           27.086956521739182`}},
           
           Method->{
            "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
@@ -19559,7 +19668,7 @@ EJU=
                  Part[#, 1]], 
                 Identity[
                  Part[#, 2]]}& )}},
-          
+          PlotLabel->FormBox["\"K_Phi_rhs error\"", TraditionalForm],
           PlotRange->{{-2.025, 2.025000000000001}, {
             0, 0.00002502239399859718}},
           PlotRangeClipping->True,
@@ -19568,24 +19677,324 @@ EJU=
              Scaled[0.02]}, {
              Scaled[0.02], 
              Scaled[0.05]}},
-          Ticks->{Automatic, Automatic}], {551.6945181402554, -53.717331491827565},
-          ImageScaled[{0.5, 0.5}], \
-{186.08521264787905, 102.31872665110012}]}, {}},
+          Ticks->{Automatic, Automatic}], {458.1824047954517, -57.91170494759215},
+          ImageScaled[{0.5, 0.5}], {145.9975164185965, 110.30800942398504}]}, \
+{}},
       DisplayFunction->Identity,
-      ImagePadding->{{8.881784197001252*^-16, 1.1368683772161603`*^-13}, {0., 
-       0.}},
+      ImagePadding->{{1.7763568394002505`*^-15, 1.1368683772161603`*^-13}, {
+       0., 1.4210854715202004`*^-14}},
       ImageSize->{
         UpTo[600], 
         UpTo[360]},
-      PlotRange->{{0, 650.762705066664}, {-107.43466298365513`, 0}},
-      PlotRangePadding->{6, 5}], {315., -410.31}, 
-     ImageScaled[{0.5, 0.5}], {600, 106}]}, {}},
+      PlotRange->{{0, 536.1454729393738}, {-115.8234098951843, 0}},
+      PlotRangePadding->{6, 5}], {315., -533.41}, 
+     ImageScaled[{0.5, 0.5}], {600, 138}]}, {}},
   ImageSize->1200.,
-  PlotRange->{{0, 630.}, {-467.64, 0}},
+  PlotRange->{{0, 630.}, {-608.04, 0}},
+  PlotRangePadding->{6, 5}]], "Output",
+ CellChangeTimes->{{3.846718984326187*^9, 3.846719008037179*^9}, {
+   3.846719125807015*^9, 3.84671913324126*^9}, 3.846719166235322*^9, 
+   3.846719199739975*^9, 3.846719229825975*^9, {3.846719456466042*^9, 
+   3.846719481288733*^9}, {3.846719517397341*^9, 3.846719557049964*^9}, 
+   3.84672087633011*^9},
+ CellLabel->"Out[28]=",ExpressionUUID->"78cfbe92-3bf5-45df-9ff1-fc7156cdebfc"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Convergence plot", "Section",
+ CellChangeTimes->{{3.846336098747624*^9, 3.846336099617429*^9}, {
+  3.8463368330815496`*^9, 3.846336833621401*^9}, {3.846719468461217*^9, 
+  3.846719470260886*^9}, {3.8467197072981157`*^9, 
+  3.846719708848033*^9}},ExpressionUUID->"2606ea7c-638c-48bf-a250-\
+2e4af555a00e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "gfs", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"gfs", "=", 
+    RowBox[{"{", "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ClearAll", "[", "i", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"For", "[", 
+  RowBox[{
+   RowBox[{"i", "=", "1"}], ",", 
+   RowBox[{"i", "\[LessEqual]", 
+    RowBox[{"Length", "[", "dirs", "]"}]}], ",", 
+   RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"ClearAll", "[", "dir", "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"dir", "=", 
+     RowBox[{"dirs", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}]}],
+     ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"ClearAll", "[", 
+     RowBox[{"sim3DGF", ",", "sim2DGF", ",", "sim1DGF"}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"sim3DGF", "=", 
+     RowBox[{"ReadGridFunction", "[", 
+      RowBox[{"dir", ",", "function", ",", "\"\<xyz\>\"", ",", 
+       RowBox[{"Iteration", "\[Rule]", "0"}], ",", 
+       RowBox[{"Map", "\[Rule]", "map"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"sim2DGF", "=", 
+     RowBox[{"Slab", "[", 
+      RowBox[{"sim3DGF", ",", "All", ",", "All", ",", "xyPlane"}], "]"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"sim1DGF", "=", 
+     RowBox[{"Slab", "[", 
+      RowBox[{"sim2DGF", ",", "All", ",", 
+       RowBox[{
+       "xLine", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ",", 
+       RowBox[{
+       "xLine", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+      "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"AppendTo", "[", 
+     RowBox[{"gfs", ",", "sim1DGF"}], "]"}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"ClearAll", "[", "dir", "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"ClearAll", "[", 
+     RowBox[{"sim3DGF", ",", "sim2DGF", ",", "sim1DGF"}], "]"}], ";"}]}], 
+  "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"ClearAll", "[", "i", "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"GraphicsRow", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"ListPlot", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Log", "[", 
+         RowBox[{"WithResampling", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+             "-", 
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+            ")"}], "/", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
+             "-", 
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}]}], 
+            ")"}]}], "]"}], "]"}], "/", 
+        RowBox[{"Log", "[", "2", "]"}]}], ",", 
+       RowBox[{"Axes", "\[Rule]", "False"}], ",", 
+       RowBox[{"Frame", "\[Rule]", "True"}], ",", 
+       RowBox[{"PlotRange", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"Full", ",", 
+          RowBox[{"{", 
+           RowBox[{"3.95", ",", "4"}], "}"}]}], "}"}]}], ",", 
+       RowBox[{"FrameLabel", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"\"\<x\>\"", ",", "\"\<Conv. fact.\>\""}], "}"}]}], ",", 
+       RowBox[{"PlotLabel", "\[Rule]", "\"\<Conv. Fact. 1\>\""}]}], " ", 
+      "]"}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"ListPlot", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Log", "[", 
+         RowBox[{"WithResampling", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
+             "-", 
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}]}], 
+            ")"}], "/", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}], 
+             "-", 
+             RowBox[{
+             "gfs", "\[LeftDoubleBracket]", "4", "\[RightDoubleBracket]"}]}], 
+            ")"}]}], "]"}], "]"}], "/", 
+        RowBox[{"Log", "[", "2", "]"}]}], ",", 
+       RowBox[{"Axes", "\[Rule]", "False"}], ",", 
+       RowBox[{"Frame", "\[Rule]", "True"}], ",", 
+       RowBox[{"PlotRange", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"Full", ",", 
+          RowBox[{"{", 
+           RowBox[{"3.95", ",", "4"}], "}"}]}], "}"}]}], ",", 
+       RowBox[{"FrameLabel", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"\"\<x\>\"", ",", "\"\<Conv. fact.\>\""}], "}"}]}], ",", 
+       RowBox[{"PlotLabel", "\[Rule]", "\"\<Conv. Fact. 2\>\""}]}], " ", 
+      "]"}]}], "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ImageSize", "\[Rule]", 
+    SuperscriptBox["10", "3"]}]}], "\[IndentingNewLine]", "]"}]}], "Input",
+ CellChangeTimes->{{3.846334920942355*^9, 3.846334972540299*^9}, 
+   3.846335179997958*^9, {3.846335513459359*^9, 3.846335516948558*^9}, {
+   3.846335747634635*^9, 3.846335805372449*^9}, 3.846335837064197*^9, {
+   3.8463358796028423`*^9, 3.846335956619712*^9}, {3.846336843092449*^9, 
+   3.846336999608094*^9}, {3.846337032828183*^9, 3.846337117235208*^9}, {
+   3.8463388701360617`*^9, 3.846338918651209*^9}, {3.846346707240074*^9, 
+   3.846346748750918*^9}, {3.8463468184202633`*^9, 3.846346819127376*^9}, {
+   3.8463468703167343`*^9, 3.846346876776021*^9}, {3.8463469384455013`*^9, 
+   3.846346951344219*^9}, {3.846347350097884*^9, 3.8463473508964043`*^9}, {
+   3.8463475989108887`*^9, 3.846347645860653*^9}, {3.8463779532519093`*^9, 
+   3.84637795478001*^9}, {3.846378008350026*^9, 3.846378017110055*^9}, {
+   3.846379380442285*^9, 3.8463793807069273`*^9}, {3.846379471839522*^9, 
+   3.846379491881976*^9}, {3.846379545679716*^9, 3.84637954580877*^9}, {
+   3.846379656778632*^9, 3.846379705426858*^9}, {3.846379838606986*^9, 
+   3.8463800060404863`*^9}, {3.846380036273382*^9, 3.846380071870988*^9}, {
+   3.84667888674695*^9, 3.846678903228961*^9}, {3.846679671749765*^9, 
+   3.846679743099704*^9}, {3.846679806768107*^9, 3.846679812287407*^9}, {
+   3.846680034095487*^9, 3.8466800815245333`*^9}, {3.846681287009006*^9, 
+   3.8466812875807247`*^9}, {3.8466821085953293`*^9, 3.84668211052538*^9}, {
+   3.8466828890733356`*^9, 3.8466828928820066`*^9}, {3.8466830939294*^9, 
+   3.846683094238469*^9}, {3.846715945656687*^9, 3.8467159747531147`*^9}, {
+   3.846716078823703*^9, 3.846716096102766*^9}, {3.846716239930808*^9, 
+   3.84671625262006*^9}, {3.846717033705389*^9, 3.84671707619352*^9}, {
+   3.8467171655624943`*^9, 3.846717209321487*^9}, {3.846717242502411*^9, 
+   3.846717245819207*^9}, {3.8467172895396852`*^9, 3.84671746447304*^9}, {
+   3.8467175257079573`*^9, 3.846717561887816*^9}, {3.846717626765564*^9, 
+   3.8467176301333637`*^9}, {3.846718631067247*^9, 3.8467186452819242`*^9}, {
+   3.846718676258546*^9, 3.8467188136956253`*^9}, {3.8467188736358232`*^9, 
+   3.84671900426262*^9}, {3.846719048891433*^9, 3.846719212148458*^9}, {
+   3.84671933465127*^9, 3.846719339898221*^9}, {3.846719370364373*^9, 
+   3.846719440702806*^9}, {3.846719691022534*^9, 3.846719694730157*^9}, {
+   3.846719769809126*^9, 3.846719819677265*^9}, {3.846720516907054*^9, 
+   3.846720647005908*^9}, {3.846720695156004*^9, 3.846720746876425*^9}, {
+   3.846720782076004*^9, 3.8467207897771063`*^9}, {3.8467208205738087`*^9, 
+   3.8467208521421347`*^9}},
+ CellLabel->"In[29]:=",ExpressionUUID->"027016d4-4ee8-4747-b915-a3228c65227f"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, {InsetBox[
+     GraphicsBox[{{}, 
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        0.012833333333333334`], AbsoluteThickness[1.6], 
+        PointBox[CompressedData["
+1:eJxTTMoPSmViYGDQBGIQ/fc/GOwvfZ0o8Hctv0NKGgj82x+aOSP2J5B/Bgz+
+7L+y6HbTWyDfyBgEfu9XLCnN+wHkz5gJAj/3u7x/0/sfyIcY931/ksnW2yB+
+Kti8b/t7rN5NZVrH73AabN6X/a5+/NfZ18HM+7zftez0P5A8xLyP+1MKch+B
+9P8Dm/d+//tF4vdB/FNg/W/27/VfL8oMVD8NrP7l/jXZGXGc62Duf7Z/yyX1
+iSB5Q7D5j/eztL97BtL/C2ze/f0+35vvgviTwPpv7m84efsWyH4dsPrL+7+a
+VW7gAPIngOVP7recMNEXZF4DmL9z/yv9M09A+hnA4ICNhWgJmL8AIm/fF9n+
+AKQewj9p/yl182RuIN8CYr69eJN9JQtc/qb99Tk670D6WcDmPbB//NrgJYhv
+BnG/PU/2/skg9VkQ/9lXvGiaywvkz4P4336y4Xw3ViD/HCR87F95LP4C0s8I
+Nu+DPd/MJeD4mA0JX/vH/eGTQf41hYS/vU84Dzg+zkPix/6mgdlvkHw6JP7s
+W96pPEKY98N+w6Zl4PiYA4l/e8NeUW2Qf00g6cP+UcjjTk64e/7YPxGPXwmS
+z4CkL/s5Gdv6GNbBwo/B4W/VW3NGIB8Af9VG9A==
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{False, False},
+      AxesLabel->{None, None},
+      AxesOrigin->{0, 3.95},
+      DisplayFunction->Identity,
+      Frame->{{True, True}, {True, True}},
+      FrameLabel->{{
+         FormBox["\"Conv. fact.\"", TraditionalForm], None}, {
+         FormBox["\"x\"", TraditionalForm], None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImagePadding->{{37.44293478260869, 0.5000000000000568}, {
+       29.347826086957866`, 19.00000000000034}},
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"Conv. Fact. 1\"", TraditionalForm],
+      PlotRange->{{-1.9999999999999993`, 2.}, {3.95, 4}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {0, 0}},
+      Ticks->{Automatic, Automatic}], {251.99001316671016, -166.37632702067273},
+      ImageScaled[{0.5, 0.5}], {472.48127468758156, 316.90728956318617}], 
+    InsetBox[
+     GraphicsBox[{{}, 
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        0.011000000000000001`], AbsoluteThickness[1.6], 
+        PointBox[CompressedData["
+1:eJxNlH9IU1EUx58hFUUGAzHRIoUlimY6p5tzHisLKXOoUP+0iPljiZgokgTR
+IiKiREoQMo2sQCzKoaBRUWdlswR/FIYjcKFpI9sIl3POOa3ufcG5Fx6PD/d+
+v/f7zj33xZlqSyo2SJJ05N/D3mESH7aqdKPW4t6ep+LjDxrianIZmyvZWMfg
++Mlsxnfa2FhDf51kZDw6wkYIb9z11TGW7UIYE7Yl17kzwpbB/VaxsXc0ls2f
+4X5BHNr9TUd+K6iMbE1kPMb9Atha/V1FfgEc6NrK95f9ljHt2AU9Y25X6cfY
+V4VCviV0lmEB+fnwR3uUmfSLqDM1b6M8v9FbZFeT3os31ZcTSL+AMY/rMyjP
+AtqsfVqqzy8sLF3mefjyEQ/6Jv16qqcbu3/uOc6Y27fNY7bSUs64gutd+Nm+
+I5L0czjdZOX7pXH9LNZcaklm3M71M9hw1JpFeaYxovaplvJOoe7BYg7j23z9
+F3QP6vOpXpM41HCrmHEm95/ApLT4UsYdfP0wzilGFYw1fH4QZzYaksjvOab2
+je1lbOP8CMv1TiGPJJmGerTCPIyfcPF+6pT18MFznefLkf0h0dFYRPPDkNjp
+OED7T8CLlogoxmfl/NBSVRIvfB9cfaZMEb4f2tpDYn3gYvRDrVA/GHkTp6N+
+mIX+8OJDjMfl+oNDbSmm/nDBV0+vkeozD+6szfsYZ8nnC29T05XC+YPauilF
+6A94WV2eKfQPdL1fEs5rAV7nRQr3wQtP6ofzhf4EZXfQIPQv3LeEnxL6G86d
+NqdTviU4X1CYTHo/XJsK0wj3B95V1Av1CcCu5hohTwA+qnKE+7QCitaDQp4g
+HP6k3k9+q3Al2m4gfQiaOhIyKM8aOO71pJB+Hfq7JY3wvwGdooyv//8/ypv3
+NPH9/wIdLycq
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{False, False},
+      AxesLabel->{None, None},
+      AxesOrigin->{0, 3.95},
+      DisplayFunction->Identity,
+      Frame->{{True, True}, {True, True}},
+      FrameLabel->{{
+         FormBox["\"Conv. fact.\"", TraditionalForm], None}, {
+         FormBox["\"x\"", TraditionalForm], None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImagePadding->{{37.44293478260872, 0.5}, {29.347826086957866`, 
+       19.00000000000034}},
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"Conv. Fact. 2\"", TraditionalForm],
+      PlotRange->{{-2.0000000000000004`, 2.0000000000000004`}, {3.95, 4}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {0, 0}},
+      Ticks->{Automatic, Automatic}], {755.9700395001304, -166.37632702067273},
+      ImageScaled[{0.5, 0.5}], {472.4812746875815, 316.90728956318617}]}, {}},
+  
+  ImageSize->1000,
+  PlotRange->{{0, 1007.9600526668405`}, {-332.75265404134547`, 0}},
   PlotRangePadding->{6, 5}]], "Output",
  CellChangeTimes->{
-  3.846717591394434*^9, {3.846717667312296*^9, 3.8467177596510878`*^9}},
- CellLabel->"Out[44]=",ExpressionUUID->"d29f73a3-567c-4453-8b67-adcbb6e106b3"]
+  3.846720607595942*^9, 3.84672067350677*^9, {3.846720707804796*^9, 
+   3.846720758667932*^9}, 3.846720795370391*^9, {3.8467208282488832`*^9, 
+   3.8467208814789*^9}},
+ CellLabel->"Out[34]=",ExpressionUUID->"9b69c159-b0d3-45d6-b231-b443e891d0c5"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -19615,14 +20024,20 @@ Cell[1012, 33, 7416, 181, 338, "Input",ExpressionUUID->"57e9dafb-5dec-4fa8-8992-
 }, Closed]],
 Cell[CellGroupData[{
 Cell[8465, 219, 251, 4, 57, "Section",ExpressionUUID->"cd298bcf-79ca-42ff-9b3b-846fd227ed7d"],
-Cell[8719, 225, 1406, 30, 153, "Input",ExpressionUUID->"f30b3fb8-7508-4df3-81c6-a72bbd3f2a58"]
+Cell[8719, 225, 2466, 53, 318, "Input",ExpressionUUID->"f30b3fb8-7508-4df3-81c6-a72bbd3f2a58"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10162, 260, 206, 4, 71, "Section",ExpressionUUID->"862e6d9a-f730-4728-8202-35e5a32a202e"],
-Cell[10371, 266, 10234, 231, 1000, "Input",ExpressionUUID->"a454fdd3-f277-44c3-a497-5882e988ffbc"],
+Cell[11222, 283, 252, 4, 71, "Section",ExpressionUUID->"862e6d9a-f730-4728-8202-35e5a32a202e"],
 Cell[CellGroupData[{
-Cell[20630, 501, 389, 8, 31, "Input",ExpressionUUID->"d862e1df-742c-4288-ad22-3d1b2d1fbf22"],
-Cell[21022, 511, 1149775, 19076, 909, "Output",ExpressionUUID->"d29f73a3-567c-4453-8b67-adcbb6e106b3"]
+Cell[11499, 291, 9592, 201, 817, "Input",ExpressionUUID->"a454fdd3-f277-44c3-a497-5882e988ffbc"],
+Cell[21094, 494, 1156646, 19205, 1172, "Output",ExpressionUUID->"78cfbe92-3bf5-45df-9ff1-fc7156cdebfc"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1177789, 19705, 309, 5, 71, "Section",ExpressionUUID->"2606ea7c-638c-48bf-a250-2e4af555a00e"],
+Cell[CellGroupData[{
+Cell[1178123, 19714, 7722, 164, 638, "Input",ExpressionUUID->"027016d4-4ee8-4747-b915-a3228c65227f"],
+Cell[1185848, 19880, 5263, 116, 353, "Output",ExpressionUUID->"9b69c159-b0d3-45d6-b231-b443e891d0c5"]
 }, Open  ]]
 }, Open  ]]
 }

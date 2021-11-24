@@ -13,7 +13,7 @@ $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coord
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 20
+$n_angular   = 40
 
 $sphere_inner_radius = 2.0
 $sphere_outer_radius = 6.0
@@ -183,7 +183,7 @@ KleinGordon::field_mass     = 0.0
 KleinGordon::initial_data   = "multipolar_gaussian"
 
 KleinGordon::gaussian_sigma = 0.25
-KleinGordon::gaussian_R0    = 0.0
+KleinGordon::gaussian_R0    = 4.0
 
 KleinGordon::gaussian_x0    = 0.0
 KleinGordon::gaussian_y0    = 0.0
@@ -194,7 +194,7 @@ KleinGordon::fd_order = $fd_order
 KleinGordon::compute_error  = $compute_field_error
 KleinGordon::compute_energy = $compute_field_energy
 
-KleinGordon::multipoles[0] = 3.54490770181 # 2 * sqrt(pi)
+KleinGordon::multipoles[0] = 0.0
 KleinGordon::multipoles[1] = 0.0
 KleinGordon::multipoles[2] = 0.0
 KleinGordon::multipoles[3] = 0.0
@@ -202,7 +202,7 @@ KleinGordon::multipoles[4] = 0.0
 KleinGordon::multipoles[5] = 0.0
 KleinGordon::multipoles[6] = 0.0
 KleinGordon::multipoles[7] = 0.0
-KleinGordon::multipoles[8] = 0.0
+KleinGordon::multipoles[8] = 3.54490770181 # 2 * sqrt(pi)
 
 #######################################################################
 # Outer Boundaries                                                    #
