@@ -21,7 +21,7 @@ $title = "Multipatch test with Llama on 7 patches (Thornburg04 coordinates)"
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 80
+$n_angular   = 40
 
 $sphere_inner_radius = 2.0
 $sphere_outer_radius = 6.0
@@ -163,29 +163,16 @@ TmunuBase::stress_energy_at_RHS  = yes
 
 KleinGordon::field_mass     = 0.0
 
-KleinGordon::initial_data   = "exact_gaussian"
+KleinGordon::initial_data   = "plane_wave"
 
-KleinGordon::gaussian_sigma = 0.25
-KleinGordon::gaussian_R0    = 0.0
-
-KleinGordon::gaussian_x0    = 0.0
-KleinGordon::gaussian_y0    = 0.0
-KleinGordon::gaussian_z0    = 0.0
+KleinGordon::wave_number  = [1, 1, 1]
+KleinGordon::space_offset = [0, 0, 0]
+KleinGordon::time_offset  = 0
 
 KleinGordon::fd_order = $fd_order
 
 KleinGordon::compute_error  = no
 KleinGordon::compute_energy = no
-
-KleinGordon::multipoles[0] = 0.0
-KleinGordon::multipoles[1] = 0.0
-KleinGordon::multipoles[2] = 0.0
-KleinGordon::multipoles[3] = 0.0
-KleinGordon::multipoles[4] = 0.0
-KleinGordon::multipoles[5] = 0.0
-KleinGordon::multipoles[6] = 0.0
-KleinGordon::multipoles[7] = 0.0
-KleinGordon::multipoles[8] = 0.0
 
 # WARNING: Never set this parameter in normal evolutions.
 KleinGordon::test_multipatch = yes

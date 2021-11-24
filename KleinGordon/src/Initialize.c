@@ -48,10 +48,10 @@ const CCTK_REAL smallnes_threshold = 1.0e-8;
  * @return The factorial of n
  */
 CCTK_INT factorial(CCTK_INT n) {
-  if (n == 0)
-    return 1;
-  else
+  if (n >= 1)
     return n * factorial(n - 1);
+  else
+    return 1;
 }
 
 /**
@@ -184,18 +184,24 @@ CCTK_REAL real_spherical_harmonics(CCTK_INT l, CCTK_INT m, const CCTK_REAL *P_lm
                                    CCTK_REAL phi) {
   const CCTK_INT abs_m = abs(m);
 
-  const CCTK_REAL condon_phase = pow(-1, abs_m);
+  const CCTK_REAL condon_phase = pow(-1, m);
   const CCTK_REAL l_minus_m_fac = factorial(l - abs_m);
   const CCTK_REAL l_plus_m_fac = factorial(l + abs_m);
-  const CCTK_REAL norm
-      = condon_phase * sqrt((2 * l + 1) / (4 * M_PI) * l_minus_m_fac / l_plus_m_fac);
+
+  const CCTK_REAL norm_1 = (2 * l + 1) / (4 * M_PI);
+  const CCTK_REAL norm_2 = l_minus_m_fac / l_plus_m_fac;
+
+  const CCTK_REAL full_norm = condon_phase * sqrt(norm_1 * norm_2);
+  const CCTK_REAL half_norm = sqrt(norm_1);
 
   const CCTK_REAL P_lm_cos_theta = P_lm_array[gsl_sf_legendre_array_index(l, abs_m)];
 
-  if (m >= 0)
-    return norm * P_lm_cos_theta * cos(abs_m * phi);
+  if (m > 0)
+    return full_norm * P_lm_cos_theta * cos(abs_m * phi);
+  else if (m == 0)
+    return half_norm * P_lm_cos_theta;
   else
-    return norm * P_lm_cos_theta * sin(abs_m * phi);
+    return full_norm * P_lm_cos_theta * sin(abs_m * phi);
 }
 
 /**
@@ -209,23 +215,23 @@ CCTK_REAL real_spherical_harmonics(CCTK_INT l, CCTK_INT m, const CCTK_REAL *P_lm
  * @param z The z cartesian coordinate.
  * @return The value of the multipolar gaussian function.
  */
-CCTK_REAL multipolar_gaussian(CCTK_REAL *P_lm_array, CCTK_INT lmax, CCTK_REAL x, CCTK_REAL y,
-                              CCTK_REAL z, CCTK_REAL R0) {
-  DECLARE_CCTK_PARAMETERS;
+CCTK_REAL multipolar_gaussian(const CCTK_REAL *multipole_array, CCTK_REAL *P_lm_array,
+                              CCTK_INT lmax, CCTK_REAL R0, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z,
+                              CCTK_REAL sigma) {
 
-  const CCTK_REAL xmx0 = x - gaussian_x0;
-  const CCTK_REAL ymy0 = y - gaussian_y0;
-  const CCTK_REAL zmz0 = z - gaussian_z0;
+  CCTK_REAL R = sqrt(x * x + y * y + z * z);
+  if (R < smallnes_threshold)
+    R = smallnes_threshold;
 
-  const CCTK_REAL xmx02 = xmx0 * xmx0;
-  const CCTK_REAL ymy02 = ymy0 * ymy0;
-  const CCTK_REAL zmz02 = zmz0 * zmz0;
+  const CCTK_REAL cos_theta = z / R;
 
-  const CCTK_REAL R2 = xmx02 + ymy02 + zmz02;
-  CCTK_REAL R = sqrt(R2);
-
-  const CCTK_REAL cos_theta = (R < smallnes_threshold) ? 1 : zmz0 / R;
-  const CCTK_REAL phi = (R < smallnes_threshold) ? M_PI / 2 : atan2(y, x);
+  CCTK_REAL phi = 0;
+  if (x > 0)
+    phi = atan2(y, x);
+  else if (x < 0)
+    phi = atan2(y, x) + M_PI;
+  else
+    phi = M_PI / 2;
 
   // Compute all spherical harmonics up to lmax at this point
   const CCTK_INT ierr = gsl_sf_legendre_array(GSL_SF_LEGENDRE_NONE, lmax, cos_theta, P_lm_array);
@@ -237,36 +243,41 @@ CCTK_REAL multipolar_gaussian(CCTK_REAL *P_lm_array, CCTK_INT lmax, CCTK_REAL x,
   }
 
   // Multipolar series
-  const CCTK_REAL multipole_sum = multipoles[0] * real_spherical_harmonics(0, 0, P_lm_array, phi)
-                                  + multipoles[1] * real_spherical_harmonics(1, -1, P_lm_array, phi)
-                                  + multipoles[2] * real_spherical_harmonics(1, 0, P_lm_array, phi)
-                                  + multipoles[3] * real_spherical_harmonics(1, 1, P_lm_array, phi)
-                                  + multipoles[4] * real_spherical_harmonics(2, -2, P_lm_array, phi)
-                                  + multipoles[5] * real_spherical_harmonics(2, -1, P_lm_array, phi)
-                                  + multipoles[6] * real_spherical_harmonics(2, 0, P_lm_array, phi)
-                                  + multipoles[7] * real_spherical_harmonics(2, 1, P_lm_array, phi)
-                                  + multipoles[8] * real_spherical_harmonics(2, 1, P_lm_array, phi);
+  const CCTK_REAL multipole_sum
+      = multipole_array[0] * real_spherical_harmonics(0, 0, P_lm_array, phi)
+        + multipole_array[1] * real_spherical_harmonics(1, -1, P_lm_array, phi)
+        + multipole_array[2] * real_spherical_harmonics(1, 0, P_lm_array, phi)
+        + multipole_array[3] * real_spherical_harmonics(1, 1, P_lm_array, phi)
+        + multipole_array[4] * real_spherical_harmonics(2, -2, P_lm_array, phi)
+        + multipole_array[5] * real_spherical_harmonics(2, -1, P_lm_array, phi)
+        + multipole_array[6] * real_spherical_harmonics(2, 0, P_lm_array, phi)
+        + multipole_array[7] * real_spherical_harmonics(2, 1, P_lm_array, phi)
+        + multipole_array[8] * real_spherical_harmonics(2, 2, P_lm_array, phi);
 
   reset_legendre_buffer(P_lm_array, lmax);
 
-  return multipole_sum * base_gaussian(R - R0, gaussian_sigma);
+  // TODO: There is a bug in the multipole_sum part of the solution.
+  return multipole_sum * base_gaussian(R - R0, sigma);
 }
 
 void KleinGordon_Initialize(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  // TODO: There currently is a bug in this initial condition that makes it noisy across the grid. I
-  // should investigate
+  CCTK_INT ijk = 0;
+
   if (CCTK_EQUALS(initial_data, "multipolar_gaussian")) {
+
     const CCTK_INT max_supported_l = 2;
     CCTK_REAL *P_lm_array = create_legendre_buffer(max_supported_l);
 
 #pragma omp parallel
     CCTK_LOOP3_ALL(loop_multipolar_gaussian, cctkGH, i, j, k) {
-      const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-      Phi[ijk]
-          = multipolar_gaussian(P_lm_array, max_supported_l, x[ijk], y[ijk], z[ijk], gaussian_R0);
+      ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+      Phi[ijk] = multipolar_gaussian(multipoles, P_lm_array, max_supported_l, gaussian_R0,
+                                     x[ijk] - gaussian_x0, y[ijk] - gaussian_y0,
+                                     z[ijk] - gaussian_z0, gaussian_sigma);
       K_Phi[ijk] = 0.0;
     }
     CCTK_ENDLOOP3_ALL(loop_multipolar_gaussian);
@@ -277,7 +288,7 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
 
 #pragma omp parallel
     CCTK_LOOP3_ALL(loop_exact_gaussian, cctkGH, i, j, k) {
-      const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+      ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
       /* Since this initial data represents a exact solution of the field equations
        * in a flat background, we will assume that the lapse is one and the
@@ -290,5 +301,34 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
                                                     z[ijk] - gaussian_z0, gaussian_sigma);
     }
     CCTK_ENDLOOP3_ALL(loop_exact_gaussian);
+
+  } else if (CCTK_EQUALS(initial_data, "plane_wave")) {
+
+    CCTK_REAL omega = 0.0;
+    CCTK_REAL nx = 0.0;
+    CCTK_REAL ny = 0.0;
+    CCTK_REAL nz = 0.0;
+    CCTK_REAL nt = 0.0;
+    CCTK_REAL w = 0.0;
+
+#pragma omp parallel
+    CCTK_LOOP3_ALL(loop_plane_wave, cctkGH, i, j, k) {
+      ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
+
+      omega = sqrt(wave_number[0] * wave_number[0] + wave_number[1] * wave_number[1]
+                   + wave_number[2] * wave_number[2]);
+      nx = wave_number[0] * (x[ijk] - space_offset[0]);
+      ny = wave_number[1] * (y[ijk] - space_offset[1]);
+      nz = wave_number[2] * (z[ijk] - space_offset[2]);
+      nt = -omega * time_offset;
+      w = 2 * M_PI * (nx + ny + nz + nt);
+
+      /* Since this initial data is intended to be used as a test in flat background,
+       * we assume that the lapse is 1 on the equations below
+       */
+      Phi[ijk] = cos(w);
+      K_Phi[ijk] = sin(w) * M_PI * omega;
+    }
+    CCTK_ENDLOOP3_ALL(loop_plane_wave);
   }
 }

@@ -49,6 +49,7 @@ CCTK_KEYWORD initial_data "Types of initial data to evolve"
 {
   "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
   "exact_gaussian"       :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
+  "plane_wave"           :: "A plane wave solution with customizable wave numbers and offsets"
 } "multipolar_gaussian"
 
 
@@ -81,6 +82,23 @@ CCTK_REAL gaussian_z0 "The z posititon of the center of the gaussian"
 CCTK_REAL multipoles[9] "The coefficients in the multipole series. Maximiun value of l possible is 2"
 {
   *:* :: "No restriction"
+} 0.0
+
+
+
+REAL wave_number[3] "Wave number"
+{
+  *:* :: ""
+} 0.0
+
+REAL space_offset[3] "Space offset"
+{
+  *:* :: ""
+} 0.0
+
+REAL time_offset "Time offset"
+{
+  *:* :: ""
 } 0.0
 
 
