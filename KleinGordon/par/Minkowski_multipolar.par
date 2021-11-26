@@ -1,8 +1,9 @@
  #######################################################################
- # Minkowski.par                                                       #
+ # Minkowski_multipolar.par                                            #
  #                                                                     #
- # Evolve the Klein gordon equation on top of a Minkowski background   #
+ # Evolve the Klein-Gordon equation on top of a Minkowski background   #
  # using Llama with 7 patches Thornburg04 coordinates                  #
+ # Multipolar gaussian initial data                                    #
  #######################################################################
 
 #######################################################################

@@ -3,12 +3,16 @@
  #                                                                      #
  # Test that the coordinate transformations of the derivative operators #
  # are correctly implemented. We do this by computing the initial con-  #
- # dition with a analytic gaussian solution in flat spacetime.          #
+ # dition using a plane wave solution in flat spacetime.                #
  #                                                                      #
  # From such ID, the RHS grid functions are computed in iteration 0. In #
  # order to do this, thy RHS routines should be scheduled at the        #
  # poststep bin. We provide a parameter for doing that. Be sure not to  #
  # set it in normal evolutions.                                         #
+ #
+ # Since the ID is know, the RHS can be computed analytically and com-  #
+ # pared with the numerical RHS result and tested for convergence.      #
+ # See the multipatch_test inside the Notebooks folder.                 #
  #                                                                      #
  # The patch system used is the Llama with 7 patches system.            #
  ########################################################################
@@ -21,10 +25,10 @@ $title = "Multipatch test with Llama on 7 patches (Thornburg04 coordinates)"
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 40
+$n_angular   = 150
 
 $sphere_inner_radius = 2.0
-$sphere_outer_radius = 6.0
+$sphere_outer_radius = 10.0
 
 $fd_order = 4
 $ghosts = 2
