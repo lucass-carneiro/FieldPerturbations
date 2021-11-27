@@ -236,7 +236,7 @@ ActiveThorns = "
 # General settings                                                    #
 #######################################################################
 
-Cactus::cctk_run_title             = $run_title
+Cactus::cctk_run_title             = "$run_title"
 
 Cactus::cctk_full_warnings         = $full_warnings
 Cactus::highlight_warning_messages = $highlight_warning_messages
