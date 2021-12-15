@@ -265,9 +265,6 @@ void KleinGordon_EnforceSymBound(CCTK_ARGUMENTS);
  ****************************************************************/
 void KleinGordon_Sync(CCTK_ARGUMENTS);
 
-// TODO: Doc
-void KleinGordon_TmunuSync(CCTK_ARGUMENTS);
-
 /***********************************************
  * KleinGordon_Boundary(void)                  *
  *                                             *

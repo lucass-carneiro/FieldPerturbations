@@ -31,11 +31,11 @@ $info_every = 1
 $out_every = 1
 $out2D_every = 0
 
-$compute_field_energy = no
+$compute_field_energy = yes
 $compute_field_error  = no
 
-$output_vars    = "KleinGordon::Phi Grid::coordinates{out_every=100000}"
-$nan_check_vars = "KleinGordon::Phi"
+$output_vars    = "KleinGordon::Phi TmunuBase::eTtt Grid::coordinates{out_every=100000}"
+$nan_check_vars = "KleinGordon::Phi TmunuBase::eTtt"
 
 #######################################################################
 # Thorns                                                              #
@@ -264,6 +264,7 @@ Cactus::cctk_final_time = $final_time
 NaNChecker::check_every     = $nan_check_every
 NaNChecker::action_if_found = "terminate"
 NaNChecker::check_vars      = $nan_check_vars
+NaNChecker::verbose         = "all"
 
 #######################################################################
 # Output                                                              #

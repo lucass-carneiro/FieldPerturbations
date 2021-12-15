@@ -111,7 +111,7 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
   CCTK_REAL J33L = 0;
 
 #pragma omp parallel
-  CCTK_LOOP3_ALL(loop_Tmunu, cctkGH, i, j, k) {
+  CCTK_LOOP3_INT(loop_Tmunu, cctkGH, i, j, k) {
     ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
     /* Assing ADM local variables */
@@ -209,5 +209,5 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
     eTzz[ijk] += (d_z_Phi * d_z_Phi)
                  + 0.5 * hzzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
   }
-  CCTK_ENDLOOP3_ALL(loop_Tmunu);
+  CCTK_ENDLOOP3_INT(loop_Tmunu);
 }

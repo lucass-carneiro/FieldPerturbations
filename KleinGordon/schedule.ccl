@@ -201,52 +201,41 @@ SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup AFTER KleinGordon_Boundar
 
 
 
-# TODO: Critical bug
-# Currently, the energy momentum might randomly produce NaNs.
-# This is probably due to an error in the schedule where the ADM values are not know everywhere
-# at the time they are needed. The sync function tries to fix that but fails. Help is needed.
 if(compute_energy)
 {
-  SCHEDULE KleinGordon_TmunuSync IN AddToTmunu
-  {
-    LANG: C
-    SYNC: ADMBase::metric ADMBase::lapse ADMBase::shift
-    SYNC: TmunuBase::stress_energy_scalar TmunuBase::stress_energy_vector TmunuBase::stress_energy_tensor
-  } "Sync data necessary to compute Tmunu"
-
   if(fd_order == 4)
   {
-    SCHEDULE KleinGordon_CalcTmunu_4 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER KleinGordon_TmunuSync
+    SCHEDULE KleinGordon_CalcTmunu_4 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER admbase_setadmvars
     {
        LANG: C
-       READS: Phi(everywhere) K_Phi(everywhere)
-       READS: ADMBase::metric(everywhere) ADMBase::lapse(everywhere) ADMBase::shift(everywhere)
-       READS: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
-       WRITES: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
+       READS: Phi(interior) K_Phi(interior)
+       READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+       READS: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
+       WRITES: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
     } "Calculate energy momentum tensor for the scalar field"
   }
 
   if(fd_order == 6)
   {
-    SCHEDULE KleinGordon_CalcTmunu_6 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER KleinGordon_TmunuSync
+    SCHEDULE KleinGordon_CalcTmunu_6 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER admbase_setadmvars
     {
        LANG: C
-       READS: Phi(everywhere) K_Phi(everywhere)
-       READS: ADMBase::metric(everywhere) ADMBase::lapse(everywhere) ADMBase::shift(everywhere)
-       READS: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
-       WRITES: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
+       READS: Phi(interior) K_Phi(interior)
+       READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+       READS: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
+       WRITES: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
     } "Calculate energy momentum tensor for the scalar field"
   }
 
   if(fd_order == 8)
   {
-    SCHEDULE KleinGordon_CalcTmunu_8 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER KleinGordon_TmunuSync
+    SCHEDULE KleinGordon_CalcTmunu_8 AS KleinGordon_CalcTmunu IN AddToTmunu AFTER admbase_setadmvars
     {
        LANG: C
-       READS: Phi(everywhere) K_Phi(everywhere)
-       READS: ADMBase::metric(everywhere) ADMBase::lapse(everywhere) ADMBase::shift(everywhere)
-       READS: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
-       WRITES: TmunuBase::stress_energy_scalar(everywhere) TmunuBase::stress_energy_vector(everywhere) TmunuBase::stress_energy_tensor(everywhere)
+       READS: Phi(interior) K_Phi(interior)
+       READS: ADMBase::metric(interior) ADMBase::lapse(interior) ADMBase::shift(interior)
+       READS: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
+       WRITES: TmunuBase::stress_energy_scalar(interior) TmunuBase::stress_energy_vector(interior) TmunuBase::stress_energy_tensor(interior)
     } "Calculate energy momentum tensor for the scalar field"
   }
 }

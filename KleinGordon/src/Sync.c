@@ -38,10 +38,3 @@ void KleinGordon_Sync(CCTK_ARGUMENTS) {
 
   /* Do nothing */
 }
-
-void KleinGordon_TmunuSync(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  /* Do nothing */
-}
