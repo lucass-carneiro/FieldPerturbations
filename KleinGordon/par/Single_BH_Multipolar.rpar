@@ -31,7 +31,7 @@ highlight_warning_messages = "yes"
 ################################################################################
 
 M = 1.0      # Total mass
-chip =  0.30 # Dimensionsless z component of spin
+chip = 0.0   # Dimensionsless z component of spin
 
 ################################################################################
 # Klein-Gordon configuration
@@ -71,7 +71,8 @@ sphere_inner_radius = 45
 expected_merger = 1000.0
 
 # Number of cells across finest grid radius
-n = int("@N@") if "@N@"[0] != "@" else 28
+# n = int("@N@") if "@N@"[0] != "@" else 28
+n = 112
 i = int(n/4)
 
 n_angular = 2*i*2
@@ -395,14 +396,14 @@ KleinGordon::multipoles[8]  = $gaussian_c_22
 # Radii are chosen to be evenly spaced in 1/r as that is the variable
 # extrapolation is performed in
 Multipole::nradii       = 7
-Multipole::radius[0]    = 100
-Multipole::radius[1]    = 115
-Multipole::radius[2]    = 136
-Multipole::radius[3]    = 167
-Multipole::radius[4]    = 214
-Multipole::radius[5]    = 300
-Multipole::radius[6]    = 500
-Multipole::ntheta       = 120
+Multipole::radius[0]    = 20.0
+Multipole::radius[1]    = 40.0
+Multipole::radius[2]    = 60.0
+Multipole::radius[3]    = 80.0
+Multipole::radius[4]    = 100.0
+Multipole::radius[5]    = 300.0
+Multipole::radius[6]    = 500.0
+Multipole::ntheta       = 120 
 Multipole::nphi         = 240
 Multipole::variables    = "KleinGordon::Phi{sw=0 name='KG_Phi'}"
 Multipole::out_every    = $wave_extract_every
@@ -535,7 +536,11 @@ IOHDF5::out_vars                        = "
   KleinGordon::Phi
 "
 
-IOHDF5::out2D_every                     = $out2d_every
+IOHDF5::out2d_every                     = $out2d_every
+IOHDF5::out2d_xy                        = yes
+IOHDF5::out2d_xz                        = no
+IOHDF5::out2d_yz                        = no
+IOHDF5::out2d_xyplane_z                 = 0.0
 IOHDF5::out2D_vars                      = "
   Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
   KleinGordon::Phi
@@ -553,6 +558,8 @@ IO::checkpoint_on_terminate                 = yes
 IO::checkpoint_dir                          = "../checkpoints"
 IO::recover_dir                             = "../checkpoints"
 IO::abort_on_io_errors                      = yes
+IO::checkpoint_keep                         = 1
+IO::recover_and_remove                      = yes
 CarpetIOHDF5::open_one_input_file_at_a_time = yes
 CarpetIOHDF5::compression_level             = 0
 
@@ -562,8 +569,8 @@ CarpetIOHDF5::compression_level             = 0
 
 TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
 
-# Trigger termination 30 minutes before the walltime is reached
-TerminationTrigger::on_remaining_walltime        = 30
+# Trigger termination 120 minutes before the walltime is reached
+TerminationTrigger::on_remaining_walltime        = 120
 TerminationTrigger::output_remtime_every_minutes = 30
 TerminationTrigger::termination_from_file        = yes
 TerminationTrigger::termination_file             = "terminate.txt"
