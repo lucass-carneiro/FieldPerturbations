@@ -376,12 +376,6 @@
  **************************************************************************/
 
 /**************************
- * Some definitions from  *
- * mathematica            *
- **************************/
-#define Power(x, y) (pow((double)(x), (double)(y)))
-
-/**************************
  * Derivative Order: 1    *
  **************************/
 #define global_Dx(order, f) (J11L * D##order##x(f) + J21L * D##order##y(f) + J31L * D##order##z(f))
@@ -392,9 +386,19 @@
  * Derivative Order: 2    *
  **************************/
 #define global_Dxx(order, f)                                                                       \
-  (J111L * D##order##x(f) + J11L * J11L * D##order##xx(f) + 2 * J11L * J21L * D##order##xy(f)      \
-   + J211L * D##order##y(f) + J21L * J21L * D##order##yy(f) + J311L * D##order##z(f)               \
+  (J111L * D##order##x(f) + (J11L * J11L) * D##order##xx(f) + 2 * J11L * J21L * D##order##xy(f)    \
+   + J211L * D##order##y(f) + (J21L * J21L) * D##order##yy(f) + J311L * D##order##z(f)             \
    + J31L * (2 * J11L * D##order##xz(f) + 2 * J21L * D##order##yz(f) + J31L * D##order##zz(f)))
+
+#define global_Dyy(order, f)                                                                       \
+  (J122L * D##order##x(f) + (J12L * J12L) * D##order##xx(f) + 2 * J12L * J22L * D##order##xy(f)    \
+   + J222L * D##order##y(f) + (J22L * J22L) * D##order##yy(f) + J322L * D##order##z(f)             \
+   + J32L * (2 * J12L * D##order##xz(f) + 2 * J22L * D##order##yz(f) + J32L * D##order##zz(f)))
+
+#define global_Dzz(order, f)                                                                       \
+  (J133L * D##order##x(f) + (J13L * J13L) * D##order##xx(f) + 2 * J13L * J23L * D##order##xy(f)    \
+   + J233L * D##order##y(f) + (J23L * J23L) * D##order##yy(f) + J333L * D##order##z(f)             \
+   + J33L * (2 * J13L * D##order##xz(f) + 2 * J23L * D##order##yz(f) + J33L * D##order##zz(f)))
 
 #define global_Dxy(order, f)                                                                       \
   (J112L * D##order##x(f) + J11L * J12L * D##order##xx(f) + J12L * J21L * D##order##xy(f)          \
@@ -408,20 +412,10 @@
    + J213L * D##order##y(f) + J21L * J23L * D##order##yy(f) + J23L * J31L * D##order##yz(f)        \
    + J21L * J33L * D##order##yz(f) + J313L * D##order##z(f) + J31L * J33L * D##order##zz(f))
 
-#define global_Dyy(order, f)                                                                       \
-  (J122L * D##order##x(f) + J12L * J12L * D##order##xx(f) + 2 * J12L * J22L * D##order##xy(f)      \
-   + J222L * D##order##y(f) + J22L * J22L * D##order##yy(f) + J322L * D##order##z(f)               \
-   + J32L * (2 * J12L * D##order##xz(f) + 2 * J22L * D##order##yz(f) + J32L * D##order##zz(f)))
-
 #define global_Dyz(order, f)                                                                       \
   (J123L * D##order##x(f) + J12L * J13L * D##order##xx(f) + J13L * J22L * D##order##xy(f)          \
    + J12L * J23L * D##order##xy(f) + J13L * J32L * D##order##xz(f) + J12L * J33L * D##order##xz(f) \
    + J223L * D##order##y(f) + J22L * J23L * D##order##yy(f) + J23L * J32L * D##order##yz(f)        \
    + J22L * J33L * D##order##yz(f) + J323L * D##order##z(f) + J32L * J33L * D##order##zz(f))
-
-#define global_Dzz(order, f)                                                                       \
-  (J133L * D##order##x(f) + J13L * J13L * D##order##xx(f) + 2 * J13L * J23L * D##order##xy(f)      \
-   + J233L * D##order##y(f) + J23L * J23L * D##order##yy(f) + J333L * D##order##z(f)               \
-   + J33L * (2 * J13L * D##order##xz(f) + 2 * J23L * D##order##yz(f) + J33L * D##order##zz(f)))
 
 #endif /* DERIVATIVES_H */
