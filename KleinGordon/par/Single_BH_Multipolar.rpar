@@ -46,7 +46,7 @@ horizon_radius = mass + math.sqrt(mass**2 - dimensionless_spin**2)
 overwrite_radius = 0.4 * horizon_radius
 
 # Overwrite value for the lapse
-minkowski_scale = (1 - (2 * mass * overwrite_radius)/(overwrite_radius**2 + dimensionless_spin**2))
+minkowski_scale = math.sqrt(-(1 - (2 * mass * overwrite_radius)/(overwrite_radius**2 + dimensionless_spin**2)))
 
 ################################################################################
 # Klein-Gordon field configuration
@@ -80,13 +80,13 @@ compute_energy = "no"
 ################################################################################
 
 # Finite difference stencil accuracy
-fd_order   = 4
+fd_order = 4
 
 # Dissipation magnitude.
 diss_mag = 0.15
 
 # Ghost zones in the stencil
-ghosts     = fd_order - 1
+ghosts = fd_order - 1
 
 # Order of the K-O dissipation operator
 diss_order = 2 * ghosts - 1
@@ -115,11 +115,10 @@ final_time = waveform_length + outermost_detector
 ################################################################################
 
 # Number of cells on the finest Cartesian grid
-n_finest = 150
+n_finest = 120
 
 # Number of angular cells of the multipatch coordinates
 n_angular = n_finest
-
 
 # In SphericalSurfaces, the number of interior grid points in the phi direction
 # of the surface must be a multiple of four after the symmetries have been removed.
@@ -183,32 +182,38 @@ sphere_inner_radius = levels_radii[0]*2
 # Courant factor
 courant_factor = 0.25
 
+# The frequency of a single coarse grid time step
+coarse_grid_timestep_frequency = 2**(refinement_levels - 2)
+
 # Wave extraction (multipolar decomposition) frequency.
-wave_extraction_frequency = 1
+wave_extraction_frequency = coarse_grid_timestep_frequency
 
 # 3D data output frequency.
-out3d_frequency = 1
+out3d_frequency = 0
 
 # 2D data output frequency.
-out2d_frequency = 1
+out2d_frequency = 0
 
 # 1D data output frequency.
-out1d_frequency = 1
+out1d_frequency = 0
 
 # 0D data output frequency.
-out0d_frequency = 256
+out0d_frequency = 0
 
 # Mesh refinement regridding frequency
-regrid_every = 1
+regrid_every = 1000000 * coarse_grid_timestep_frequency
 
 # Apparent horizon finding frequency
-ah_frequency = 10
+ah_frequency = 1000000 * coarse_grid_timestep_frequency
+
+# Timers and process statistics output frequency
+stats_frequency = 10 * coarse_grid_timestep_frequency
 
 # NaN checking frequency
-nan_check_every = 256
+nan_check_every = 10 * coarse_grid_timestep_frequency
 
 # Timer output frequency
-timer_tree_every = 1024
+timer_tree_every = 10 * coarse_grid_timestep_frequency
 
 ################################################################################
 # Record all script variables in generated parameter file
@@ -389,7 +394,7 @@ KleinGordon::K_Phi0              = 0.0
 NewRad::z_is_radial              = yes
 
 TmunuBase::timelevels            = 3
-TmunuBase::stress_energy_storage = $compute_energy
+TmunuBase::stress_energy_storage = yes
 TmunuBase::stress_energy_at_RHS  = yes
 
 ################################################################################
@@ -534,13 +539,15 @@ QuasiLocalMeasures::output_vtk_every     = $out3d_frequency
 # Singularity Excision                                                         #
 ################################################################################
 
-NoExcision::method             = "new"
-NoExcision::num_regions        = 1
-NoExcision::centre_x       [0] = 0.0
-NoExcision::centre_y       [0] = 0.0
-NoExcision::centre_z       [0] = 0.0
-NoExcision::radius         [0] = $overwrite_radius
-NoExcision::Minkowski_scale[0] = $minkowski_scale
+NoExcision::method              = "new"
+NoExcision::smooth_regions      = yes
+NoExcision::num_regions         = 1
+NoExcision::centre_x        [0] = 0.0
+NoExcision::centre_y        [0] = 0.0
+NoExcision::centre_z        [0] = 0.0
+NoExcision::radius          [0] = $overwrite_radius
+NoExcision::Minkowski_scale [0] = $minkowski_scale
+NoExcision::reduce_rhs      [0] = yes
 
 ################################################################################
 # Correctness checking
@@ -583,13 +590,13 @@ IOBasic::outInfo_vars             = "
   SystemStatistics::swap_used_mb
 "
 
-IOScalar::outScalar_every      = $out0d_frequency
+IOScalar::outScalar_every      = $stats_frequency
 IOScalar::outScalar_reductions = "minimum maximum average"
 IOScalar::outScalar_vars       = "SystemStatistics::process_memory_mb"
 
 IOASCII::out0D_every = $out0d_frequency
 IOASCII::out0D_vars  = "
-  Carpet::timing
+  Carpet::timing{out_every = $stats_frequency}
   QuasiLocalMeasures::qlm_scalars{out_every = $ah_frequency}
 "
 
@@ -624,7 +631,7 @@ IO::abort_on_io_errors                      = yes
 IO::checkpoint_keep                         = 1
 IO::recover_and_remove                      = yes
 CarpetIOHDF5::open_one_input_file_at_a_time = yes
-CarpetIOHDF5::compression_level             = 0
+CarpetIOHDF5::compression_level             = 9
 
 ################################################################################
 # Run termination
@@ -643,10 +650,8 @@ Cactus::terminate                                = "time"
 Cactus::cctk_final_time                          = $final_time
 
 # Used for debugging the parameter file
-#Cactus::terminate                                = "iteration"
-#Cactus::cctk_itlast                              = 0
-
+# Cactus::terminate                                = "iteration"
+# Cactus::cctk_itlast                              = $coarse_grid_timestep_frequency
 """
 
 open(re.sub(r'(.*)\.rpar$', r'\1.par', sys.argv[0]), 'w').write(re.sub(r'\n *',r'\n',Template(Template(lines).substitute(locals())).substitute(locals())))
-

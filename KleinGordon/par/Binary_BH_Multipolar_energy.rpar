@@ -99,7 +99,7 @@ gaussian_c_22  = 0.0
 
 
 compute_error  = "no"
-compute_energy = "no"
+compute_energy = "yes"
 
 ################################################################################
 # Grid structure
