@@ -783,8 +783,10 @@ IO::checkpoint_on_terminate                 = yes
 IO::checkpoint_dir                          = "../checkpoints"
 IO::recover_dir                             = "../checkpoints"
 IO::abort_on_io_errors                      = yes
+IO::checkpoint_keep                         = 1
+IO::recover_and_remove                      = yes
 CarpetIOHDF5::open_one_input_file_at_a_time = yes
-CarpetIOHDF5::compression_level             = 0
+CarpetIOHDF5::compression_level             = 9
 
 ################################################################################
 # Run termination
