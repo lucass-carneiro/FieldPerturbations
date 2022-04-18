@@ -99,7 +99,7 @@ gaussian_c_22  = 0.0
 
 
 compute_error  = "no"
-compute_energy = "yes"
+compute_Tmunu = "yes"
 
 ################################################################################
 # Grid structure
@@ -400,7 +400,7 @@ InitBase::initial_data_setup_method     = "init_single_level"
 ################################################################################
 
 KleinGordon::compute_error       = $compute_error
-KleinGordon::compute_energy      = $compute_energy
+KleinGordon::compute_Tmunu       = $compute_Tmunu
 
 KleinGordon::bc_type             = "NewRad"
 KleinGordon::nPhi                = 3
