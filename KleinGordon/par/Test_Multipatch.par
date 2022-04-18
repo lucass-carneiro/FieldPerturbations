@@ -176,7 +176,7 @@ KleinGordon::time_offset  = 0
 KleinGordon::fd_order = $fd_order
 
 KleinGordon::compute_error  = no
-KleinGordon::compute_energy = no
+KleinGordon::compute_Tmunu = no
 
 # WARNING: Never set this parameter in normal evolutions.
 KleinGordon::test_multipatch = yes

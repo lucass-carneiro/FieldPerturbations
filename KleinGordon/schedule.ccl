@@ -201,7 +201,7 @@ SCHEDULE KleinGordon_Sync IN KleinGordon_PostStepGroup AFTER KleinGordon_Boundar
 
 
 
-if(compute_energy)
+if(compute_Tmunu)
 {
   if(fd_order == 4)
   {

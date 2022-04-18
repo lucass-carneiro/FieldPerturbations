@@ -73,7 +73,7 @@ gaussian_c_22  = 0.0
 
 
 compute_error  = "no"
-compute_energy = "no"
+compute_Tmunu = "no"
 
 ################################################################################
 # Finite difference stencil and dissipation configuration
@@ -383,7 +383,7 @@ ADMBase::lapse_evolution_method  = "exact"
 ADMBase::shift_evolution_method  = "exact"
 
 KleinGordon::compute_error       = $compute_error
-KleinGordon::compute_energy      = $compute_energy
+KleinGordon::compute_Tmunu      = $compute_Tmunu
 
 KleinGordon::bc_type             = "NewRad"
 KleinGordon::nPhi                = 3
@@ -394,7 +394,11 @@ KleinGordon::K_Phi0              = 0.0
 NewRad::z_is_radial              = yes
 
 TmunuBase::timelevels            = 3
+<<<<<<< HEAD
 TmunuBase::stress_energy_storage = yes
+=======
+TmunuBase::stress_energy_storage = $compute_Tmunu
+>>>>>>> 20f59e9 (Renamed the parameter that triggers Tmunu computations. Tweaked test parameter files)
 TmunuBase::stress_energy_at_RHS  = yes
 
 ################################################################################

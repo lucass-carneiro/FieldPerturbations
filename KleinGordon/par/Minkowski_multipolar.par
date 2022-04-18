@@ -31,8 +31,8 @@ $info_every = 1
 $out_every = 1
 $out2D_every = 0
 
-$compute_field_energy = yes
 $compute_field_error  = no
+$compute_Tmunu = yes
 
 $output_vars    = "KleinGordon::Phi TmunuBase::eTtt Grid::coordinates{out_every=100000}"
 $nan_check_vars = "KleinGordon::Phi TmunuBase::eTtt"
@@ -193,7 +193,7 @@ KleinGordon::gaussian_z0    = 0.0
 KleinGordon::fd_order = $fd_order
 
 KleinGordon::compute_error  = $compute_field_error
-KleinGordon::compute_energy = $compute_field_energy
+KleinGordon::compute_Tmunu = $compute_Tmunu
 
 KleinGordon::multipoles[0] = 0.0
 KleinGordon::multipoles[1] = 0.0

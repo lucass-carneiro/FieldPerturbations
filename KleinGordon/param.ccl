@@ -103,11 +103,11 @@ REAL time_offset "Time offset"
 
 
 
-CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respecto to a Minkowski evolution"
+CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respect to a Minkowski evolution"
 {
 } no
 
-CCTK_BOOLEAN compute_energy "Wether to compute the PDE energy"
+CCTK_BOOLEAN compute_Tmunu "Wether to add the field contribution to the Tmunu components"
 {
 } no
 
