@@ -24,6 +24,11 @@ CCTK_REAL error_group type=gf tags='tensortypealias="Scalar" prolongation="None"
   Phi_err, K_Phi_err
 } "Error measure of the wave equation"
 
+CCTK_REAL energy_density_group type=gf tags='tensortypealias="Scalar" prolongation="None" checkpoint="no"'
+{
+  rho_E
+} "Field energy density"
+
 ################################
 #  ALIASED FUNCTIONS FROM MoL  #
 ################################

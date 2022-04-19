@@ -102,6 +102,9 @@ REAL time_offset "Time offset"
 } 0.0
 
 
+CCTK_BOOLEAN compute_energy_density "Wether to compute the energy density of the field"
+{
+} no
 
 CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respect to a Minkowski evolution"
 {

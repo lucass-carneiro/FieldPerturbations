@@ -19,12 +19,12 @@ $n_angular   = 20
 $sphere_inner_radius = 1.0
 $sphere_outer_radius = 4.0
 
-$fd_order = 4
-$ghosts = 2
+$fd_order = 6
+$ghosts = $fd_order/2
 
 $courant_factor = 0.25
 $time_step      = $courant_factor * $h_cartesian
-$final_time     = 40.0
+$final_time     = 1.0
 
 $nan_check_every = 1
 $info_every = 1
@@ -32,10 +32,21 @@ $out_every = 1
 $out2D_every = 0
 
 $compute_field_error  = yes
-$compute_Tmunu = yes
+$compute_Tmunu = no
+$compute_energy_density = yes
 
-$output_vars    = "KleinGordon::evolved_group KleinGordon::error_group TmunuBase::eTtt Grid::coordinates{out_every=100000}"
-$nan_check_vars = "KleinGordon::evolved_group KleinGordon::error_group TmunuBase::eTtt"
+$output_vars    = "
+  KleinGordon::evolved_group
+  KleinGordon::error_group
+  KleinGordon::energy_density_group
+  Grid::coordinates{out_every=100000}
+"
+
+$nan_check_vars = "
+  KleinGordon::evolved_group
+  KleinGordon::error_group
+  KleinGordon::energy_density_group
+"
 
 #######################################################################
 # Thorns                                                              #
@@ -161,7 +172,7 @@ Carpet::init_3_timelevels           = no
 #######################################################################
 
 TmunuBase::timelevels            = 3
-TmunuBase::stress_energy_storage = yes
+TmunuBase::stress_energy_storage = $compute_Tmunu
 TmunuBase::stress_energy_at_RHS  = yes
 
 #######################################################################
@@ -181,8 +192,9 @@ KleinGordon::gaussian_z0    = 0.0
 
 KleinGordon::fd_order = $fd_order
 
-KleinGordon::compute_error  = $compute_field_error
-KleinGordon::compute_Tmunu = $compute_Tmunu
+KleinGordon::compute_error          = $compute_field_error
+KleinGordon::compute_Tmunu          = $compute_Tmunu
+KleinGordon::compute_energy_density = $compute_energy_density
 
 KleinGordon::multipoles[0] = 0.0
 KleinGordon::multipoles[1] = 0.0

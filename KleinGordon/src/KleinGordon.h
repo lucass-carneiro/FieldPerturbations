@@ -112,9 +112,9 @@ void KleinGordon_ZeroRHS(CCTK_ARGUMENTS);
 void KleinGordon_ZeroError(CCTK_ARGUMENTS);
 
 /**********************************************
- * KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS)    *
+ * KleinGordon_ZeroEnDen(CCTK_ARGUMENTS)      *
  *                                            *
- * This function zeros the epsilon variable   *
+ * This function zeros the rho_E variable     *
  * in order to prevent sporious NaNs.         *
  *                                            *
  * Input: CCTK_ARGUMENTS (the grid functions  *
@@ -122,7 +122,7 @@ void KleinGordon_ZeroError(CCTK_ARGUMENTS);
  *                                            *
  * Output: Nothing                            *
  **********************************************/
-void KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS);
+void KleinGordon_ZeroEnDen(CCTK_ARGUMENTS);
 
 /**********************************************
  * KleinGordon_RHS_4(CCTK_ARGUMENTS)          *
@@ -207,6 +207,51 @@ void KleinGordon_CalcTmunu_6(CCTK_ARGUMENTS);
  * Output: Nothing                             *
  ***********************************************/
 void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcEnDen_4(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy density   *
+ * of the scalar field using 4-th order        *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcEnDen_4(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcEnDen_6(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy density   *
+ * of the scalar field using 6-th order        *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcEnDen_6(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcEnDen_8(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy density   *
+ * of the scalar field using 8-th order        *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcEnDen_8(CCTK_ARGUMENTS);
 
 /****************************************************************
  * KleinGordon_RHSSync(CCTK_ARGUMENTS)                          *

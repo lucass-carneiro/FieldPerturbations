@@ -51,17 +51,24 @@ void KleinGordon_MoLRegister(CCTK_ARGUMENTS) {
    * The energy momentum tensor and error variables shoud be registered as "Constrained"
    * within mol. Constrained variables are those which your thorn sets but does not evolve.
    */
-  const CCTK_INT energy_scalar_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_scalar");
-  const CCTK_INT energy_vector_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_vector");
-  const CCTK_INT energy_tensor_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_tensor");
+  if (compute_Tmunu) {
+    const CCTK_INT energy_scalar_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_scalar");
+    const CCTK_INT energy_vector_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_vector");
+    const CCTK_INT energy_tensor_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_tensor");
+    ierr += MoLRegisterConstrainedGroup(energy_scalar_group_idx);
+    ierr += MoLRegisterConstrainedGroup(energy_vector_group_idx);
+    ierr += MoLRegisterConstrainedGroup(energy_tensor_group_idx);
+  }
 
-  const CCTK_INT error_group_idx = CCTK_GroupIndex("KleinGordon::error_group");
+  if (compute_error) {
+    const CCTK_INT error_group_idx = CCTK_GroupIndex("KleinGordon::error_group");
+    ierr += MoLRegisterConstrainedGroup(error_group_idx);
+  }
 
-  ierr += MoLRegisterConstrainedGroup(energy_scalar_group_idx);
-  ierr += MoLRegisterConstrainedGroup(energy_vector_group_idx);
-  ierr += MoLRegisterConstrainedGroup(energy_tensor_group_idx);
-
-  ierr += MoLRegisterConstrainedGroup(error_group_idx);
+  if (compute_energy_density) {
+    const CCTK_INT energy_density_group_idx = CCTK_GroupIndex("KleinGordon::energy_density_group");
+    ierr += MoLRegisterConstrainedGroup(energy_density_group_idx);
+  }
 
   /*
    * Here we register the evolved variables, the field and it's
