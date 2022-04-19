@@ -14,28 +14,42 @@ $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coord
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 40
+$n_angular   = 20
 
-$sphere_inner_radius = 2.0
-$sphere_outer_radius = 6.0
+$sphere_inner_radius = 1.0
+$sphere_outer_radius = 4.0
 
 $fd_order = 4
-$ghosts = 2
+$ghosts = $fd_order/2
 
 $courant_factor = 0.25
 $time_step      = $courant_factor * $h_cartesian
-$final_time     = 4.5
+$final_iteration = 200
 
 $nan_check_every = 1
 $info_every = 1
 $out_every = 1
-$out2D_every = 0
 
 $compute_field_error  = no
-$compute_Tmunu = yes
+$compute_Tmunu = no
+$compute_energy_density = yes
 
-$output_vars    = "KleinGordon::Phi TmunuBase::eTtt Grid::coordinates{out_every=100000}"
-$nan_check_vars = "KleinGordon::Phi TmunuBase::eTtt"
+$output_vars    = "
+  KleinGordon::evolved_group
+  KleinGordon::energy_density_group
+  #TmunuBase::stress_energy_scalar
+  #TmunuBase::stress_energy_vector
+  #TmunuBase::stress_energy_tensor
+  Grid::coordinates{out_every=100000}
+"
+
+$nan_check_vars = "
+  KleinGordon::evolved_group
+  KleinGordon::energy_density_group
+  #TmunuBase::stress_energy_scalar
+  #TmunuBase::stress_energy_vector
+  #TmunuBase::stress_energy_tensor
+"
 
 #######################################################################
 # Thorns                                                              #
@@ -59,7 +73,6 @@ ActiveThorns = "
   CartGrid3D
   CoordBase
   Coordinates
-#  Dissipation
   IOUtil
   InitBase
   Interpolate2
@@ -119,16 +132,6 @@ Interpolate2::interpolator_order         = $ghosts
 Interpolate2::continue_if_selftest_fails = no
 
 #######################################################################
-# Grid symmetries                                                     #
-#######################################################################
-
-# CoordinatesSymmetry::reflection_z       = yes
-# CoordinatesSymmetry::stagger            = no
-# Coordinates::symmetry                   = "+z bitant"
-# Coordinates::additional_symmetry_size   = 1
-Coordinates::verbose                    = no
-
-#######################################################################
 # Carpet setup                                                        #
 #######################################################################
 
@@ -145,7 +148,7 @@ Carpet::convergence_level = 0
 Carpet::time_refinement_factors = "[1,1,2,4,8,16,32,64,128,256]"
 
 CarpetRegrid2::regrid_every            = -1
-# CarpetRegrid2::freeze_unaligned_levels = yes
+CarpetRegrid2::freeze_unaligned_levels = yes
 CarpetRegrid2::verbose                 = no
 
 #######################################################################
@@ -172,7 +175,7 @@ Carpet::init_3_timelevels           = no
 #######################################################################
 
 TmunuBase::timelevels            = 3
-TmunuBase::stress_energy_storage = yes
+TmunuBase::stress_energy_storage = $compute_Tmunu
 TmunuBase::stress_energy_at_RHS  = yes
 
 #######################################################################
@@ -184,7 +187,7 @@ KleinGordon::field_mass     = 0.0
 KleinGordon::initial_data   = "multipolar_gaussian"
 
 KleinGordon::gaussian_sigma = 0.25
-KleinGordon::gaussian_R0    = 4.0
+KleinGordon::gaussian_R0    = 2.5
 
 KleinGordon::gaussian_x0    = 0.0
 KleinGordon::gaussian_y0    = 0.0
@@ -192,8 +195,9 @@ KleinGordon::gaussian_z0    = 0.0
 
 KleinGordon::fd_order = $fd_order
 
-KleinGordon::compute_error  = $compute_field_error
-KleinGordon::compute_Tmunu = $compute_Tmunu
+KleinGordon::compute_error          = $compute_field_error
+KleinGordon::compute_Tmunu          = $compute_Tmunu
+KleinGordon::compute_energy_density = $compute_energy_density
 
 KleinGordon::multipoles[0] = 0.0
 KleinGordon::multipoles[1] = 0.0
@@ -222,21 +226,8 @@ Coordinates::outer_boundary_size = $ghosts
 # Interpolation
 ################################################################################
 
-CarpetInterp::check_tree_search         = no
-CarpetInterp::tree_search               = yes
-
-#######################################################################
-# Dissipation                                                         #
-#######################################################################
-
-#Dissipation::verbose                         = no
-#Dissipation::epsdis                          = 0.15
-#Dissipation::extra_Dissipation_at_outerbound = yes
-
-#Dissipation::ob_slope                  = 0.1
-#Dissipation::outer_boundary_max_epsdis = 0.3
-#Dissipation::outer_bound_npoints       = $ghosts
-#Dissipation::vars                      = "KleinGordon::evolved_group"
+CarpetInterp::check_tree_search = no
+CarpetInterp::tree_search       = yes
 
 #######################################################################
 # Time integration                                                    #
@@ -254,8 +245,8 @@ Time::timestep        = $time_step
 # Termination and final time                                          #
 #######################################################################
 
-Cactus::terminate       = "time"
-Cactus::cctk_final_time = $final_time
+Cactus::terminate   = "iteration"
+Cactus::cctk_itlast = $final_iteration
 
 #######################################################################
 # Debugging checks                                                    #
@@ -278,10 +269,3 @@ CarpetIOBasic::outInfo_vars     = "KleinGordon::Phi"
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9
 CarpetIOHDF5::out_vars          = $output_vars
-
-IOHDF5::out2D_every     = $out2D_every
-IOHDF5::out2d_xy        = yes
-IOHDF5::out2d_xz        = no
-IOHDF5::out2d_yz        = no
-IOHDF5::out2d_xyplane_z = 0
-IOHDF5::out2D_vars      = $output_vars

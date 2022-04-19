@@ -1,9 +1,9 @@
  #######################################################################
- # Minkowski_exact.par                                                 #
+ # Minkowski_multipolar.par                                            #
  #                                                                     #
  # Evolve the Klein-Gordon equation on top of a Minkowski background   #
  # using Llama with 7 patches Thornburg04 coordinates                  #
- # Exact gaussian initial data.                                        #
+ # Multipolar gaussian initial data                                    #
  #######################################################################
 
 #######################################################################
@@ -24,28 +24,31 @@ $ghosts = $fd_order/2
 
 $courant_factor = 0.25
 $time_step      = $courant_factor * $h_cartesian
-$final_time     = 1.0
+$final_iteration = 2
 
 $nan_check_every = 1
 $info_every = 1
 $out_every = 1
-$out2D_every = 0
 
-$compute_field_error  = yes
-$compute_Tmunu = no
+$compute_field_error  = no
+$compute_Tmunu = yes
 $compute_energy_density = yes
 
 $output_vars    = "
   KleinGordon::evolved_group
-  KleinGordon::error_group
   KleinGordon::energy_density_group
+  TmunuBase::stress_energy_scalar
+  TmunuBase::stress_energy_vector
+  TmunuBase::stress_energy_tensor
   Grid::coordinates{out_every=100000}
 "
 
 $nan_check_vars = "
   KleinGordon::evolved_group
-  KleinGordon::error_group
   KleinGordon::energy_density_group
+  TmunuBase::stress_energy_scalar
+  TmunuBase::stress_energy_vector
+  TmunuBase::stress_energy_tensor
 "
 
 #######################################################################
@@ -181,10 +184,10 @@ TmunuBase::stress_energy_at_RHS  = yes
 
 KleinGordon::field_mass     = 0.0
 
-KleinGordon::initial_data   = "exact_gaussian"
+KleinGordon::initial_data   = "multipolar_gaussian"
 
 KleinGordon::gaussian_sigma = 0.25
-KleinGordon::gaussian_R0    = 0.0
+KleinGordon::gaussian_R0    = 2.5
 
 KleinGordon::gaussian_x0    = 0.0
 KleinGordon::gaussian_y0    = 0.0
@@ -204,7 +207,7 @@ KleinGordon::multipoles[4] = 0.0
 KleinGordon::multipoles[5] = 0.0
 KleinGordon::multipoles[6] = 0.0
 KleinGordon::multipoles[7] = 0.0
-KleinGordon::multipoles[8] = 0.0
+KleinGordon::multipoles[8] = 3.54490770181 # 2 * sqrt(pi)
 
 #######################################################################
 # Outer Boundaries                                                    #
@@ -223,16 +226,16 @@ Coordinates::outer_boundary_size = $ghosts
 # Interpolation
 ################################################################################
 
-CarpetInterp::check_tree_search         = no
-CarpetInterp::tree_search               = yes
+CarpetInterp::check_tree_search = no
+CarpetInterp::tree_search       = yes
 
 #######################################################################
 # Time integration                                                    #
 #######################################################################
 
-MoL::ode_method              = "RK4"
-MoL::mol_intermediate_steps  = 4
-MoL::mol_num_scratch_levels  = 1
+MoL::ode_method              = "RK65"
+MoL::mol_intermediate_steps  = 8
+MoL::mol_num_scratch_levels  = 8
 MoL::initial_data_is_crap    = true
 
 Time::timestep_method = "given"
@@ -242,8 +245,8 @@ Time::timestep        = $time_step
 # Termination and final time                                          #
 #######################################################################
 
-Cactus::terminate       = "time"
-Cactus::cctk_final_time = $final_time
+Cactus::terminate   = "iteration"
+Cactus::cctk_itlast = $final_iteration
 
 #######################################################################
 # Debugging checks                                                    #
@@ -266,10 +269,3 @@ CarpetIOBasic::outInfo_vars     = "KleinGordon::Phi"
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9
 CarpetIOHDF5::out_vars          = $output_vars
-
-IOHDF5::out2D_every     = $out2D_every
-IOHDF5::out2d_xy        = yes
-IOHDF5::out2d_xz        = no
-IOHDF5::out2d_yz        = no
-IOHDF5::out2d_xyplane_z = 0
-IOHDF5::out2D_vars      = $output_vars

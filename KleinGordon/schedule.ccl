@@ -108,15 +108,21 @@ SCHEDULE KleinGordon_ZeroRHS IN KleinGordon_BaseGridGroup
   LANG: C
 } "Set all right hand side functions to zero to prevent spurious nans"
 
-SCHEDULE KleinGordon_ZeroError IN KleinGordon_BaseGridGroup
+if (compute_error)
 {
-  LANG: C
-} "Set the error functions to zero to prevent spurious nans"
+  SCHEDULE KleinGordon_ZeroError IN KleinGordon_BaseGridGroup
+  {
+    LANG: C
+  } "Set the error functions to zero to prevent spurious nans"
+}
 
-SCHEDULE KleinGordon_ZeroEnDen IN KleinGordon_BaseGridGroup
+if (compute_energy_density)
 {
-  LANG: C
-} "Set the energy density functions to zero to prevent spurious nans"
+  SCHEDULE KleinGordon_ZeroEnDen IN KleinGordon_BaseGridGroup
+  {
+    LANG: C
+  } "Set the energy density functions to zero to prevent spurious nans"
+}
 
 
 
