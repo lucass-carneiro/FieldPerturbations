@@ -1,0 +1,599 @@
+ #!/usr/bin/env python
+
+ #######################################################################
+ # Single_BH_Multipolar.par                                            #
+ #                                                                     #
+ # Evolve the Klein-Gordon equation on top of a single exact back hole #
+ # using Llama with 6 patches in Thornburg04nc coordinates.            #
+ # The spin of the black hole can be chosen to give Kerr or Schw. BHs. #
+ #                                                                     #
+ # The scalar field is initialized with multipolar Gaussian initial    #
+ # data                                                                #
+ #                                                                     #
+ # It requires TODO GB for the evolution plus some buffer needed when  #
+ # producing checkpoint data.                                          #
+ #                                                                     #
+ # It takes TODO days with TODO cores to obtain meaningfully results.  #
+ #######################################################################
+
+import numpy as np
+import numpy.polynomial.polynomial as poly
+import sys
+import re
+from string import Template
+
+################################################################################
+# General settings
+################################################################################
+
+run_title = "Klein Gordon in Kerr background"
+
+full_warnings              = "yes"
+highlight_warning_messages = "yes"
+
+################################################################################
+# Black hole configuration
+################################################################################
+
+mass = 1.0
+dimensionless_spin = 0
+
+# Event horizon
+horizon_radius = mass + np.sqrt(mass**2 - dimensionless_spin**2)
+
+# Cauchy horizon
+cauchy_radius = mass - np.sqrt(mass**2 - dimensionless_spin**2)
+
+# The excision radius must be placed in between the cauchy and event horizon.
+# See section II B of https://arxiv.org/pdf/gr-qc/0608091.pdf for further details
+def choose_excision_radius(M, a):
+  if a == 0 and M > 0:
+    return 2 * M * 5 / 10
+  elif a > 0 and a < 2 * np.sqrt(np.sqrt(5) - 2) * M:
+    min_radius = poly.polyroots([4 * a**2 * M**2, 0.0, -4 * M**2, 0.0, 1.0])[2]
+    return (min_radius + (horizon_radius - min_radius)/2)
+
+excision_radius = choose_excision_radius(mass, dimensionless_spin)
+
+################################################################################
+# Klein-Gordon field configuration
+################################################################################
+
+field_mass     = 0.0
+
+gaussian_sigma = 0.25
+gaussian_R0    = horizon_radius + 1
+
+gaussian_x0    = 0.0
+gaussian_y0    = 0.0
+gaussian_z0    = 0.0
+
+gaussian_c_00  = 2 * np.sqrt(np.pi)
+gaussian_c_1m1 = 0.0
+gaussian_c_10  = 0.0
+gaussian_c_11  = 0.0
+gaussian_c_2m2 = 0.0
+gaussian_c_2m1 = 0.0
+gaussian_c_20  = 0.0
+gaussian_c_21  = 0.0
+gaussian_c_22  = 0.0
+
+compute_field_error  = "no"
+compute_Tmunu = "no"
+compute_energy_density = "yes"
+
+################################################################################
+# Finite difference stencil and dissipation configuration
+################################################################################
+
+# Finite difference stencil accuracy
+fd_order = 4
+
+# Dissipation magnitude.
+diss_mag = 0.15
+
+# Ghost zones in the stencil
+ghosts = int(fd_order / 2)
+
+# Order of the K-O dissipation operator
+diss_order = 2 * ghosts - 1
+
+################################################################################
+# Simulation times
+################################################################################
+
+# Time where the field's oscillation is expected to vanish (or almost vanish)
+expected_oscillation_endtime = 10.0
+
+# Time after oscillation to keep integrating
+time_after_oscillation = 10.0
+
+# Length of the target waveform
+waveform_length = expected_oscillation_endtime + time_after_oscillation
+
+# Position of the outermost detector
+outermost_detector = 15.0
+
+# Final integration time
+final_time = waveform_length + outermost_detector
+
+################################################################################
+# Grid structure
+################################################################################
+
+# Number of angular cells of the multipatch coordinates
+n_angular = 20
+
+# In SphericalSurfaces, the number of interior grid points in the phi direction
+# of the surface must be a multiple of four after the symmetries have been removed.
+n_phi = n_angular
+while (n_phi - 2 * ghosts) % 4 != 0:
+    n_phi -= 1
+
+# In SphericalSurfaces, the number of interior grid points in the theta direction
+# of the surface must be odd after the symmetries have been removed.
+n_theta = n_angular
+while (n_theta - 2 * ghosts) % 2 == 0:
+    n_theta -= 1
+
+# Radial grid spacing
+h_radial = 0.1
+
+# Outer radius of the spherical patch. It is made to be a multiple of h_radial.
+sphere_outer_radius = int((final_time + outermost_detector)/h_radial)*h_radial + h_radial
+
+# Inner radius of the spherical patch. It is made to be a multiple of excision_radius.
+sphere_inner_radius = int(excision_radius/h_radial)*h_radial + h_radial
+
+################################################################################
+# Frequencies
+################################################################################
+
+# Courant factor
+courant_factor = 0.25
+
+# Wave extraction (multipolar decomposition) frequency.
+wave_extraction_frequency = 0
+
+# 3D data output frequency.
+out3d_frequency = 0
+
+# 2D data output frequency.
+out2d_frequency = 0
+
+# 1D data output frequency.
+out1d_frequency = 0
+
+# 0D data output frequency.
+out0d_frequency = 0
+
+# Apparent horizon finding frequency
+ah_frequency = 1000000
+
+# Timers and process statistics output frequency
+stats_frequency = 1
+
+# NaN checking frequency
+nan_check_every = 0
+
+# Timer output frequency
+timer_tree_every = 100
+
+################################################################################
+# Record all script variables in generated parameter file
+################################################################################
+
+local_vars = locals()
+
+col_width = 0
+for key,val in sorted(local_vars.items()):
+    if isinstance(val, (int, float, complex, str)):
+        col_width = max(len(str(key)), col_width)
+
+var_settings = []
+for key,val in sorted(local_vars.items()):
+    if isinstance(val, (int, float, complex, str)):
+        var_settings = var_settings + ["# {0}{1} = {2}".format(key," "*(col_width-len(key)),val)]
+
+var_settings_str = "\n".join(var_settings)
+
+lines = """
+################################################################################
+# Script variables
+################################################################################
+
+$var_settings_str
+
+################################################################################
+# Active thorns
+################################################################################
+
+ActiveThorns = "
+  ADMBase
+  ADMCoupling
+  ADMMacros
+  AEILocalInterp
+  AHFinderDirect
+  Boundary
+  Carpet
+  CarpetIOASCII
+  CarpetIOBasic
+  CarpetIOHDF5
+  CarpetIOScalar
+  CarpetInterp
+  CarpetInterp2
+  CarpetLib
+  CarpetReduce
+  CarpetRegrid2
+  CarpetTracker
+  CartGrid3D
+  CoordBase
+  CoordGauge
+  Coordinates
+  CoordinatesSymmetry
+  Dissipation
+  hwloc
+  IOUtil
+  InitBase
+  Interpolate2
+  KerrSchild
+  KleinGordon
+  LocalInterp
+  LoopControl
+  MoL
+  NaNChecker
+  NoExcision
+  QuasiLocalMeasures
+  SpaceMask
+  SphericalSurface
+  StaticConformal
+  SymBase
+  SystemStatistics
+  SystemTopology
+  TerminationTrigger
+  Time
+  TmunuBase
+  Vectors
+  NewRad
+  Multipole
+"
+
+#######################################################################
+# General settings                                                    #
+#######################################################################
+
+Cactus::cctk_run_title             = "$run_title"
+
+Cactus::cctk_full_warnings         = $full_warnings
+Cactus::highlight_warning_messages = $highlight_warning_messages
+
+################################################################################
+# Grid structure
+################################################################################
+
+Carpet::domain_from_multipatch          = yes
+CartGrid3D::type                        = "multipatch"
+CartGrid3D::set_coordinate_ranges_on    = "all maps"
+Coordinates::coordinate_system          = "Thornburg04nc"
+Coordinates::h_radial                   = $h_radial
+
+Coordinates::sphere_inner_radius        = $sphere_inner_radius
+Coordinates::sphere_outer_radius        = $sphere_outer_radius
+Coordinates::n_angular                  = $n_angular
+
+Driver::ghost_size                      = $ghosts
+Coordinates::patch_boundary_size        = $ghosts
+Coordinates::additional_overlap_size    = $fd_order - $ghosts
+Coordinates::outer_boundary_size        = $ghosts
+
+# change these (to their defaults) to disable z-zymmetry
+#CoordinatesSymmetry::reflection_z       = yes
+#CoordinatesSymmetry::stagger            = no
+#Coordinates::symmetry                   = "+z bitant"
+#Coordinates::additional_symmetry_size   = 1
+#Coordinates::verbose                    = no
+
+Time::timestep_method                   = "courant_static"
+Time::dtfac                             = $courant_factor
+Carpet::time_refinement_factors         = "[1,1,2,4,8,16,32,64,128,256]"
+
+################################################################################
+# Initial data
+################################################################################
+
+ADMBase::evolution_method            = "KerrSchild"
+ADMBase::initial_data                = "KerrSchild"
+ADMBase::initial_lapse               = "KerrSchild"
+ADMBase::initial_shift               = "KerrSchild"
+ADMBase::initial_dtlapse             = "KerrSchild"
+ADMBase::initial_dtshift             = "KerrSchild"
+
+ADMBase::lapse_timelevels           = 3
+ADMBase::shift_timelevels           = 3
+ADMBase::metric_timelevels          = 3
+
+KerrSchild::M = $mass
+KerrSchild::a = $dimensionless_spin
+
+InitBase::initial_data_setup_method = "init_all_levels"
+Carpet::init_fill_timelevels        = no
+Carpet::init_3_timelevels           = no
+
+################################################################################
+# Evolution and boundary
+################################################################################
+
+KleinGordon::bc_type             = "NewRad"
+KleinGordon::nPhi                = 3
+KleinGordon::nK_Phi              = 3
+KleinGordon::Phi0                = 0.0
+KleinGordon::K_Phi0              = 0.0
+
+NewRad::z_is_radial              = yes
+
+TmunuBase::timelevels            = 3
+TmunuBase::stress_energy_storage = $compute_Tmunu
+TmunuBase::stress_energy_at_RHS  = yes
+
+################################################################################
+# Spatial finite differencing
+################################################################################
+
+KleinGordon::fd_order = $fd_order
+
+Dissipation::verbose = no
+Dissipation::epsdis  = $diss_mag
+Dissipation::order   = $diss_order
+
+Dissipation::vars = "
+  KleinGordon::evolved_group
+"
+
+################################################################################
+# Time integration
+################################################################################
+
+MoL::ODE_Method              = "RK4"
+MoL::MoL_Intermediate_Steps  = 4
+MoL::MoL_Num_Scratch_Levels  = 1
+
+################################################################################
+# Interpolation
+################################################################################
+
+CarpetInterp::check_tree_search          = no
+CarpetInterp::tree_search                = yes
+
+Interpolate2::interpolator_order         = $ghosts
+Interpolate2::continue_if_selftest_fails = no
+
+################################################################################
+# KG field initial data
+################################################################################
+
+KleinGordon::field_mass     = $field_mass
+
+KleinGordon::initial_data   = "multipolar_gaussian"
+
+KleinGordon::gaussian_sigma = $gaussian_sigma
+KleinGordon::gaussian_R0    = $gaussian_R0
+
+KleinGordon::gaussian_x0    = $gaussian_x0
+KleinGordon::gaussian_y0    = $gaussian_y0
+KleinGordon::gaussian_z0    = $gaussian_z0
+
+KleinGordon::multipoles[0]  = $gaussian_c_00
+KleinGordon::multipoles[1]  = $gaussian_c_1m1
+KleinGordon::multipoles[2]  = $gaussian_c_10
+KleinGordon::multipoles[3]  = $gaussian_c_11
+KleinGordon::multipoles[4]  = $gaussian_c_2m2
+KleinGordon::multipoles[5]  = $gaussian_c_2m1
+KleinGordon::multipoles[6]  = $gaussian_c_20 
+KleinGordon::multipoles[7]  = $gaussian_c_21
+KleinGordon::multipoles[8]  = $gaussian_c_22
+
+KleinGordon::compute_error          = $compute_field_error
+KleinGordon::compute_Tmunu          = $compute_Tmunu
+KleinGordon::compute_energy_density = $compute_energy_density
+
+################################################################################
+# KG field decomposition
+################################################################################
+
+# Radii are chosen to be evenly spaced in 1/r as that is the variable
+# extrapolation is performed in
+Multipole::nradii       = 7
+Multipole::radius[0]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**0
+Multipole::radius[1]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**1
+Multipole::radius[2]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**2
+Multipole::radius[3]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**3
+Multipole::radius[4]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**4
+Multipole::radius[5]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**5
+Multipole::radius[6]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**6
+Multipole::ntheta       = $n_theta
+Multipole::nphi         = $n_phi
+Multipole::variables    = "KleinGordon::Phi{sw=0 name='KG_Phi'}"
+Multipole::out_every    = $wave_extraction_frequency
+Multipole::l_max        = 8
+Multipole::output_hdf5  = yes
+
+# Disable ASCII output to avoid creating a large number of files
+Multipole::output_ascii = no
+
+################################################################################
+# Apparent Horizons
+################################################################################
+
+AHFinderDirect::N_horizons                               = 1
+AHFinderDirect::find_every                               = $ah_frequency
+AHFinderDirect::output_h_every                           = 0
+AHFinderDirect::max_Newton_iterations__initial           = 50
+AHFinderDirect::max_Newton_iterations__subsequent        = 50
+AHFinderDirect::max_allowable_Theta_growth_iterations    = 10
+AHFinderDirect::max_allowable_Theta_nonshrink_iterations = 10
+AHFinderDirect::geometry_interpolator_name               = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars               = "order=4"
+AHFinderDirect::surface_interpolator_name                = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars                = "order=4"
+AHFinderDirect::verbose_level                            = "physics details"
+AHFinderDirect::move_origins                             = yes
+
+AHFinderDirect::origin_x                             [1] = 0
+AHFinderDirect::origin_y                             [1] = 0
+AHFinderDirect::origin_z                             [1] = 0
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 0
+AHFinderDirect::initial_guess__coord_sphere__radius  [1] = $horizon_radius
+AHFinderDirect::which_surface_to_store_info          [1] = 0
+AHFinderDirect::set_mask_for_individual_horizon      [1] = no
+AHFinderDirect::max_allowable_horizon_radius         [1] = 6
+
+################################################################################
+# Spherical surfaces
+################################################################################
+
+SphericalSurface::nsurfaces = 1
+SphericalSurface::maxntheta = $n_theta
+SphericalSurface::maxnphi   = $n_phi
+SphericalSurface::verbose   = no
+
+# Event horizon
+SphericalSurface::ntheta      [0] = $n_theta
+SphericalSurface::nphi        [0] = $n_phi
+SphericalSurface::nghoststheta[0] = $ghosts
+SphericalSurface::nghostsphi  [0] = $ghosts
+
+################################################################################
+# Isolated Horizons
+################################################################################
+
+QuasiLocalMeasures::verbose              = no
+QuasiLocalMeasures::veryverbose          = no
+QuasiLocalMeasures::interpolator         = "Lagrange polynomial interpolation"
+QuasiLocalMeasures::interpolator_options = "order=4"
+QuasiLocalMeasures::spatial_order        = 4
+QuasiLocalMeasures::num_surfaces         = 1
+QuasiLocalMeasures::surface_index[0]     = 0
+QuasiLocalMeasures::output_vtk_every     = $out3d_frequency
+
+################################################################################
+# Singularity Excision                                                         #
+################################################################################
+
+NoExcision::method              = "new"
+NoExcision::smooth_regions      = no
+NoExcision::num_regions         = 1
+NoExcision::centre_x        [0] = 0.0
+NoExcision::centre_y        [0] = 0.0
+NoExcision::centre_z        [0] = 0.0
+NoExcision::radius          [0] = $excision_radius
+NoExcision::Minkowski_scale [0] = 1.0 #minkowski_scale
+NoExcision::reduce_rhs      [0] = yes
+
+################################################################################
+# Correctness checking
+################################################################################
+
+Carpet::poison_new_timelevels = no
+Carpet::check_for_poison      = no
+
+NaNChecker::check_every     = $nan_check_every
+NanChecker::check_after     = 0
+NaNChecker::report_max      = 10
+NaNChecker::verbose         = "all"
+NaNChecker::action_if_found = terminate
+NaNChecker::out_NaNmask     = yes
+NaNChecker::check_vars      = "
+  KleinGordon::evolved_group
+"
+
+################################################################################
+# Timers
+################################################################################
+
+Carpet::output_timer_tree_every      = $timer_tree_every
+Carpet::output_initialise_timer_tree = yes
+
+################################################################################
+# Output
+################################################################################
+
+IO::out_dir                             = "@SIMULATION_NAME@"
+IOScalar::one_file_per_group            = yes
+IOASCII::one_file_per_group             = yes
+
+IOBasic::outInfo_every            = 1
+IOBasic::outInfo_reductions       = "minimum maximum average"
+IOBasic::outInfo_vars             = "
+  KleinGordon::Phi
+  Carpet::physical_time_per_hour
+  SystemStatistics::maxrss_mb
+  SystemStatistics::swap_used_mb
+"
+
+IOScalar::outScalar_every      = $stats_frequency
+IOScalar::outScalar_reductions = "minimum maximum average"
+IOScalar::outScalar_vars       = "SystemStatistics::process_memory_mb"
+
+IOASCII::out0D_every = $out0d_frequency
+IOASCII::out0D_vars  = "
+  Carpet::timing{out_every = $stats_frequency}
+  QuasiLocalMeasures::qlm_scalars{out_every = $ah_frequency}
+"
+
+IOHDF5::out_every = $out3d_frequency
+IOHDF5::out_vars  = "
+  Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
+  KleinGordon::Phi
+"
+
+IOHDF5::out2d_every     = $out2d_frequency
+IOHDF5::out2d_xy        = yes
+IOHDF5::out2d_xz        = no
+IOHDF5::out2d_yz        = no
+IOHDF5::out2d_xyplane_z = 0.0
+IOHDF5::out2d_vars      = "
+  Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
+  KleinGordon::Phi
+"
+
+################################################################################
+# Checkpointing and recovery
+################################################################################
+
+#CarpetIOHDF5::checkpoint                    = yes
+#IO::checkpoint_ID                           = no
+#IO::recover                                 = "autoprobe"
+#IO::out_proc_every                          = 2
+#IO::checkpoint_on_terminate                 = yes
+#IO::checkpoint_dir                          = "../checkpoints"
+#IO::recover_dir                             = "../checkpoints"
+#IO::abort_on_io_errors                      = yes
+#IO::checkpoint_keep                         = 1
+#IO::recover_and_remove                      = yes
+#CarpetIOHDF5::open_one_input_file_at_a_time = yes
+#CarpetIOHDF5::compression_level             = 9
+
+################################################################################
+# Run termination
+################################################################################
+
+#TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
+
+# Trigger termination 120 minutes before the walltime is reached
+TerminationTrigger::on_remaining_walltime        = 120
+TerminationTrigger::output_remtime_every_minutes = 30
+TerminationTrigger::termination_from_file        = yes
+TerminationTrigger::termination_file             = "terminate.txt"
+TerminationTrigger::create_termination_file      = yes
+
+#Cactus::terminate                                = "time"
+#Cactus::cctk_final_time                          = $final_time
+
+# Used for debugging the parameter file
+Cactus::terminate                                = "iteration"
+Cactus::cctk_itlast                              = 100
+"""
+
+open(re.sub(r'(.*)\.rpar$', r'\1.par', sys.argv[0]), 'w').write(re.sub(r'\n *',r'\n',Template(Template(lines).substitute(locals())).substitute(locals())))

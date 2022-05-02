@@ -1,0 +1,271 @@
+ #######################################################################
+ # Minkowski_multipolar.par                                            #
+ #                                                                     #
+ # Evolve the Klein-Gordon equation on top of a Minkowski background   #
+ # using Llama with 7 patches Thornburg04 coordinates                  #
+ # Multipolar gaussian initial data                                    #
+ #######################################################################
+
+#######################################################################
+# Script variables                                                    #
+#######################################################################
+
+$title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
+
+$h_radial    = 0.1
+$h_cartesian = 0.1
+$n_angular   = 20
+
+$sphere_inner_radius = 1.0
+$sphere_outer_radius = 4.0
+
+$fd_order = 4
+$ghosts = $fd_order/2
+
+$courant_factor = 0.25
+$time_step      = $courant_factor * $h_cartesian
+$final_iteration = 200
+
+$nan_check_every = 1
+$info_every = 1
+$out_every = 1
+
+$compute_field_error  = no
+$compute_Tmunu = no
+$compute_energy_density = yes
+
+$output_vars    = "
+  KleinGordon::evolved_group
+  KleinGordon::energy_density_group
+  #TmunuBase::stress_energy_scalar
+  #TmunuBase::stress_energy_vector
+  #TmunuBase::stress_energy_tensor
+  Grid::coordinates{out_every=100000}
+"
+
+$nan_check_vars = "
+  KleinGordon::evolved_group
+  KleinGordon::energy_density_group
+  #TmunuBase::stress_energy_scalar
+  #TmunuBase::stress_energy_vector
+  #TmunuBase::stress_energy_tensor
+"
+
+#######################################################################
+# Thorns                                                              #
+#######################################################################
+
+ActiveThorns = "
+  ADMBase
+  AEILocalInterp
+  Boundary
+  Carpet
+  CarpetIOASCII
+  CarpetIOBasic
+  CarpetIOHDF5
+  CarpetIOScalar
+  CarpetInterp
+  CarpetInterp2
+  CarpetLib
+  CarpetReduce
+  CarpetRegrid2
+  CarpetTracker
+  CartGrid3D
+  CoordBase
+  Coordinates
+  IOUtil
+  InitBase
+  Interpolate2
+  QuasiLocalMeasures
+  LocalInterp
+  Minkowski
+  MoL
+  NaNChecker
+  Slab
+  SpaceMask
+  SphericalSurface
+  StaticConformal
+  SymBase
+  SystemStatistics
+  SystemTopology
+  TerminationTrigger
+  Time
+  TmunuBase
+  Vectors
+  NewRad
+  KleinGordon
+"
+
+#######################################################################
+# General settings                                                    #
+#######################################################################
+
+Cactus::cctk_run_title = $title
+
+Cactus::cctk_full_warnings         = yes
+Cactus::highlight_warning_messages = yes
+
+#######################################################################
+# Grid setup                                                          #
+#######################################################################
+
+Carpet::domain_from_multipatch       = yes
+CartGrid3D::type                     = "multipatch"
+CartGrid3D::set_coordinate_ranges_on = "all maps"
+
+Driver::ghost_size                   = $ghosts
+
+Coordinates::coordinate_system       = "Thornburg04"
+Coordinates::h_radial                = $h_radial
+Coordinates::h_cartesian             = $h_cartesian
+Coordinates::sphere_inner_radius     = $sphere_inner_radius
+Coordinates::sphere_outer_radius     = $sphere_outer_radius
+Coordinates::n_angular               = $n_angular
+
+#######################################################################
+# Interpatch boundary                                                 #
+#######################################################################
+
+Coordinates::patch_boundary_size         = $ghosts
+Coordinates::additional_overlap_size     = $fd_order - $ghosts
+Interpolate2::interpolator_order         = $ghosts
+Interpolate2::continue_if_selftest_fails = no
+
+#######################################################################
+# Carpet setup                                                        #
+#######################################################################
+
+Carpet::max_refinement_levels  = 1
+
+Carpet::use_buffer_zones         = yes
+Carpet::prolongation_order_space = 5
+Carpet::prolongation_order_time  = 2
+
+Carpet::grid_structure_filename   = "carpet-grid-structure.asc"
+Carpet::grid_coordinates_filename = "carpet-grid-coordinates.asc"
+
+Carpet::convergence_level = 0
+Carpet::time_refinement_factors = "[1,1,2,4,8,16,32,64,128,256]"
+
+CarpetRegrid2::regrid_every            = -1
+CarpetRegrid2::freeze_unaligned_levels = yes
+CarpetRegrid2::verbose                 = no
+
+#######################################################################
+# Background spacetime                                                #
+#######################################################################
+
+ADMBase::initial_data     = "Minkowski"
+ADMBase::evolution_method = "Minkowski"
+ADMBase::initial_lapse    = "Minkowski"
+ADMBase::initial_shift    = "Minkowski"
+ADMBase::initial_dtlapse  = "Minkowski"
+ADMBase::initial_dtshift  = "Minkowski"
+
+ADMBase::lapse_timelevels  = 3
+ADMBase::shift_timelevels  = 3
+ADMBase::metric_timelevels = 3
+
+InitBase::initial_data_setup_method = "init_some_levels"
+Carpet::init_fill_timelevels        = yes
+Carpet::init_3_timelevels           = no
+
+#######################################################################
+# Energy momentum tensor config                                       #
+#######################################################################
+
+TmunuBase::timelevels            = 3
+TmunuBase::stress_energy_storage = $compute_Tmunu
+TmunuBase::stress_energy_at_RHS  = yes
+
+#######################################################################
+# Scalar field initial data                                           #
+#######################################################################
+
+KleinGordon::field_mass     = 0.0
+
+KleinGordon::initial_data   = "multipolar_gaussian"
+
+KleinGordon::gaussian_sigma = 0.25
+KleinGordon::gaussian_R0    = 2.5
+
+KleinGordon::gaussian_x0    = 0.0
+KleinGordon::gaussian_y0    = 0.0
+KleinGordon::gaussian_z0    = 0.0
+
+KleinGordon::fd_order = $fd_order
+
+KleinGordon::compute_error          = $compute_field_error
+KleinGordon::compute_Tmunu          = $compute_Tmunu
+KleinGordon::compute_energy_density = $compute_energy_density
+
+KleinGordon::multipoles[0] = 0.0
+KleinGordon::multipoles[1] = 0.0
+KleinGordon::multipoles[2] = 0.0
+KleinGordon::multipoles[3] = 0.0
+KleinGordon::multipoles[4] = 0.0
+KleinGordon::multipoles[5] = 0.0
+KleinGordon::multipoles[6] = 0.0
+KleinGordon::multipoles[7] = 0.0
+KleinGordon::multipoles[8] = 3.54490770181 # 2 * sqrt(pi)
+
+#######################################################################
+# Outer Boundaries                                                    #
+#######################################################################
+
+KleinGordon::bc_type = "NewRad"
+NewRad::z_is_radial  = yes
+KleinGordon::nPhi    = 3
+KleinGordon::nK_Phi  = 3
+KleinGordon::Phi0    = 0.0
+KleinGordon::K_Phi0  = 0.0
+
+Coordinates::outer_boundary_size = $ghosts
+
+################################################################################
+# Interpolation
+################################################################################
+
+CarpetInterp::check_tree_search = no
+CarpetInterp::tree_search       = yes
+
+#######################################################################
+# Time integration                                                    #
+#######################################################################
+
+MoL::ode_method              = "RK4"
+MoL::mol_intermediate_steps  = 4
+MoL::mol_num_scratch_levels  = 1
+MoL::initial_data_is_crap    = true
+
+Time::timestep_method = "given"
+Time::timestep        = $time_step
+
+#######################################################################
+# Termination and final time                                          #
+#######################################################################
+
+Cactus::terminate   = "iteration"
+Cactus::cctk_itlast = $final_iteration
+
+#######################################################################
+# Debugging checks                                                    #
+#######################################################################
+
+NaNChecker::check_every     = $nan_check_every
+NaNChecker::action_if_found = "terminate"
+NaNChecker::check_vars      = $nan_check_vars
+NaNChecker::verbose         = "all"
+
+#######################################################################
+# Output                                                              #
+#######################################################################
+
+IO::out_dir                     = $parfile
+
+CarpetIOBasic::outInfo_every    = $info_every
+CarpetIOBasic::outInfo_vars     = "KleinGordon::Phi"
+
+CarpetIOHDF5::out_every         = $out_every
+CarpetIOHDF5::compression_level = 9
+CarpetIOHDF5::out_vars          = $output_vars

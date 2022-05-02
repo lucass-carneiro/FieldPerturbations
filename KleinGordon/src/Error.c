@@ -41,12 +41,21 @@ void KleinGordon_Error(CCTK_ARGUMENTS) {
 
   /* Time values */
   const CCTK_REAL t = cctk_time;
+  CCTK_REAL analytic_Phi = 0.0, analytic_K_Phi = 0.0;
 
-  CCTK_LOOP3_INT(loop_error, cctkGH, i, j, k) {
+#pragma omp parallel
+  CCTK_LOOP3_ALL(loop_error, cctkGH, i, j, k) {
+
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-    Phi_err[ijk] = fabs(Phi[ijk] - exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
-    K_Phi_err[ijk] = fabs(K_Phi[ijk] - dt_exact_gaussian(t, x[ijk], y[ijk], z[ijk]));
+    analytic_Phi = cartesian_gaussian_solution(t, x[ijk] - gaussian_x0, y[ijk] - gaussian_y0,
+                                               z[ijk] - gaussian_z0, gaussian_sigma);
+    analytic_K_Phi = -0.5
+                     * cartesian_gaussian_solution_dt(t, x[ijk] - gaussian_x0, y[ijk] - gaussian_y0,
+                                                      z[ijk] - gaussian_z0, gaussian_sigma);
+
+    Phi_err[ijk] = fabs(Phi[ijk] - analytic_Phi);
+    K_Phi_err[ijk] = fabs(K_Phi[ijk] - analytic_K_Phi);
   }
-  CCTK_ENDLOOP3_INT(loop_error);
+  CCTK_ENDLOOP3_ALL(loop_error);
 }

@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with KleinGordon.  If not, see <https://www.gnu.org/licenses/>.
  *
- * CalcTmunu_8.c
- * Compute the energy momentum tensor of the wave equation.
+ * CalcEnDen_4.c
+ * Compute the energy density of the wave equation.
  */
 
 /*************************
@@ -27,12 +27,14 @@
 #include "Derivatives.h"
 #include "KleinGordon.h"
 
-void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
+#include <math.h>
+
+void KleinGordon_CalcEnDen_4(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
   /* Quantities required for the derivative macros to work */
-  DECLARE_FIRST_DERIVATIVE_FACTORS_8;
+  DECLARE_FIRST_DERIVATIVE_FACTORS_4;
 
   /* Loop index */
   CCTK_INT ijk = 0;
@@ -111,7 +113,7 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
   CCTK_REAL J33L = 0;
 
 #pragma omp parallel
-  CCTK_LOOP3_INT(loop_Tmunu, cctkGH, i, j, k) {
+  CCTK_LOOP3_INT(loop_rho_E, cctkGH, i, j, k) {
     ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
     /* Assing ADM local variables */
@@ -176,9 +178,9 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
     igzzL = ihzzL + igttL * betazL * betazL;
 
     /* Derivatives of Phi */
-    d_x_Phi = global_Dx(8, Phi);
-    d_y_Phi = global_Dy(8, Phi);
-    d_z_Phi = global_Dz(8, Phi);
+    d_x_Phi = global_Dx(4, Phi);
+    d_y_Phi = global_Dy(4, Phi);
+    d_z_Phi = global_Dz(4, Phi);
     d_t_Phi = (betaxL * d_x_Phi + betayL * d_y_Phi + betazL * d_z_Phi) - 2.0 * alpL * K_PhiL;
 
     // The scalar quantity g^{ab} \nabla_{a} \phi \nabla_{b} \phi
@@ -188,26 +190,8 @@ void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS) {
                + 2.0 * (igxzL * d_x_Phi * d_z_Phi) + (igyyL * d_y_Phi * d_y_Phi)
                + 2.0 * (igyzL * d_y_Phi * d_z_Phi) + (igzzL * d_z_Phi * d_z_Phi);
 
-    eTtt[ijk] += (d_t_Phi * d_t_Phi)
-                 + 0.5 * gttL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTtx[ijk] += (d_t_Phi * d_x_Phi)
-                 + 0.5 * betaxL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTty[ijk] += (d_t_Phi * d_y_Phi)
-                 + 0.5 * betayL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTtz[ijk] += (d_t_Phi * d_z_Phi)
-                 + 0.5 * betazL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTxx[ijk] += (d_x_Phi * d_x_Phi)
-                 + 0.5 * hxxL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTxy[ijk] += (d_x_Phi * d_y_Phi)
-                 + 0.5 * hxyL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTxz[ijk] += (d_x_Phi * d_z_Phi)
-                 + 0.5 * hxzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTyy[ijk] += (d_y_Phi * d_y_Phi)
-                 + 0.5 * hyyL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTyz[ijk] += (d_y_Phi * d_z_Phi)
-                 + 0.5 * hyzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
-    eTzz[ijk] += (d_z_Phi * d_z_Phi)
-                 + 0.5 * hzzL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
+    rho_E[ijk]
+        = (d_t_Phi * d_t_Phi) + 0.5 * gttL * ((field_mass * PhiL) * (field_mass * PhiL) - nabladot);
   }
-  CCTK_ENDLOOP3_INT(loop_Tmunu);
+  CCTK_ENDLOOP3_INT(loop_rho_E);
 }

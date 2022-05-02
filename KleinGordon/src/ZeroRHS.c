@@ -30,18 +30,12 @@ void KleinGordon_ZeroRHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  /* Loop indexes */
-  CCTK_INT i = 0, j = 0, k = 0, ijk = 0;
+#pragma omp parallel
+  CCTK_LOOP3_ALL(loop_zero_rhs, cctkGH, i, j, k) {
+    const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-  /* Loop over all points (ghostzones included) */
-  for (k = 0; k < cctk_lsh[2]; k++) {
-    for (j = 0; j < cctk_lsh[1]; j++) {
-      for (i = 0; i < cctk_lsh[0]; i++) {
-        ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
-
-        Phi_rhs[ijk] = 0.0;
-        K_Phi_rhs[ijk] = 0.0;
-      }
-    }
+    Phi_rhs[ijk] = 0.0;
+    K_Phi_rhs[ijk] = 0.0;
   }
+  CCTK_ENDLOOP3_ALL(loop_zero_rhs);
 }

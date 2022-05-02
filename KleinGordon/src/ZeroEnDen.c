@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  *
- * ZeroEpsilon.c
- * Zeros the energy density variable to prevent spurious NaNs.
+ * ZeroEnDen.c
+ * Zeros the energy density variables to prevent spurious NaNs.
  */
 
 /*************************
@@ -26,14 +26,15 @@
  *************************/
 #include "KleinGordon.h"
 
-void KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS) {
+void KleinGordon_ZeroEnDen(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  CCTK_LOOP3_ALL(loop_epsilon, cctkGH, i, j, k) {
+#pragma omp parallel
+  CCTK_LOOP3_ALL(loop_en_den, cctkGH, i, j, k) {
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-    epsilon[ijk] = 0.0;
+    rho_E[ijk] = 0.0;
   }
-  CCTK_ENDLOOP3_ALL(loop_epsilon);
+  CCTK_ENDLOOP3_ALL(loop_en_den);
 }

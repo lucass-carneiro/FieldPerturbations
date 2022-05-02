@@ -41,6 +41,7 @@ void KleinGordon_RHSBoundaries(CCTK_ARGUMENTS) {
       CCTK_ERROR("Failed to register NewRad boundary conditions");
   } else if (CCTK_EQUALS(bc_type, "reflecting")) {
 
+#pragma omp parallel
     CCTK_LOOP3_INTBND(loop_reflecting, cctkGH, i, j, k, ni, nj, nk) {
       const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
       Phi_rhs[ijk] = K_Phi[ijk];
@@ -56,6 +57,7 @@ void KleinGordon_Boundaries(CCTK_ARGUMENTS) {
 
   if (CCTK_EQUALS(bc_type, "reflecting")) {
 
+#pragma omp parallel
     CCTK_LOOP3_INTBND(loop_reflecting, cctkGH, i, j, k, ni, nj, nk) {
       const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
       Phi[ijk] = 0.0;
@@ -68,6 +70,9 @@ void KleinGordon_Boundaries(CCTK_ARGUMENTS) {
 }
 
 void KleinGordon_EnforceSymBound(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
   if (CCTK_IsFunctionAliased("Boundary_SelectGroupForBC")) {
     int ierr = Boundary_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, 1, -1,
                                          "KleinGordon::evolved_group", "none");

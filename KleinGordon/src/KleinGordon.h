@@ -112,9 +112,9 @@ void KleinGordon_ZeroRHS(CCTK_ARGUMENTS);
 void KleinGordon_ZeroError(CCTK_ARGUMENTS);
 
 /**********************************************
- * KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS)    *
+ * KleinGordon_ZeroEnDen(CCTK_ARGUMENTS)      *
  *                                            *
- * This function zeros the epsilon variable   *
+ * This function zeros the rho_E variable     *
  * in order to prevent sporious NaNs.         *
  *                                            *
  * Input: CCTK_ARGUMENTS (the grid functions  *
@@ -122,7 +122,7 @@ void KleinGordon_ZeroError(CCTK_ARGUMENTS);
  *                                            *
  * Output: Nothing                            *
  **********************************************/
-void KleinGordon_ZeroEpsilon(CCTK_ARGUMENTS);
+void KleinGordon_ZeroEnDen(CCTK_ARGUMENTS);
 
 /**********************************************
  * KleinGordon_RHS_4(CCTK_ARGUMENTS)          *
@@ -207,6 +207,51 @@ void KleinGordon_CalcTmunu_6(CCTK_ARGUMENTS);
  * Output: Nothing                             *
  ***********************************************/
 void KleinGordon_CalcTmunu_8(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcEnDen_4(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy density   *
+ * of the scalar field using 4-th order        *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcEnDen_4(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcEnDen_6(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy density   *
+ * of the scalar field using 6-th order        *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcEnDen_6(CCTK_ARGUMENTS);
+
+/***********************************************
+ * KleinGordon_CalcEnDen_8(CCTK_ARGUMENTS)     *
+ *                                             *
+ * This function computes the energy density   *
+ * of the scalar field using 8-th order        *
+ * accurate finite differences.                *
+ * of the ADM scalar wave equation.            *
+ *                                             *
+ * Input: CCTK_ARGUMENTS (the grid functions   *
+ * from interface.ccl                          *
+ *                                             *
+ * Output: Nothing                             *
+ ***********************************************/
+void KleinGordon_CalcEnDen_8(CCTK_ARGUMENTS);
 
 /****************************************************************
  * KleinGordon_RHSSync(CCTK_ARGUMENTS)                          *
@@ -299,30 +344,32 @@ void KleinGordon_Boundaries(CCTK_ARGUMENTS);
  ****************************************************/
 void KleinGordon_Error(CCTK_ARGUMENTS);
 
-/**********************************************************************
- * exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
- *                                                                    *
- * Computes the exect result of a gaussian fild in a Minkowski        *
- * background for a given time and position                           *
- *                                                                    *
- * Input: The 4-D point where the gaussian shoulde be computed        *
- *                                                                    *
- * Output: The result of the gaussian at the given point              *
- **********************************************************************/
-CCTK_REAL exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
+/**
+ * The general Gaussian solution of the wave equation in Minkowski
+ * spacetime - cartesian version.
+ *
+ * @param t The time which the solution is to be evaluated. *
+ * @param x The x cartesian coordinate
+ * @param y The y cartesian coordinate
+ * @param z The z cartesian coordinate
+ * @param sigma The Gaussian width.
+ * @return The general solution of the wave equation in Minkowski spacetime.
+ */
+CCTK_REAL cartesian_gaussian_solution(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z,
+                                      CCTK_REAL sigma);
 
-/*************************************************************************
- * dt_exact_gaussian(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z) *
- *                                                                       *
- * Computes the time derivative exect result of a gaussian field in a    *
- * Minkowski background for a given time and position                    *
- *                                                                       *
- * Input: The 4-D point where the time derivative if the gaussian should *
- * be computed                                                           *
- *                                                                       *
- * Output: The result of the time derivative of the gaussian at the      *
- * given point                                                           *
- *************************************************************************/
-CCTK_REAL dt_exact_gaussian(CCTK_REAL, CCTK_REAL, CCTK_REAL, CCTK_REAL);
+/**
+ * Time derivative of the general Gaussian solution of the wave equation in Minkowski
+ * spacetime - cartesian version.
+ *
+ * @param t The time which the solution is to be evaluated. *
+ * @param x The x cartesian coordinate
+ * @param y The y cartesian coordinate
+ * @param z The z cartesian coordinate
+ * @param sigma The Gaussian width.
+ * @return The time derivative of the general solution of the wave equation in Minkowski spacetime.
+ */
+CCTK_REAL cartesian_gaussian_solution_dt(CCTK_REAL t, CCTK_REAL x, CCTK_REAL y, CCTK_REAL z,
+                                         CCTK_REAL sigma);
 
 #endif /* DERIVATIVES_H */

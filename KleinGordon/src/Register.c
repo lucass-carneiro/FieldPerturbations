@@ -34,26 +34,50 @@ void KleinGordon_MoLRegister(CCTK_ARGUMENTS) {
 
   /*
    * The ADM variables must be set as "Save and restore" within MoL.
-   * These are the variables that the Thorn sets but doesn't evolve.
+   * Save and restore variables are those that a thorn depends on but
+   * does not set or evolve.
    */
-  const CCTK_INT lapse_idx = CCTK_GroupIndex("ADMBase::lapse");
-  const CCTK_INT shift_idx = CCTK_GroupIndex("ADMBase::shift");
-  const CCTK_INT metric_idx = CCTK_GroupIndex("ADMBase::metric");
-  const CCTK_INT curv_idx = CCTK_GroupIndex("ADMBase::curv");
+  const CCTK_INT lapse_group_idx = CCTK_GroupIndex("ADMBase::lapse");
+  const CCTK_INT shift_group_idx = CCTK_GroupIndex("ADMBase::shift");
+  const CCTK_INT metric_group_idx = CCTK_GroupIndex("ADMBase::metric");
+  const CCTK_INT curv_group_idx = CCTK_GroupIndex("ADMBase::curv");
 
-  ierr += MoLRegisterSaveAndRestoreGroup(lapse_idx);
-  ierr += MoLRegisterSaveAndRestoreGroup(shift_idx);
-  ierr += MoLRegisterSaveAndRestoreGroup(metric_idx);
-  ierr += MoLRegisterSaveAndRestoreGroup(curv_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(lapse_group_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(shift_group_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(metric_group_idx);
+  ierr += MoLRegisterSaveAndRestoreGroup(curv_group_idx);
+
+  /**
+   * The energy momentum tensor and error variables shoud be registered as "Constrained"
+   * within mol. Constrained variables are those which your thorn sets but does not evolve.
+   */
+  if (compute_Tmunu) {
+    const CCTK_INT energy_scalar_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_scalar");
+    const CCTK_INT energy_vector_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_vector");
+    const CCTK_INT energy_tensor_group_idx = CCTK_GroupIndex("TmunuBase::stress_energy_tensor");
+    ierr += MoLRegisterConstrainedGroup(energy_scalar_group_idx);
+    ierr += MoLRegisterConstrainedGroup(energy_vector_group_idx);
+    ierr += MoLRegisterConstrainedGroup(energy_tensor_group_idx);
+  }
+
+  if (compute_error) {
+    const CCTK_INT error_group_idx = CCTK_GroupIndex("KleinGordon::error_group");
+    ierr += MoLRegisterConstrainedGroup(error_group_idx);
+  }
+
+  if (compute_energy_density) {
+    const CCTK_INT energy_density_group_idx = CCTK_GroupIndex("KleinGordon::energy_density_group");
+    ierr += MoLRegisterConstrainedGroup(energy_density_group_idx);
+  }
 
   /*
    * Here we register the evolved variables, the field and it's
    * conjugate momentum
    */
-  const CCTK_INT evolved_idx = CCTK_GroupIndex("KleinGordon::evolved_group");
-  const CCTK_INT rhs_idx = CCTK_GroupIndex("KleinGordon::rhs_group");
+  const CCTK_INT evolved_group_idx = CCTK_GroupIndex("KleinGordon::evolved_group");
+  const CCTK_INT rhs_group_idx = CCTK_GroupIndex("KleinGordon::rhs_group");
 
-  ierr += MoLRegisterEvolvedGroup(evolved_idx, rhs_idx);
+  ierr += MoLRegisterEvolvedGroup(evolved_group_idx, rhs_group_idx);
 
   if (ierr != 0)
     CCTK_WARN(CCTK_WARN_ABORT, "Error registering variables within MoL. Aborting.");

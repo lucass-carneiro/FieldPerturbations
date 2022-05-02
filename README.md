@@ -18,5 +18,11 @@ This arrangement contains [EinsteinToolkit](https://einsteintoolkit.org/index.ht
 
 All the tensor quantities in this thorn were expanded/computed with the help of Wolfram Mathematica. The equations implemented can be found on the compressed notebook file *equations.nb.gz*
 
+The thorns in this branch use multipatch infrastructures. Here's a status of the multipatch conversion for each thorn:
+
+1. `KleinGordon`: Llama support implemented for all derivative orders. Rigorous testing pending.
+2. `KleinGordonX`: Not yet started. CarpetX patch system not yet implemented.
+3. `KerrSchildX`: Not yet started. CarpetX patch system not yet implemented.
+4. `MinkowskiX`: Not yet started. CarpetX patch system not yet implemented.
 
 **WARNING:** These thorns are under heavy development and testing.

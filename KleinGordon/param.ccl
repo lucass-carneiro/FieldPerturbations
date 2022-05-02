@@ -49,6 +49,7 @@ CCTK_KEYWORD initial_data "Types of initial data to evolve"
 {
   "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
   "exact_gaussian"       :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
+  "plane_wave"           :: "A plane wave solution with customizable wave numbers and offsets"
 } "multipolar_gaussian"
 
 
@@ -85,10 +86,34 @@ CCTK_REAL multipoles[9] "The coefficients in the multipole series. Maximiun valu
 
 
 
-CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respecto to a Minkowski evolution"
+REAL wave_number[3] "Wave number"
+{
+  *:* :: ""
+} 0.0
+
+REAL space_offset[3] "Space offset"
+{
+  *:* :: ""
+} 0.0
+
+REAL time_offset "Time offset"
+{
+  *:* :: ""
+} 0.0
+
+
+CCTK_BOOLEAN compute_energy_density "Wether to compute the energy density of the field"
 {
 } no
 
-CCTK_BOOLEAN compute_energy "Wether to compute the PDE energy"
+CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respect to a Minkowski evolution"
+{
+} no
+
+CCTK_BOOLEAN compute_Tmunu "Wether to add the field contribution to the Tmunu components"
+{
+} no
+
+CCTK_BOOLEAN test_multipatch "If true, the RHS is scheduled at the poststep bin. This only makes sense when testing the multipatch implementation. Do not set this to true in normal evolutions"
 {
 } no
