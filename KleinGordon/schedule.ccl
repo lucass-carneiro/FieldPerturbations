@@ -89,6 +89,7 @@ SCHEDULE KleinGordon_CheckParameters IN KleinGordon_ParamCheckGroup
 SCHEDULE KleinGordon_Initialize IN KleinGordon_InitialGroup
 {
   LANG: C
+  READS: ADMBase::lapse(everywhere) ADMBase::shift(everywhere)
   WRITES: Phi(everywhere) K_Phi(everywhere)
   SYNC: evolved_group
 } "Initialize evolved variables and set the RHS to zero"

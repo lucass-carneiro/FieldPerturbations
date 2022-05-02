@@ -198,6 +198,26 @@ void KleinGordon_RHS_4(CCTK_ARGUMENTS) {
   CCTK_REAL J323L = 0;
   CCTK_REAL J333L = 0;
 
+/* cctk_bbox elements 4 and 5
+ * 4 - non zero tells i need to apply bnd condition at the lower end
+ * 5 - non zero tells i need to apply bnd condition at the upper end
+ * Query cctk_bbox for the loop limits before looping and apply 2nd order stencil accordingly
+ *
+ * This is only required for the z direction (thornburg radial) including one sided stencil,
+   other directions must be centered
+ *
+ * This is only true in Thornburg coordinates.
+ *
+ * kmin = cctk_bbox[4] ? 0 : gz;
+ * kmax = cctk_lsh[2] - (cctk_bbox[5] ? 0 : gz);
+ * if (k==0) one-sided (right bias)
+ * else if (k==cctk_lsh[2]-1) one-sided (the other way)
+ * else centred
+ *
+ * if (k==0) df = (f[k+1] - f[k]) / h;
+ * else if (k==lsh[2]-1) df = (f[k] - f[k-1]) / h;
+ * else df = (f(k+1) - f(k-1) / (2*h);
+ */
 #pragma omp parallel for
   for (k = gz; k < cctk_lsh[2] - gz; k++) {
     for (j = gy; j < cctk_lsh[1] - gy; j++) {

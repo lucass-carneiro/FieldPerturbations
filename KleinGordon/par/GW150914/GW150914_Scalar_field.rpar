@@ -98,8 +98,9 @@ gaussian_c_21  = 0.0
 gaussian_c_22  = 0.0
 
 
-compute_error  = "no"
-compute_Tmunu = "yes"
+compute_field_error    = "no"
+compute_Tmunu          = "no"
+compute_energy_density = "yes"
 
 ################################################################################
 # Grid structure
@@ -109,7 +110,7 @@ sphere_inner_radius = 45
 expected_merger = 1000.0
 
 # Number of cells across finest grid radius
-n = 56 # int("@N@") if "@N@"[0] != "@" else 28
+n = 28 # int("@N@") if "@N@"[0] != "@" else 28
 i = int(n/4)
 
 n_angular = 2*i*2
@@ -175,14 +176,18 @@ rl1_every = rl0_every
 rl_max = maxrls-1
 dt_it = dt0/2.0**(rl_max-1) # Time step of one iteration
 find_cah = max(int((expected_merger - 200)/dt_it), 0)
-wave_extract_every = rl0_every * 2 # Every other coarse grid step
+
+wave_extract_every = rl0_every * 1 # Every other coarse grid step
                                    # (TODO: should this be every
                                    # coarse grid step?)
-horizon_every = rl0_every * 2
-out_every = rl0_every
+horizon_every = rl0_every * 1
+
 # out3d_every = rl0_every * 2
-out3d_every = 0
-out2d_every = rl0_every * 8
+out3d_every = rl0_every * 1
+out2d_every = rl0_every * 1
+
+out_ascii_0d_every = 256
+out_ascii_1d_every = 0
 
 ################################################################################
 # Sanity checks
@@ -399,9 +404,6 @@ InitBase::initial_data_setup_method     = "init_single_level"
 # Evolution and boundary
 ################################################################################
 
-KleinGordon::compute_error       = $compute_error
-KleinGordon::compute_Tmunu       = $compute_Tmunu
-
 KleinGordon::bc_type             = "NewRad"
 KleinGordon::nPhi                = 3
 KleinGordon::nK_Phi              = 3
@@ -548,6 +550,10 @@ KleinGordon::multipoles[6]  = $gaussian_c_20
 KleinGordon::multipoles[7]  = $gaussian_c_21
 KleinGordon::multipoles[8]  = $gaussian_c_22
 
+KleinGordon::compute_error          = $compute_field_error
+KleinGordon::compute_Tmunu          = $compute_Tmunu
+KleinGordon::compute_energy_density = $compute_energy_density
+
 ################################################################################
 # Psi4 computation
 ################################################################################
@@ -676,7 +682,7 @@ QuasiLocalMeasures::num_surfaces           = 3
 QuasiLocalMeasures::surface_index      [0] = 2
 QuasiLocalMeasures::surface_index      [1] = 3
 QuasiLocalMeasures::surface_index      [2] = 4
-QuasiLocalMeasures::output_vtk_every       = $out3d_every
+QuasiLocalMeasures::output_vtk_every       = $horizon_every
 
 ################################################################################
 # Correctness checking
@@ -725,14 +731,14 @@ IOScalar::outScalar_every               = 256
 IOScalar::outScalar_reductions          = "minimum maximum average"
 IOScalar::outScalar_vars                = "SystemStatistics::process_memory_mb"
 
-IOASCII::out0D_every                    = 256
+IOASCII::out0D_every                    = $out_ascii_0d_every
 IOASCII::out0D_vars                     = "
   Carpet::timing
   PunctureTracker::pt_loc
   QuasiLocalMeasures::qlm_scalars{out_every = $horizon_every}
 "
 
-IOASCII::out1D_every                    = 0
+IOASCII::out1D_every                    = $out_ascii_1d_every
 IOASCII::out1D_d                        = no
 IOASCII::out1D_x                        = yes
 IOASCII::out1D_y                        = no
@@ -741,10 +747,6 @@ IOASCII::out1D_vars                     = "
   ML_BSSN::ML_log_confac
   ML_BSSN::ML_trace_curv
   WeylScal4::Psi4r
-"
-
-IOASCII::out2D_every                    = 0
-IOASCII::out2D_vars                     = "
 "
 
 IOHDF5::out_every                       = $out3d_every
@@ -783,14 +785,16 @@ IO::checkpoint_on_terminate                 = yes
 IO::checkpoint_dir                          = "../checkpoints"
 IO::recover_dir                             = "../checkpoints"
 IO::abort_on_io_errors                      = yes
+IO::checkpoint_keep                         = 1
+IO::recover_and_remove                      = yes
 CarpetIOHDF5::open_one_input_file_at_a_time = yes
-CarpetIOHDF5::compression_level             = 0
+CarpetIOHDF5::compression_level             = 9
 
 ################################################################################
 # Run termination
 ################################################################################
 
-TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
+#TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
 
 # Trigger termination 30 minutes before the walltime is reached
 TerminationTrigger::on_remaining_walltime        = 120 
@@ -799,12 +803,12 @@ TerminationTrigger::termination_from_file        = yes
 TerminationTrigger::termination_file             = "terminate.txt"
 TerminationTrigger::create_termination_file      = yes
 
-Cactus::terminate                               = time
-Cactus::cctk_final_time                         = $final_time
+#Cactus::terminate                               = time
+#Cactus::cctk_final_time                         = $final_time
 
 # Used for debugging the parameter file
-#Cactus::terminate                                = "iteration"
-#Cactus::cctk_itlast                              = $out2d_every
+Cactus::terminate                                = "iteration"
+Cactus::cctk_itlast                              = 2*$out2d_every
 
 """
 

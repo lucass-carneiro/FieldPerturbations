@@ -232,14 +232,33 @@ void KleinGordon_Initialize(CCTK_ARGUMENTS) {
     const CCTK_INT max_supported_l = 2;
 
     CCTK_REAL *P_lm_array = create_legendre_buffer(max_supported_l);
+    CCTK_REAL gaussian = 0.0, R = 0.0, gaussian_dr = 0.0, contraction = 0.0;
 
     CCTK_LOOP3_ALL(loop_multipolar_gaussian, cctkGH, i, j, k) {
       ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-      Phi[ijk] = multipolar_gaussian(multipoles, P_lm_array, max_supported_l, gaussian_R0,
+      gaussian = multipolar_gaussian(multipoles, P_lm_array, max_supported_l, gaussian_R0,
                                      x[ijk] - gaussian_x0, y[ijk] - gaussian_y0,
                                      z[ijk] - gaussian_z0, gaussian_sigma);
-      K_Phi[ijk] = 0.0;
+
+      R = sqrt((x[ijk] - gaussian_x0) * (x[ijk] - gaussian_x0)
+               + (y[ijk] - gaussian_y0) * (y[ijk] - gaussian_y0)
+               + (z[ijk] - gaussian_z0) * (z[ijk] - gaussian_z0));
+
+      gaussian_dr = gaussian * (-(R - gaussian_R0) / (gaussian_sigma * gaussian_sigma));
+
+      contraction = (betax[ijk] * (x[ijk] - gaussian_x0) + betay[ijk] * (y[ijk] - gaussian_y0)
+                     + betaz[ijk] * (z[ijk] - gaussian_z0));
+
+      if (contraction < 1.0e-13)
+        contraction = 0.0;
+      else
+        contraction /= R;
+
+      Phi[ijk] = gaussian;
+
+      // This choice makes the gaussian move towards the origin, instead of splitting.
+      K_Phi[ijk] = ((contraction - 1.0) * gaussian_dr) / (2 * alp[ijk]);
     }
     CCTK_ENDLOOP3_ALL(loop_multipolar_gaussian);
 

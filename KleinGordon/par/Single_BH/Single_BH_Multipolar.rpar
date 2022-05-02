@@ -3,20 +3,21 @@
  #######################################################################
  # Single_BH_Multipolar.par                                            #
  #                                                                     #
- # Evolve the Klein-Gordon equation on top of a single exact back-hole #
- # using Llama with 7 patches in Thornburg04 coordinates.              #
+ # Evolve the Klein-Gordon equation on top of a single exact back hole #
+ # using Llama with 6 patches in Thornburg04nc coordinates.            #
  # The spin of the black hole can be chosen to give Kerr or Schw. BHs. #
  #                                                                     #
  # The scalar field is initialized with multipolar Gaussian initial    #
  # data                                                                #
  #                                                                     #
- # I requires TODO GB for the evolution plus some buffer needed when   #
+ # It requires TODO GB for the evolution plus some buffer needed when  #
  # producing checkpoint data.                                          #
  #                                                                     #
  # It takes TODO days with TODO cores to obtain meaningfully results.  #
  #######################################################################
 
-import math
+import numpy as np
+import numpy.polynomial.polynomial as poly
 import sys
 import re
 from string import Template
@@ -35,18 +36,24 @@ highlight_warning_messages = "yes"
 ################################################################################
 
 mass = 1.0
-dimensionless_spin = 0.0
+dimensionless_spin = 0
 
-# Estimated AH radius
-horizon_radius = mass + math.sqrt(mass**2 - dimensionless_spin**2)
+# Event horizon
+horizon_radius = mass + np.sqrt(mass**2 - dimensionless_spin**2)
 
-# Overwrite radius, i.e., the radius of the region inside of the black hole
-# that will be overwritten by Minkowski in order to avoid the singularity at
-# the origin by the NoExcision thorn.
-overwrite_radius = 0.4 * horizon_radius
+# Cauchy horizon
+cauchy_radius = mass - np.sqrt(mass**2 - dimensionless_spin**2)
 
-# Overwrite value for the lapse
-minkowski_scale = math.sqrt(-(1 - (2 * mass * overwrite_radius)/(overwrite_radius**2 + dimensionless_spin**2)))
+# The excision radius must be placed in between the cauchy and event horizon.
+# See section II B of https://arxiv.org/pdf/gr-qc/0608091.pdf for further details
+def choose_excision_radius(M, a):
+  if a == 0 and M > 0:
+    return 2 * M * 5 / 10
+  elif a > 0 and a < 2 * np.sqrt(np.sqrt(5) - 2) * M:
+    min_radius = poly.polyroots([4 * a**2 * M**2, 0.0, -4 * M**2, 0.0, 1.0])[2]
+    return (min_radius + (horizon_radius - min_radius)/2)
+
+excision_radius = choose_excision_radius(mass, dimensionless_spin)
 
 ################################################################################
 # Klein-Gordon field configuration
@@ -55,13 +62,13 @@ minkowski_scale = math.sqrt(-(1 - (2 * mass * overwrite_radius)/(overwrite_radiu
 field_mass     = 0.0
 
 gaussian_sigma = 0.25
-gaussian_R0    = 4.5
+gaussian_R0    = horizon_radius + 1
 
 gaussian_x0    = 0.0
 gaussian_y0    = 0.0
 gaussian_z0    = 0.0
 
-gaussian_c_00  = 2 * math.sqrt(math.pi)
+gaussian_c_00  = 2 * np.sqrt(np.pi)
 gaussian_c_1m1 = 0.0
 gaussian_c_10  = 0.0
 gaussian_c_11  = 0.0
@@ -71,9 +78,9 @@ gaussian_c_20  = 0.0
 gaussian_c_21  = 0.0
 gaussian_c_22  = 0.0
 
-
-compute_error  = "no"
+compute_field_error  = "no"
 compute_Tmunu = "no"
+compute_energy_density = "yes"
 
 ################################################################################
 # Finite difference stencil and dissipation configuration
@@ -86,7 +93,7 @@ fd_order = 4
 diss_mag = 0.15
 
 # Ghost zones in the stencil
-ghosts = fd_order - 1
+ghosts = int(fd_order / 2)
 
 # Order of the K-O dissipation operator
 diss_order = 2 * ghosts - 1
@@ -96,16 +103,16 @@ diss_order = 2 * ghosts - 1
 ################################################################################
 
 # Time where the field's oscillation is expected to vanish (or almost vanish)
-expected_oscillation_endtime = 1000.0
+expected_oscillation_endtime = 10.0
 
 # Time after oscillation to keep integrating
-time_after_oscillation = 200.0
+time_after_oscillation = 10.0
 
 # Length of the target waveform
 waveform_length = expected_oscillation_endtime + time_after_oscillation
 
 # Position of the outermost detector
-outermost_detector = 500.0
+outermost_detector = 15.0
 
 # Final integration time
 final_time = waveform_length + outermost_detector
@@ -114,66 +121,29 @@ final_time = waveform_length + outermost_detector
 # Grid structure
 ################################################################################
 
-# Number of cells on the finest Cartesian grid
-n_finest = 120
-
 # Number of angular cells of the multipatch coordinates
-n_angular = n_finest
+n_angular = 20
 
 # In SphericalSurfaces, the number of interior grid points in the phi direction
 # of the surface must be a multiple of four after the symmetries have been removed.
-n_phi = n_finest
+n_phi = n_angular
 while (n_phi - 2 * ghosts) % 4 != 0:
     n_phi -= 1
 
 # In SphericalSurfaces, the number of interior grid points in the theta direction
 # of the surface must be odd after the symmetries have been removed.
-n_theta = n_finest
+n_theta = n_angular
 while (n_theta - 2 * ghosts) % 2 == 0:
     n_theta -= 1
 
-# Mesh refinement levels. It affects iteration counting
-refinement_levels = 6
+# Radial grid spacing
+h_radial = 0.1
 
-# The minimum grid spacing below which the event horizon (and physics) cannot be reliably resolved
-reliability_threshold = 0.06
+# Outer radius of the spherical patch. It is made to be a multiple of h_radial.
+sphere_outer_radius = int((final_time + outermost_detector)/h_radial)*h_radial + h_radial
 
-# Coordinate size of the finest Cartesian level centered around the BH
-finest_cart_grid_radius = horizon_radius * 1.2
-
-# Grid separation that needs to be achieved in the finest Cartesian refinement level
-finest_cart_grid_h = finest_cart_grid_radius/n_finest
-
-# Ensure that the reliability threshold is satisfied
-if finest_cart_grid_h > reliability_threshold:
-    print("Error: The computed finest Cartesian grid spacing ",  finest_cart_grid_h, " is smaller than the reliability threshold ", reliability_threshold, ".")
-    exit()
-
-# Grid size in each refinement level.
-levels_h = [finest_cart_grid_h * 2**(i-1) for i  in range(refinement_levels - 1, 0, -1)]
-
-# Grid size of the coarsest refinement level
-coarsest_cart_grid_h = levels_h[0]
-
-# Radii of each refinement level
-levels_radii = [finest_cart_grid_radius*2**(refinement_levels-l-1) for l in range(1, refinement_levels)]
-
-#change each refinement level radius so that they are a multiple of the grid spacing for that level
-for i in range(0, refinement_levels - 1):
-    ri = levels_radii[i]
-    hi = levels_h[i]
-    levels_radii[i] = int(ri/hi)*hi + hi
-
-
-# The string representing the radius of each refinement level. A zero is added to the beggining of the
-# array to make Carpet actually create the levels.
-levels_radii_string = str([0.0] + levels_radii)
-
-# Outer radius of the spherical patch. It is made to be a multiple of the grid spacing of the coarsest refinement level.
-sphere_outer_radius = int((final_time + outermost_detector)/levels_h[0])*levels_h[0] + levels_h[0]
-
-# Inner radius of the spherical patch. It coincides with the boundaries of the outermost refinement level
-sphere_inner_radius = levels_radii[0]*2
+# Inner radius of the spherical patch. It is made to be a multiple of excision_radius.
+sphere_inner_radius = int(excision_radius/h_radial)*h_radial + h_radial
 
 ################################################################################
 # Frequencies
@@ -182,11 +152,8 @@ sphere_inner_radius = levels_radii[0]*2
 # Courant factor
 courant_factor = 0.25
 
-# The frequency of a single coarse grid time step
-coarse_grid_timestep_frequency = 2**(refinement_levels - 2)
-
 # Wave extraction (multipolar decomposition) frequency.
-wave_extraction_frequency = coarse_grid_timestep_frequency
+wave_extraction_frequency = 0
 
 # 3D data output frequency.
 out3d_frequency = 0
@@ -200,20 +167,17 @@ out1d_frequency = 0
 # 0D data output frequency.
 out0d_frequency = 0
 
-# Mesh refinement regridding frequency
-regrid_every = 1000000 * coarse_grid_timestep_frequency
-
 # Apparent horizon finding frequency
-ah_frequency = 1000000 * coarse_grid_timestep_frequency
+ah_frequency = 1000000
 
 # Timers and process statistics output frequency
-stats_frequency = 10 * coarse_grid_timestep_frequency
+stats_frequency = 1
 
 # NaN checking frequency
-nan_check_every = 10 * coarse_grid_timestep_frequency
+nan_check_every = 0
 
 # Timer output frequency
-timer_tree_every = 10 * coarse_grid_timestep_frequency
+timer_tree_every = 100
 
 ################################################################################
 # Record all script variables in generated parameter file
@@ -268,11 +232,11 @@ ActiveThorns = "
   Coordinates
   CoordinatesSymmetry
   Dissipation
-  Exact
   hwloc
   IOUtil
   InitBase
   Interpolate2
+  KerrSchild
   KleinGordon
   LocalInterp
   LoopControl
@@ -310,9 +274,8 @@ Cactus::highlight_warning_messages = $highlight_warning_messages
 Carpet::domain_from_multipatch          = yes
 CartGrid3D::type                        = "multipatch"
 CartGrid3D::set_coordinate_ranges_on    = "all maps"
-Coordinates::coordinate_system          = "Thornburg04"
-Coordinates::h_cartesian                = $coarsest_cart_grid_h
-Coordinates::h_radial                   = $coarsest_cart_grid_h
+Coordinates::coordinate_system          = "Thornburg04nc"
+Coordinates::h_radial                   = $h_radial
 
 Coordinates::sphere_inner_radius        = $sphere_inner_radius
 Coordinates::sphere_outer_radius        = $sphere_outer_radius
@@ -324,52 +287,33 @@ Coordinates::additional_overlap_size    = $fd_order - $ghosts
 Coordinates::outer_boundary_size        = $ghosts
 
 # change these (to their defaults) to disable z-zymmetry
-CoordinatesSymmetry::reflection_z       = yes
-CoordinatesSymmetry::stagger            = no
-Coordinates::symmetry                   = "+z bitant"
-Coordinates::additional_symmetry_size   = 1
-Coordinates::verbose                    = no
+#CoordinatesSymmetry::reflection_z       = yes
+#CoordinatesSymmetry::stagger            = no
+#Coordinates::symmetry                   = "+z bitant"
+#Coordinates::additional_symmetry_size   = 1
+#Coordinates::verbose                    = no
 
 Time::timestep_method                   = "courant_static"
-Time::timestep                          = $courant_factor
+Time::dtfac                             = $courant_factor
 Carpet::time_refinement_factors         = "[1,1,2,4,8,16,32,64,128,256]"
-
-################################################################################
-# Mesh refinement
-################################################################################
-
-Carpet::max_refinement_levels           = $refinement_levels
-CarpetRegrid2::num_centres              = 1
-CarpetRegrid2::num_levels_1             = $refinement_levels
-CarpetRegrid2::position_x_1             = 0
-CarpetRegrid2::position_y_1             = 0
-CarpetRegrid2::position_z_1             = 0
-CarpetRegrid2::radius_1                 = $levels_radii_string
-
-Carpet::use_buffer_zones                = yes
-Carpet::prolongation_order_space        = 5
-Carpet::prolongation_order_time         = 2
-
-CarpetRegrid2::regrid_every             = $regrid_every
-CarpetRegrid2::verbose                  = no
-Carpet::grid_coordinates_filename       = "carpet-grid.asc"
 
 ################################################################################
 # Initial data
 ################################################################################
 
-ADMBase::initial_data               = "exact"
-ADMBase::initial_lapse              = "exact"
-ADMBase::initial_shift              = "exact"
+ADMBase::evolution_method            = "KerrSchild"
+ADMBase::initial_data                = "KerrSchild"
+ADMBase::initial_lapse               = "KerrSchild"
+ADMBase::initial_shift               = "KerrSchild"
+ADMBase::initial_dtlapse             = "KerrSchild"
+ADMBase::initial_dtshift             = "KerrSchild"
 
 ADMBase::lapse_timelevels           = 3
 ADMBase::shift_timelevels           = 3
 ADMBase::metric_timelevels          = 3
 
-Exact::exact_model                  = "Kerr/Kerr-Schild"
-Exact::Kerr_KerrSchild__mass        = $mass
-Exact::Kerr_KerrSchild__spin        = $dimensionless_spin
-Exact::Kerr_KerrSchild__epsilon     = 1e-8
+KerrSchild::M = $mass
+KerrSchild::a = $dimensionless_spin
 
 InitBase::initial_data_setup_method = "init_all_levels"
 Carpet::init_fill_timelevels        = no
@@ -378,12 +322,6 @@ Carpet::init_3_timelevels           = no
 ################################################################################
 # Evolution and boundary
 ################################################################################
-
-ADMBase::lapse_evolution_method  = "exact"
-ADMBase::shift_evolution_method  = "exact"
-
-KleinGordon::compute_error       = $compute_error
-KleinGordon::compute_Tmunu      = $compute_Tmunu
 
 KleinGordon::bc_type             = "NewRad"
 KleinGordon::nPhi                = 3
@@ -394,11 +332,7 @@ KleinGordon::K_Phi0              = 0.0
 NewRad::z_is_radial              = yes
 
 TmunuBase::timelevels            = 3
-<<<<<<< HEAD
-TmunuBase::stress_energy_storage = yes
-=======
 TmunuBase::stress_energy_storage = $compute_Tmunu
->>>>>>> 20f59e9 (Renamed the parameter that triggers Tmunu computations. Tweaked test parameter files)
 TmunuBase::stress_energy_at_RHS  = yes
 
 ################################################################################
@@ -458,6 +392,10 @@ KleinGordon::multipoles[6]  = $gaussian_c_20
 KleinGordon::multipoles[7]  = $gaussian_c_21
 KleinGordon::multipoles[8]  = $gaussian_c_22
 
+KleinGordon::compute_error          = $compute_field_error
+KleinGordon::compute_Tmunu          = $compute_Tmunu
+KleinGordon::compute_energy_density = $compute_energy_density
+
 ################################################################################
 # KG field decomposition
 ################################################################################
@@ -465,15 +403,15 @@ KleinGordon::multipoles[8]  = $gaussian_c_22
 # Radii are chosen to be evenly spaced in 1/r as that is the variable
 # extrapolation is performed in
 Multipole::nradii       = 7
-Multipole::radius[0]    = 20.0
-Multipole::radius[1]    = 40.0
-Multipole::radius[2]    = 60.0
-Multipole::radius[3]    = 80.0
-Multipole::radius[4]    = 100.0
-Multipole::radius[5]    = 300.0
-Multipole::radius[6]    = 500.0
-Multipole::ntheta       = $n_finest
-Multipole::nphi         = $n_finest
+Multipole::radius[0]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**0
+Multipole::radius[1]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**1
+Multipole::radius[2]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**2
+Multipole::radius[3]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**3
+Multipole::radius[4]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**4
+Multipole::radius[5]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**5
+Multipole::radius[6]    = $outermost_detector - ($outermost_detector -  2 * $horizon_radius) / 2**6
+Multipole::ntheta       = $n_theta
+Multipole::nphi         = $n_phi
 Multipole::variables    = "KleinGordon::Phi{sw=0 name='KG_Phi'}"
 Multipole::out_every    = $wave_extraction_frequency
 Multipole::l_max        = 8
@@ -536,7 +474,7 @@ QuasiLocalMeasures::interpolator         = "Lagrange polynomial interpolation"
 QuasiLocalMeasures::interpolator_options = "order=4"
 QuasiLocalMeasures::spatial_order        = 4
 QuasiLocalMeasures::num_surfaces         = 1
-QuasiLocalMeasures::surface_index    [0] = 0
+QuasiLocalMeasures::surface_index[0]     = 0
 QuasiLocalMeasures::output_vtk_every     = $out3d_frequency
 
 ################################################################################
@@ -544,13 +482,13 @@ QuasiLocalMeasures::output_vtk_every     = $out3d_frequency
 ################################################################################
 
 NoExcision::method              = "new"
-NoExcision::smooth_regions      = yes
+NoExcision::smooth_regions      = no
 NoExcision::num_regions         = 1
 NoExcision::centre_x        [0] = 0.0
 NoExcision::centre_y        [0] = 0.0
 NoExcision::centre_z        [0] = 0.0
-NoExcision::radius          [0] = $overwrite_radius
-NoExcision::Minkowski_scale [0] = $minkowski_scale
+NoExcision::radius          [0] = $excision_radius
+NoExcision::Minkowski_scale [0] = 1.0 #minkowski_scale
 NoExcision::reduce_rhs      [0] = yes
 
 ################################################################################
@@ -624,24 +562,24 @@ IOHDF5::out2d_vars      = "
 # Checkpointing and recovery
 ################################################################################
 
-CarpetIOHDF5::checkpoint                    = yes
-IO::checkpoint_ID                           = no
-IO::recover                                 = "autoprobe"
-IO::out_proc_every                          = 2
-IO::checkpoint_on_terminate                 = yes
-IO::checkpoint_dir                          = "../checkpoints"
-IO::recover_dir                             = "../checkpoints"
-IO::abort_on_io_errors                      = yes
-IO::checkpoint_keep                         = 1
-IO::recover_and_remove                      = yes
-CarpetIOHDF5::open_one_input_file_at_a_time = yes
-CarpetIOHDF5::compression_level             = 9
+#CarpetIOHDF5::checkpoint                    = yes
+#IO::checkpoint_ID                           = no
+#IO::recover                                 = "autoprobe"
+#IO::out_proc_every                          = 2
+#IO::checkpoint_on_terminate                 = yes
+#IO::checkpoint_dir                          = "../checkpoints"
+#IO::recover_dir                             = "../checkpoints"
+#IO::abort_on_io_errors                      = yes
+#IO::checkpoint_keep                         = 1
+#IO::recover_and_remove                      = yes
+#CarpetIOHDF5::open_one_input_file_at_a_time = yes
+#CarpetIOHDF5::compression_level             = 9
 
 ################################################################################
 # Run termination
 ################################################################################
 
-TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
+#TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
 
 # Trigger termination 120 minutes before the walltime is reached
 TerminationTrigger::on_remaining_walltime        = 120
@@ -650,12 +588,12 @@ TerminationTrigger::termination_from_file        = yes
 TerminationTrigger::termination_file             = "terminate.txt"
 TerminationTrigger::create_termination_file      = yes
 
-Cactus::terminate                                = "time"
-Cactus::cctk_final_time                          = $final_time
+#Cactus::terminate                                = "time"
+#Cactus::cctk_final_time                          = $final_time
 
 # Used for debugging the parameter file
-# Cactus::terminate                                = "iteration"
-# Cactus::cctk_itlast                              = $coarse_grid_timestep_frequency
+Cactus::terminate                                = "iteration"
+Cactus::cctk_itlast                              = 100
 """
 
 open(re.sub(r'(.*)\.rpar$', r'\1.par', sys.argv[0]), 'w').write(re.sub(r'\n *',r'\n',Template(Template(lines).substitute(locals())).substitute(locals())))

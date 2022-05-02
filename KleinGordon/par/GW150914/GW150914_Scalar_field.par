@@ -1,305 +1,172 @@
- #!/usr/bin/env python
 
- #####################################################################################################
- # Single_BH_Multipolar.par                                                                          #
- #                                                                                                   #
- # Evolve the Klein-Gordon equation on top of binary black hole merger that reproduces the GW150914  #
- # event. This parameter file is adapted from                                                        #
- # https://bitbucket.org/einsteintoolkit/einsteinexamples/raw/master/par/GW150914/GW150914.rpar      #
- #                                                                                                   #
- # The scalar field is initialized with multipolar Gaussian initial                                  #
- # data                                                                                              #
- #                                                                                                   #
- # It requires TODO GB for the evolution plus some buffer needed                                     #
- # when producing checkpoint data.                                                                   #
- #                                                                                                   #
- # It takes TODO days with TODO processes to obtain meaningfully results.                            #
- #####################################################################################################
-
-import math
-import sys
-import re
-from string import Template
-
-################################################################################
-# General settings
-################################################################################
-
-run_title = "Klein Gordon in Kerr background"
-
-full_warnings              = "yes"
-highlight_warning_messages = "yes"
-
-################################################################################
-# Binary black hole configuration
-################################################################################
-
-# BHs labeled as '+' and '-' ('p' and 'm') for their initial position
-# on the x axis.  The more massive BH is '+'.
-
-D = 10.0                    # Separation
-q = 36.0/29.0               # Mass ratio: q = mp/mm >= 1
-M = 1.0                     # Total mass
-chip =  0.31                # Dimensionsless z component of spin of + BH (x0 > 0, more massive)
-chim = -0.46                # Dimensionsless z component of spin of - BH (x0 < 0, less massive)
-Pr = -0.00084541526517121;  # Radial linear momentum
-Pphi = 0.09530152296974252; # Azimuthal linear momentum
-
-################################################################################
-# Black hole initial data configuration
-################################################################################
-
-mp = M * q/(1+q)           # Heavier, larger BH, AH1, SS 0
-mm = M * 1/(1+q)           # Lighter, smaller BH, AH2, SS 1
-
-xp     = D * mm
-xm     = -D * mp
-half_D = D/2.0
-
-center_offset = xp - half_D
-
-Spx = 0.;
-Spy = 0.;
-Spz = chip * mp**2;
-
-Smx = 0.;
-Smy = 0.;
-Smz = chim * mm**2;
-
-Ppx = Pr
-Ppy = Pphi
-Ppz = 0
-
-Pmx = -Ppx
-Pmy = -Ppy
-Pmz = -Ppz
-
-################################################################################
-# Klein-Gordon field configuration
-################################################################################
-
-field_mass     = 0.0
-
-gaussian_sigma = M
-gaussian_R0    = 1.5 * D
-
-gaussian_x0    = 0.0
-gaussian_y0    = 0.0
-gaussian_z0    = 0.0
-
-gaussian_c_00  = 2 * math.sqrt(math.pi)
-gaussian_c_1m1 = 0.0
-gaussian_c_10  = 0.0
-gaussian_c_11  = 0.0
-gaussian_c_2m2 = 0.0
-gaussian_c_2m1 = 0.0
-gaussian_c_20  = 0.0
-gaussian_c_21  = 0.0
-gaussian_c_22  = 0.0
-
-
-compute_error  = "no"
-compute_Tmunu = "no"
-
-################################################################################
-# Grid structure
-################################################################################
-
-sphere_inner_radius = 45
-expected_merger = 1000.0
-
-# Number of cells across finest grid radius
-n = 56 # int("@N@") if "@N@"[0] != "@" else 28
-i = int(n/4)
-
-n_angular = 2*i*2
-
-# Estimated eventual AH radii
-ahrp = mp * 1.0
-ahrm = mm * 1.0
-
-# Coordinate size of finest boxes around each BH
-rp = ahrp * 1.2
-rm = ahrm * 1.2
-
-# Minimum acceptable radial grid spacing
-hr_min = 2*0.96*M
-maxrls = 9  # Essentially determines iteration counting
-
-# Smaller '-' BH
-
-# Decisions are made independent of n, to avoid roundoff problems.
-# This is achieved by using nmin for the calculations and scaling by
-# n/nmin at the end.
-
-n_min = 24 # Cells across AHm radius
-hfm_min = rm/n_min # Fine grid spacing for '-' BH
-rlsm = 1 + int(math.log(hr_min/hfm_min,2)) # Number of refinements to attain hr_min
-h0_min = hfm_min * 2**(rlsm-1) # RL0 Cartesian spacing
-
-# Radii of each level for the centre around the '-' BH
-levelsm = "[0," + ",".join(["%f" %(rm*2**(rlsm-l-1)) for l in range(1,rlsm)])+"]"
-
-# '+' BH
-
-# Number of levels for '+' BH estimated to keep error in angular
-# velocity the same as for the '-' BH, assuming vErr \propto v *
-# (h0/2**(rls-1)/rAH)**8
-rlsp = rlsm + math.log(ahrm/ahrp * (xp/-xm)**(1./8))/math.log(2)
-rlsp = int(round(rlsp))
-levelsp = "[0," + ",".join(["%f" %(rp*2**(rlsp-l-1)) for l in range(1,rlsp)])+"]"
-
-hr = h0_min * float(n_min)/float(n) # This could be changed (h0_min ->
-                                    # hr_min) to get the minimum
-                                    # radial resolution for efficiency
-h0 = h0_min * float(n_min)/float(n)
-
-time_after_merger = 200.0
-waveform_length = expected_merger + time_after_merger
-outermost_detector = 500.0
-final_time = waveform_length + outermost_detector
-sphere_outer_radius = int((outermost_detector + final_time)/(i*hr))*i*hr
-sphere_outer_radius = int(sphere_outer_radius / hr) * hr + hr # round up to a multiple of hr
-sphere_inner_radius = int(math.ceil(sphere_inner_radius/(i*h0))) * h0 * i
-
-################################################################################
-# Frequencies
-################################################################################
-
-dtdx = 0.45 # Courant factor
-dtdx0 = dtdx * 0.5 # RL0 is evolved with the same frequency as RL1
-dt0 = dtdx0 * h0 # Time step on RL0
-rl0_every = 2**(maxrls-2)
-rl1_every = rl0_every
-
-rl_max = maxrls-1
-dt_it = dt0/2.0**(rl_max-1) # Time step of one iteration
-find_cah = max(int((expected_merger - 200)/dt_it), 0)
-wave_extract_every = rl0_every * 2 # Every other coarse grid step
-                                   # (TODO: should this be every
-                                   # coarse grid step?)
-horizon_every = rl0_every * 2
-out_every = rl0_every
-# out3d_every = rl0_every * 2
-out3d_every = 0
-out2d_every = rl0_every * 8
-
-################################################################################
-# Sanity checks
-################################################################################
-
-# this example uses
-# Coordinates::symmetry                   = "+z bitant"
-# thus all data must by mirror symmetric accross the z=0 plane requiring 0
-# values for z components of all polar vectors at the z=0 plane and 0 values
-# for the x,y components of axial vectors
-
-if (Spx != 0. or Spy != 0. or Smx != 0. or Smy != 0.):
-    sys.stderr.write("This parameter file employs z-symmetry via the 'Coordinates::symmetry=\"+z bitant\"' setting. Therefore all spins must be in the z-direction only.\n");
-    sys.exit(1)
-
-if (Ppz != 0. or Pmz != 0.):
-    sys.stderr.write("This parameter file employs z-symmetry via the 'Coordinates::symmetry=\"+z bitant\"' setting. Therefore no momentum may have a non-zero z-component.\n");
-    sys.exit(1)
-
-################################################################################
-# Record all script variables in generated parameter file
-################################################################################
-
-local_vars = locals()
-
-col_width = 0
-for key,val in sorted(local_vars.items()):
-    if isinstance(val, (int, float, complex, str)):
-        col_width = max(len(str(key)), col_width)
-
-var_settings = []
-for key,val in sorted(local_vars.items()):
-    if isinstance(val, (int, float, complex, str)):
-        var_settings = var_settings + ["# {0}{1} = {2}".format(key," "*(col_width-len(key)),val)]
-
-var_settings_str = "\n".join(var_settings)
-        
-lines = """
 ################################################################################
 # Script variables
 ################################################################################
 
-$var_settings_str
+# D                          = 10.0
+# M                          = 1.0
+# Pmx                        = 0.00084541526517121
+# Pmy                        = -0.09530152296974252
+# Pmz                        = 0
+# Pphi                       = 0.09530152296974252
+# Ppx                        = -0.00084541526517121
+# Ppy                        = 0.09530152296974252
+# Ppz                        = 0
+# Pr                         = -0.00084541526517121
+# Smx                        = 0.0
+# Smy                        = 0.0
+# Smz                        = -0.09156449704142013
+# Spx                        = 0.0
+# Spy                        = 0.0
+# Spz                        = 0.09509112426035504
+# __file__                   = /home/lucas/EinsteinToolkit/Cactus/repos/FieldPerturbations/KleinGordon/par/GW150914/GW150914_Scalar_field.rpar
+# __name__                   = __main__
+# ahrm                       = 0.4461538461538462
+# ahrp                       = 0.5538461538461539
+# center_offset              = -0.5384615384615383
+# chim                       = -0.46
+# chip                       = 0.31
+# col_width                  = 26
+# compute_Tmunu              = no
+# compute_energy_density     = yes
+# compute_field_error        = no
+# dt0                        = 0.2753406593406593
+# dt_it                      = 0.002151098901098901
+# dtdx                       = 0.45
+# dtdx0                      = 0.225
+# expected_merger            = 1000.0
+# field_mass                 = 0.0
+# final_time                 = 1700.0
+# find_cah                   = 371902
+# full_warnings              = yes
+# gaussian_R0                = 15.0
+# gaussian_c_00              = 3.5449077018110318
+# gaussian_c_10              = 0.0
+# gaussian_c_11              = 0.0
+# gaussian_c_1m1             = 0.0
+# gaussian_c_20              = 0.0
+# gaussian_c_21              = 0.0
+# gaussian_c_22              = 0.0
+# gaussian_c_2m1             = 0.0
+# gaussian_c_2m2             = 0.0
+# gaussian_sigma             = 1.0
+# gaussian_x0                = 0.0
+# gaussian_y0                = 0.0
+# gaussian_z0                = 0.0
+# h0                         = 1.2237362637362637
+# h0_min                     = 1.4276923076923076
+# half_D                     = 5.0
+# hfm_min                    = 0.022307692307692306
+# highlight_warning_messages = yes
+# horizon_every              = 128
+# hr                         = 1.2237362637362637
+# hr_min                     = 1.92
+# i                          = 7
+# key                        = xp
+# levelsm                    = [0,17.132308,8.566154,4.283077,2.141538,1.070769,0.535385]
+# levelsp                    = [0,21.267692,10.633846,5.316923,2.658462,1.329231,0.664615]
+# maxrls                     = 9
+# mm                         = 0.4461538461538462
+# mp                         = 0.5538461538461539
+# n                          = 28
+# n_angular                  = 28
+# n_min                      = 24
+# out2d_every                = 128
+# out3d_every                = 128
+# out_ascii_0d_every         = 256
+# out_ascii_1d_every         = 0
+# outermost_detector         = 500.0
+# q                          = 1.2413793103448276
+# rl0_every                  = 128
+# rl1_every                  = 128
+# rl_max                     = 8
+# rlsm                       = 7
+# rlsp                       = 7
+# rm                         = 0.5353846153846153
+# rp                         = 0.6646153846153846
+# run_title                  = Klein Gordon in Kerr background
+# sphere_inner_radius        = 51.39692307692307
+# sphere_outer_radius        = 2194.1591208791206
+# time_after_merger          = 200.0
+# val                        = 4.461538461538462
+# wave_extract_every         = 128
+# waveform_length            = 1200.0
+# xm                         = -5.538461538461538
+# xp                         = 4.461538461538462
 
 ################################################################################
 # Active thorns
 ################################################################################
 
 ActiveThorns = "
-  ADMBase
-  ML_ADMConstraints
-  ADMCoupling
-  ADMMacros
-  AEILocalInterp
-  AHFinderDirect
-  Boundary
-  Carpet
-  CarpetIOASCII
-  CarpetIOBasic
-  CarpetIOHDF5
-  CarpetIOScalar
-  CarpetInterp
-  CarpetInterp2
-  CarpetLib
-  CarpetReduce
-  CarpetRegrid2
-  CarpetTracker
-  CartGrid3D
-  CoordBase
-  CoordGauge
-  Coordinates
-  CoordinatesSymmetry
-  Dissipation
-  Formaline
-  GlobalDerivative
-  hwloc
-  IOUtil
-  InitBase
-  Interpolate2
-  QuasiLocalMeasures
-  LocalInterp
-  LoopControl
-  MoL
-  NaNChecker
-  PunctureTracker
-  Slab
-  SpaceMask
-  SphericalSurface
-  StaticConformal
-  SummationByParts
-  SymBase
-  SystemStatistics
-  SystemTopology
-  TerminationTrigger
-  TensorTypes
-  Time
-  TmunuBase
-  TwoPunctures
-  Vectors
-  ML_BSSN
-  ML_BSSN_Helper
-  NewRad
-  GenericFD
-  WeylScal4
-  Multipole
-  ADMDerivatives
-  KleinGordon
+ADMBase
+ML_ADMConstraints
+ADMCoupling
+ADMMacros
+AEILocalInterp
+AHFinderDirect
+Boundary
+Carpet
+CarpetIOASCII
+CarpetIOBasic
+CarpetIOHDF5
+CarpetIOScalar
+CarpetInterp
+CarpetInterp2
+CarpetLib
+CarpetReduce
+CarpetRegrid2
+CarpetTracker
+CartGrid3D
+CoordBase
+CoordGauge
+Coordinates
+CoordinatesSymmetry
+Dissipation
+Formaline
+GlobalDerivative
+hwloc
+IOUtil
+InitBase
+Interpolate2
+QuasiLocalMeasures
+LocalInterp
+LoopControl
+MoL
+NaNChecker
+PunctureTracker
+Slab
+SpaceMask
+SphericalSurface
+StaticConformal
+SummationByParts
+SymBase
+SystemStatistics
+SystemTopology
+TerminationTrigger
+TensorTypes
+Time
+TmunuBase
+TwoPunctures
+Vectors
+ML_BSSN
+ML_BSSN_Helper
+NewRad
+GenericFD
+WeylScal4
+Multipole
+ADMDerivatives
+KleinGordon
 "
 
 #######################################################################
 # General settings                                                    #
 #######################################################################
 
-Cactus::cctk_run_title             = "$run_title"
+Cactus::cctk_run_title             = "Klein Gordon in Kerr background"
 
-Cactus::cctk_full_warnings         = $full_warnings
-Cactus::highlight_warning_messages = $highlight_warning_messages
+Cactus::cctk_full_warnings         = yes
+Cactus::highlight_warning_messages = yes
 
 ################################################################################
 # Grid structure
@@ -309,12 +176,12 @@ Carpet::domain_from_multipatch          = yes
 CartGrid3D::type                        = "multipatch"
 CartGrid3D::set_coordinate_ranges_on    = "all maps"
 Coordinates::coordinate_system          = "Thornburg04"
-Coordinates::h_cartesian                = $h0
-Coordinates::h_radial                   = $hr
+Coordinates::h_cartesian                = 1.2237362637362637
+Coordinates::h_radial                   = 1.2237362637362637
 
-Coordinates::sphere_inner_radius        = $sphere_inner_radius
-Coordinates::sphere_outer_radius        = $sphere_outer_radius
-Coordinates::n_angular                  = $n_angular
+Coordinates::sphere_inner_radius        = 51.39692307692307
+Coordinates::sphere_outer_radius        = 2194.1591208791206
+Coordinates::n_angular                  = 28
 
 Driver::ghost_size                      = 5
 Coordinates::patch_boundary_size        = 5
@@ -329,27 +196,27 @@ Coordinates::additional_symmetry_size   = 1
 Coordinates::verbose                    = no
 
 Time::timestep_method                   = "given"
-Time::timestep                          = $dt0
+Time::timestep                          = 0.2753406593406593
 Carpet::time_refinement_factors         = "[1,1,2,4,8,16,32,64,128,256]"
 
 ################################################################################
 # Mesh refinement
 ################################################################################
 
-Carpet::max_refinement_levels           = $maxrls
+Carpet::max_refinement_levels           = 9
 CarpetRegrid2::num_centres              = 2
-CarpetRegrid2::num_levels_1             = $rlsp
-CarpetRegrid2::position_x_1             = $xp
-CarpetRegrid2::radius_1                 = $levelsp
-CarpetRegrid2::num_levels_2             = $rlsm
-CarpetRegrid2::position_x_2             = $xm
-CarpetRegrid2::radius_2                 = $levelsm
+CarpetRegrid2::num_levels_1             = 7
+CarpetRegrid2::position_x_1             = 4.461538461538462
+CarpetRegrid2::radius_1                 = [0,21.267692,10.633846,5.316923,2.658462,1.329231,0.664615]
+CarpetRegrid2::num_levels_2             = 7
+CarpetRegrid2::position_x_2             = -5.538461538461538
+CarpetRegrid2::radius_2                 = [0,17.132308,8.566154,4.283077,2.141538,1.070769,0.535385]
 
 Carpet::use_buffer_zones                = yes
 Carpet::prolongation_order_space        = 5
 Carpet::prolongation_order_time         = 2
 
-CarpetRegrid2::regrid_every             = $rl1_every
+CarpetRegrid2::regrid_every             = 128
 CarpetRegrid2::verbose                  = no
 Carpet::grid_coordinates_filename       = "carpet-grid.asc"
 
@@ -363,31 +230,31 @@ ADMBase::initial_shift                  = "zero"
 ADMBase::initial_dtlapse                = "zero"
 ADMBase::initial_dtshift                = "zero"
 
-TwoPunctures::target_M_plus             = $mp
-TwoPunctures::target_M_minus            = $mm
+TwoPunctures::target_M_plus             = 0.5538461538461539
+TwoPunctures::target_M_minus            = 0.4461538461538462
 
 # Initial guesses for iterative solve
-TwoPunctures::par_m_plus                = $mp
-TwoPunctures::par_m_minus               = $mm
+TwoPunctures::par_m_plus                = 0.5538461538461539
+TwoPunctures::par_m_minus               = 0.4461538461538462
 
-TwoPunctures::par_b                     = $half_D
-TwoPunctures::center_offset[0]          = $center_offset
+TwoPunctures::par_b                     = 5.0
+TwoPunctures::center_offset[0]          = -0.5384615384615383
 
-TwoPunctures::par_P_plus[0]             = $Ppx
-TwoPunctures::par_P_plus[1]             = $Ppy
-TwoPunctures::par_P_plus[2]             = $Ppz
+TwoPunctures::par_P_plus[0]             = -0.00084541526517121
+TwoPunctures::par_P_plus[1]             = 0.09530152296974252
+TwoPunctures::par_P_plus[2]             = 0
 
-TwoPunctures::par_P_minus[0]            = $Pmx
-TwoPunctures::par_P_minus[1]            = $Pmy
-TwoPunctures::par_P_minus[2]            = $Pmz
+TwoPunctures::par_P_minus[0]            = 0.00084541526517121
+TwoPunctures::par_P_minus[1]            = -0.09530152296974252
+TwoPunctures::par_P_minus[2]            = 0
 
-TwoPunctures::par_S_plus[0]             = $Spx
-TwoPunctures::par_S_plus[1]             = $Spy
-TwoPunctures::par_S_plus[2]             = $Spz
+TwoPunctures::par_S_plus[0]             = 0.0
+TwoPunctures::par_S_plus[1]             = 0.0
+TwoPunctures::par_S_plus[2]             = 0.09509112426035504
 
-TwoPunctures::par_S_minus[0]            = $Smx
-TwoPunctures::par_S_minus[1]            = $Smy
-TwoPunctures::par_S_minus[2]            = $Smz
+TwoPunctures::par_S_minus[0]            = 0.0
+TwoPunctures::par_S_minus[1]            = 0.0
+TwoPunctures::par_S_minus[2]            = -0.09156449704142013
 
 TwoPunctures::grid_setup_method         = "evaluation"
 TwoPunctures::give_bare_mass            = no
@@ -398,9 +265,6 @@ InitBase::initial_data_setup_method     = "init_single_level"
 ################################################################################
 # Evolution and boundary
 ################################################################################
-
-KleinGordon::compute_error       = $compute_error
-KleinGordon::compute_Tmunu      = $compute_Tmunu
 
 KleinGordon::bc_type             = "NewRad"
 KleinGordon::nPhi                = 3
@@ -456,10 +320,10 @@ Boundary::radpower                  = 2
 CarpetTracker::surface                      [0] = 0
 CarpetTracker::surface                      [1] = 1
 PunctureTracker::track                      [0] = yes
-PunctureTracker::initial_x                  [0] = $xp
+PunctureTracker::initial_x                  [0] = 4.461538461538462
 PunctureTracker::which_surface_to_store_info[0] = 0
 PunctureTracker::track                      [1] = yes
-PunctureTracker::initial_x                  [1] = $xm
+PunctureTracker::initial_x                  [1] = -5.538461538461538
 PunctureTracker::which_surface_to_store_info[1] = 1
 
 ################################################################################
@@ -473,7 +337,7 @@ Dissipation::epsdis  = 0.15
 Dissipation::order   = 9
 
 Dissipation::vars = "
-  KleinGordon::evolved_group
+KleinGordon::evolved_group
 "
 SummationByParts::order                              = 8
 
@@ -495,15 +359,15 @@ GlobalDerivative::epsdis_for_level               [0] = 0.075
 
 # Variables for dissipation
 SummationByParts::vars                               = "
-  ML_BSSN::ML_log_confac
-  ML_BSSN::ML_metric
-  ML_BSSN::ML_trace_curv
-  ML_BSSN::ML_curv
-  ML_BSSN::ML_Gamma
-  ML_BSSN::ML_lapse
-  ML_BSSN::ML_shift
-  ML_BSSN::ML_dtlapse
-  ML_BSSN::ML_dtshift
+ML_BSSN::ML_log_confac
+ML_BSSN::ML_metric
+ML_BSSN::ML_trace_curv
+ML_BSSN::ML_curv
+ML_BSSN::ML_Gamma
+ML_BSSN::ML_lapse
+ML_BSSN::ML_shift
+ML_BSSN::ML_dtlapse
+ML_BSSN::ML_dtshift
 "
 
 ################################################################################
@@ -527,26 +391,30 @@ Interpolate::interpolator_order         = 5
 # KG field initial data
 ################################################################################
 
-KleinGordon::field_mass     = $field_mass
+KleinGordon::field_mass     = 0.0
 
 KleinGordon::initial_data   = "multipolar_gaussian"
 
-KleinGordon::gaussian_sigma = $gaussian_sigma
-KleinGordon::gaussian_R0    = $gaussian_R0
+KleinGordon::gaussian_sigma = 1.0
+KleinGordon::gaussian_R0    = 15.0
 
-KleinGordon::gaussian_x0    = $gaussian_x0
-KleinGordon::gaussian_y0    = $gaussian_y0
-KleinGordon::gaussian_z0    = $gaussian_z0
+KleinGordon::gaussian_x0    = 0.0
+KleinGordon::gaussian_y0    = 0.0
+KleinGordon::gaussian_z0    = 0.0
 
-KleinGordon::multipoles[0]  = $gaussian_c_00
-KleinGordon::multipoles[1]  = $gaussian_c_1m1
-KleinGordon::multipoles[2]  = $gaussian_c_10
-KleinGordon::multipoles[3]  = $gaussian_c_11
-KleinGordon::multipoles[4]  = $gaussian_c_2m2
-KleinGordon::multipoles[5]  = $gaussian_c_2m1
-KleinGordon::multipoles[6]  = $gaussian_c_20 
-KleinGordon::multipoles[7]  = $gaussian_c_21
-KleinGordon::multipoles[8]  = $gaussian_c_22
+KleinGordon::multipoles[0]  = 3.5449077018110318
+KleinGordon::multipoles[1]  = 0.0
+KleinGordon::multipoles[2]  = 0.0
+KleinGordon::multipoles[3]  = 0.0
+KleinGordon::multipoles[4]  = 0.0
+KleinGordon::multipoles[5]  = 0.0
+KleinGordon::multipoles[6]  = 0.0 
+KleinGordon::multipoles[7]  = 0.0
+KleinGordon::multipoles[8]  = 0.0
+
+KleinGordon::compute_error          = no
+KleinGordon::compute_Tmunu          = no
+KleinGordon::compute_energy_density = yes
 
 ################################################################################
 # Psi4 computation
@@ -572,13 +440,13 @@ Multipole::radius[5]    = 300.0
 Multipole::radius[6]    = 500.0
 Multipole::ntheta       = 120
 Multipole::nphi         = 240
-Multipole::out_every    = $wave_extract_every
+Multipole::out_every    = 128
 Multipole::l_max        = 8
 Multipole::output_hdf5  = yes
 
 Multipole::variables    = "
-  WeylScal4::Psi4r{sw=-2 cmplx='WeylScal4::Psi4i' name='psi4'}
-  KleinGordon::Phi{sw=0 name='KG_Phi'}
+WeylScal4::Psi4r{sw=-2 cmplx='WeylScal4::Psi4i' name='psi4'}
+KleinGordon::Phi{sw=0 name='KG_Phi'}
 "
 
 # Disable ASCII output to avoid creating a large number of files
@@ -589,7 +457,7 @@ Multipole::output_ascii = no
 ################################################################################
 
 AHFinderDirect::N_horizons                               = 3
-AHFinderDirect::find_every                               = $horizon_every
+AHFinderDirect::find_every                               = 128
 AHFinderDirect::output_h_every                           = 0
 AHFinderDirect::max_Newton_iterations__initial           = 50
 AHFinderDirect::max_Newton_iterations__subsequent        = 50
@@ -602,9 +470,9 @@ AHFinderDirect::surface_interpolator_pars                = "order=4"
 AHFinderDirect::verbose_level                            = "physics details"
 AHFinderDirect::move_origins                             = yes
 
-AHFinderDirect::origin_x                             [1] = $xp
-AHFinderDirect::initial_guess__coord_sphere__x_center[1] = $xp
-AHFinderDirect::initial_guess__coord_sphere__radius  [1] = $rp
+AHFinderDirect::origin_x                             [1] = 4.461538461538462
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 4.461538461538462
+AHFinderDirect::initial_guess__coord_sphere__radius  [1] = 0.6646153846153846
 AHFinderDirect::which_surface_to_store_info          [1] = 2
 AHFinderDirect::set_mask_for_individual_horizon      [1] = no
 AHFinderDirect::reset_horizon_after_not_finding      [1] = no
@@ -614,9 +482,9 @@ AHFinderDirect::track_origin_source_y                [1] = "PunctureTracker::pt_
 AHFinderDirect::track_origin_source_z                [1] = "PunctureTracker::pt_loc_z[0]"
 AHFinderDirect::max_allowable_horizon_radius         [1] = 3
 
-AHFinderDirect::origin_x                             [2] = $xm
-AHFinderDirect::initial_guess__coord_sphere__x_center[2] = $xm
-AHFinderDirect::initial_guess__coord_sphere__radius  [2] = $rm
+AHFinderDirect::origin_x                             [2] = -5.538461538461538
+AHFinderDirect::initial_guess__coord_sphere__x_center[2] = -5.538461538461538
+AHFinderDirect::initial_guess__coord_sphere__radius  [2] = 0.5353846153846153
 AHFinderDirect::which_surface_to_store_info          [2] = 3
 AHFinderDirect::set_mask_for_individual_horizon      [2] = no
 AHFinderDirect::reset_horizon_after_not_finding      [2] = no
@@ -627,7 +495,7 @@ AHFinderDirect::track_origin_source_z                [2] = "PunctureTracker::pt_
 AHFinderDirect::max_allowable_horizon_radius         [2] = 3
 
 AHFinderDirect::origin_x                             [3] = 0
-AHFinderDirect::find_after_individual                [3] = $find_cah
+AHFinderDirect::find_after_individual                [3] = 371902
 AHFinderDirect::initial_guess__coord_sphere__x_center[3] = 0
 AHFinderDirect::initial_guess__coord_sphere__radius  [3] = 1.0
 AHFinderDirect::which_surface_to_store_info          [3] = 4
@@ -676,7 +544,7 @@ QuasiLocalMeasures::num_surfaces           = 3
 QuasiLocalMeasures::surface_index      [0] = 2
 QuasiLocalMeasures::surface_index      [1] = 3
 QuasiLocalMeasures::surface_index      [2] = 4
-QuasiLocalMeasures::output_vtk_every       = $out3d_every
+QuasiLocalMeasures::output_vtk_every       = 128
 
 ################################################################################
 # Correctness checking
@@ -692,8 +560,8 @@ NaNChecker::verbose                     = "all"
 NaNChecker::action_if_found             = terminate
 NaNChecker::out_NaNmask                 = yes
 NaNChecker::check_vars                  = "
-  ML_BSSN::ML_log_confac
-  KleinGordon::evolved_group
+ML_BSSN::ML_log_confac
+KleinGordon::evolved_group
 "
 
 ################################################################################
@@ -714,11 +582,11 @@ IOASCII::one_file_per_group             = yes
 IOBasic::outInfo_every                  = 1
 IOBasic::outInfo_reductions             = "minimum maximum average"
 IOBasic::outInfo_vars                   = "
-  ML_BSSN::ML_log_confac
-  Carpet::physical_time_per_hour
-  SystemStatistics::maxrss_mb
-  SystemStatistics::swap_used_mb
-  KleinGordon::Phi
+ML_BSSN::ML_log_confac
+Carpet::physical_time_per_hour
+SystemStatistics::maxrss_mb
+SystemStatistics::swap_used_mb
+KleinGordon::Phi
 "
 
 IOScalar::outScalar_every               = 256
@@ -727,9 +595,9 @@ IOScalar::outScalar_vars                = "SystemStatistics::process_memory_mb"
 
 IOASCII::out0D_every                    = 256
 IOASCII::out0D_vars                     = "
-  Carpet::timing
-  PunctureTracker::pt_loc
-  QuasiLocalMeasures::qlm_scalars{out_every = $horizon_every}
+Carpet::timing
+PunctureTracker::pt_loc
+QuasiLocalMeasures::qlm_scalars{out_every = 128}
 "
 
 IOASCII::out1D_every                    = 0
@@ -738,37 +606,33 @@ IOASCII::out1D_x                        = yes
 IOASCII::out1D_y                        = no
 IOASCII::out1D_z                        = yes
 IOASCII::out1D_vars                     = "
-  ML_BSSN::ML_log_confac
-  ML_BSSN::ML_trace_curv
-  WeylScal4::Psi4r
+ML_BSSN::ML_log_confac
+ML_BSSN::ML_trace_curv
+WeylScal4::Psi4r
 "
 
-IOASCII::out2D_every                    = 0
-IOASCII::out2D_vars                     = "
-"
-
-IOHDF5::out_every                       = $out3d_every
+IOHDF5::out_every                       = 128
 IOHDF5::out_vars                        = "
-  Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
-  ML_BSSN::ML_log_confac
-  WeylScal4::Psi4r
-  WeylScal4::Psi4i
-  WeylScal4::curvIr{refinement_levels={3 5}}
-  WeylScal4::curvIi{refinement_levels={3 5}}
-  WeylScal4::curvJr{refinement_levels={3 5}}
-  WeylScal4::curvJi{refinement_levels={3 5}}
-  KleinGordon::Phi
+Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
+ML_BSSN::ML_log_confac
+WeylScal4::Psi4r
+WeylScal4::Psi4i
+WeylScal4::curvIr{refinement_levels={3 5}}
+WeylScal4::curvIi{refinement_levels={3 5}}
+WeylScal4::curvJr{refinement_levels={3 5}}
+WeylScal4::curvJi{refinement_levels={3 5}}
+KleinGordon::Phi
 "
 
-IOHDF5::out2D_every                     = $out2d_every
+IOHDF5::out2D_every                     = 128
 IOHDF5::out2D_vars                      = "
-  Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
-  ML_BSSN::alpha
-  ML_BSSN::phi
-  ML_BSSN::trK
-  WeylScal4::Psi4r
-  WeylScal4::Psi4i
-  KleinGordon::Phi
+Grid::Coordinates{out_every=1000000000 refinement_levels={0}}
+ML_BSSN::alpha
+ML_BSSN::phi
+ML_BSSN::trK
+WeylScal4::Psi4r
+WeylScal4::Psi4i
+KleinGordon::Phi
 "
 
 ################################################################################
@@ -792,7 +656,7 @@ CarpetIOHDF5::compression_level             = 9
 # Run termination
 ################################################################################
 
-TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
+#TerminationTrigger::max_walltime                 = @WALLTIME_HOURS@
 
 # Trigger termination 30 minutes before the walltime is reached
 TerminationTrigger::on_remaining_walltime        = 120 
@@ -801,13 +665,10 @@ TerminationTrigger::termination_from_file        = yes
 TerminationTrigger::termination_file             = "terminate.txt"
 TerminationTrigger::create_termination_file      = yes
 
-Cactus::terminate                               = time
-Cactus::cctk_final_time                         = $final_time
+#Cactus::terminate                               = time
+#Cactus::cctk_final_time                         = 1700.0
 
 # Used for debugging the parameter file
-#Cactus::terminate                                = "iteration"
-#Cactus::cctk_itlast                              = $out2d_every
+Cactus::terminate                                = "iteration"
+Cactus::cctk_itlast                              = 128
 
-"""
-
-open(re.sub(r'(.*)\.rpar$', r'\1.par', sys.argv[0]), 'w').write(re.sub(r'\n *',r'\n',Template(Template(lines).substitute(locals())).substitute(locals())))
