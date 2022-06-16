@@ -1,0 +1,59 @@
+# Parameter definitions for thorn KleinGrodon
+
+CCTK_KEYWORD bc_type "Type of boundary condition to apply"
+{
+  "zero" :: "Set all evolved variables to zero at the boundary"
+} "zero"
+
+
+CCTK_REAL field_mass "The mass of the scalar field"
+{
+  0:* :: "Positive"
+} 1.0
+
+
+
+CCTK_KEYWORD initial_data "Types of initial data to evolve"
+{
+  "exact_gaussian" :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
+  "plane_wave"     :: "A plane wave solution with customizable wave numbers and offsets"
+} "exact_gaussian"
+
+
+
+CCTK_REAL sigma "The width of the gaussian"
+{
+  0:* :: "Positive"
+} 1.0
+
+CCTK_REAL R0 "The position of the peak of the gaussian"
+{
+  0:* :: "Positive"
+} 0.0
+
+
+
+REAL wave_number[3] "Wave number"
+{
+  *:* :: ""
+} 0.0
+
+REAL space_offset[3] "Space offset"
+{
+  *:* :: ""
+} 0.0
+
+REAL time_offset "Time offset"
+{
+  *:* :: ""
+} 0.0
+
+
+
+CCTK_BOOLEAN compute_error "Wether to compute the error of the evolution with respect to a Minkowski evolution"
+{
+} no
+
+CCTK_BOOLEAN test_multipatch "If true, the RHS is scheduled at the poststep bin. This only makes sense when testing the multipatch implementation. Do not set this to true in normal evolutions"
+{
+} no

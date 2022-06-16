@@ -48,7 +48,7 @@ const CCTK_REAL smallnes_threshold = 1.0e-8;
  * @param sigma The Gaussian width
  * @return The value of the Gaussian function.
  */
-inline CCTK_REAL base_gaussian(CCTK_REAL x, CCTK_REAL sigma) {
+static inline CCTK_REAL base_gaussian(CCTK_REAL x, CCTK_REAL sigma) {
   const CCTK_REAL x2 = x * x;
   const CCTK_REAL sigma2 = sigma * sigma;
   const CCTK_REAL x2_over_sigma_2 = x2 / sigma2;
@@ -63,7 +63,7 @@ inline CCTK_REAL base_gaussian(CCTK_REAL x, CCTK_REAL sigma) {
  * @param sigma The gaussian width
  * @return The value of the x derivative of the gaussian function.
  */
-inline CCTK_REAL base_gaussian_dx(CCTK_REAL x, CCTK_REAL sigma) {
+static inline CCTK_REAL base_gaussian_dx(CCTK_REAL x, CCTK_REAL sigma) {
   const CCTK_REAL sigma2 = sigma * sigma;
   return -x / sigma2 * base_gaussian(x, sigma);
 }
@@ -77,7 +77,7 @@ inline CCTK_REAL base_gaussian_dx(CCTK_REAL x, CCTK_REAL sigma) {
  * @param sigma The Gaussian width.
  * @return The general solution of the wave equation in Minkowski spacetime.
  */
-inline CCTK_REAL gaussian_solution(CCTK_REAL r, CCTK_REAL t, CCTK_REAL sigma) {
+static inline CCTK_REAL gaussian_solution(CCTK_REAL r, CCTK_REAL t, CCTK_REAL sigma) {
   if (r < smallnes_threshold) {
     const CCTK_REAL sigma2 = sigma * sigma;
     return 2 * t / sigma2 * base_gaussian(t, sigma);
@@ -95,7 +95,7 @@ inline CCTK_REAL gaussian_solution(CCTK_REAL r, CCTK_REAL t, CCTK_REAL sigma) {
  * @param sigma The Gaussian width.
  * @return The time derivative of the general solution of the wave equation in Minkowski spacetime.
  */
-inline CCTK_REAL gaussian_solution_dt(CCTK_REAL r, CCTK_REAL t, CCTK_REAL sigma) {
+static inline CCTK_REAL gaussian_solution_dt(CCTK_REAL r, CCTK_REAL t, CCTK_REAL sigma) {
   if (r < smallnes_threshold) {
     const CCTK_REAL sigma2 = sigma * sigma;
     const CCTK_REAL sigma4 = sigma2 * sigma2;

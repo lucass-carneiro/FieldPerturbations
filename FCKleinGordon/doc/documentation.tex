@@ -1,0 +1,243 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevant thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphicx package.
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command.
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as
+%     standard sections.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+%
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================*
+
+% If you are using CVS use this line to give version information
+% $Header$
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{Lucas Timotheo Sanches \textless lucas.t.s.carneiro@gmail.com\textgreater}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{Flux Conservative Klein Gordon}
+
+% the date your document was last changed, if your document is in CVS,
+% please use:
+%    \date{$ $Date$ $}
+\date{\today}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here
+%   \def\mydef etc
+
+% Add an abstract for this thorn's documentation
+\begin{abstract}
+
+This Thorn evolves the massive Klein Gordon field equation on top of a general (and possibly evolving) background spacetime. Once the spacetime initial data and evolution methods are set, the Klein Gordon field is computed on top of it. It's also possible take the field's contribution to the energy momentum tensor into account.
+  
+\end{abstract}
+
+% The following sections are suggestive only.
+% Remove them or add your own.
+
+\section{Introduction}
+
+This thorn aims to evolve the Klein-Gordon (KG) field on top of any background spacetime in a stable and well behaved manner. In order to do so, the KG equation is rewritten in first order flux-conservative (FC) form and the system characteristics are computed and analysed.
+
+\section{Physical System}
+
+The original KG equation for a scalar field ($\Phi$) of mass $m$ states that
+%
+\begin{equation}
+  \nabla_{\mu}\nabla^{\mu}\Phi - m^2\Phi = 0.
+\end{equation}
+
+It is well know that~\cite{wald1984}
+%
+\begin{equation}
+  \nabla_{\mu}T^{\mu}  = \frac{1}{\sqrt{-\textsl{g}}}\partial_{\mu}(\sqrt{-\textsl{g}}\,T^{\mu})
+\end{equation}
+%
+which allows us to write
+%
+\begin{equation}
+  \nabla_{\mu}\nabla^{\mu}\Phi = \nabla_{\mu}(\textsl{g}^{\mu\nu}\nabla_\nu\Phi) = \frac{1}{\sqrt{-\textsl{g}}}\partial_{\mu}(\sqrt{-\textsl{g}}\,\textsl{g}^{\mu\nu}\nabla_\nu\Phi)
+\end{equation}
+%
+and using the fact that $\nabla_\mu\Phi = \partial_\mu\Phi$, the KG equation becomes
+%
+\begin{equation}
+  \frac{1}{\sqrt{-\textsl{g}}}\partial_{\mu}(\sqrt{-\textsl{g}}\,\textsl{g}^{\mu\nu}\partial_\nu\Phi) - m^2\Phi = 0.
+  \label{eq:kg_base}
+\end{equation}
+
+To get to the flux conservative form of the equation, we first write out the outer spatial and time derivatives explicitly in Eq. \eqref{eq:kg_base} and obtain
+%
+\begin{equation}
+  \partial_{t}(\sqrt{-\textsl{g}}\,\textsl{g}^{t\nu}\partial_\nu\Phi) + \partial_{i}(\sqrt{-\textsl{g}}\,\textsl{g}^{i \nu}\partial_\nu\Phi) - \sqrt{-\textsl{g}}\,m^2\Phi = 0
+\end{equation}
+%
+where Latin indices label spatial dimensions. By defining
+%
+\begin{equation}
+  \Psi_i \equiv \partial_i\Phi
+  \label{eq:def_psi_i}
+\end{equation}
+%
+we can define a new function $\Pi$ as
+%
+\begin{equation}
+  \Pi \equiv \sqrt{-\textsl{g}}\,\textsl{g}^{t\nu}\partial_\nu\Phi = \sqrt{-\textsl{g}}(\textsl{g}^{tt}\partial_t\Phi + \textsl{g}^{ti}\Psi_i),
+\end{equation}
+%
+which we can immediately invert to yield a time evolution equation for $\Phi$:
+%
+\begin{equation}
+  \partial_t\Phi = \frac{1}{\textsl{g}^{tt}}\left( \frac{\Pi}{\sqrt{-\textsl{g}}} - \textsl{g}^{ti}\Psi_i \right).
+  \label{eq:volution_for_phi}
+\end{equation}
+
+By defining the flux vector $F^i$ as
+%
+\begin{equation}
+  F^i \equiv \sqrt{-\textsl{g}}\,\textsl{g}^{i \nu}\partial_\nu\Phi = \sqrt{-\textsl{g}}\left\{ \textsl{g}^{ti} \left[ \frac{1}{\textsl{g}^{tt}}\left( \frac{\Pi}{\sqrt{-\textsl{g}}} - \textsl{g}^{tj}\Psi_j \right) \right] + g^{ij}\Psi_j \right\}.
+\end{equation}
+%
+the original KG equation becomes
+%
+\begin{equation}
+  \partial_t\Pi + \partial_iF^i - \sqrt{-\textsl{g}}\, m^2 \Phi = 0,
+\end{equation}
+%
+which immediately yields a time evolution equation for $\Pi$. In order to complete the evolution system, we need to find time evolution equations for the $\Psi_i$ variables which can be easily done using Eq.~\eqref{eq:def_psi_i} and assuming that the $\Psi_i$ functions are such that their second order partial derivatives commute:
+%
+\begin{equation}
+  \partial_t\Psi_i = \partial_t(\partial_i\Phi) = \partial_i(\partial_t\Phi) = \partial_i \left[  \frac{1}{\textsl{g}^{tt}}\left( \frac{\Pi}{\sqrt{-\textsl{g}}} - \textsl{g}^{tj}\Psi_j \right) \right].
+\end{equation}
+
+We are now in possession of all necessary ingredients to evolve the system. Since we would like to use the \texttt{ADMBase} infrastructure it's advantageous to substituite metric components with ADM variables~\cite{baumgarte2010}. By doing that, we can write the evolution system as
+
+\begin{align}
+  \partial_t\Pi    = &  \alpha \sqrt{\gamma}\,m^2\Phi - \partial_iF^i\\
+  \partial_t\Psi_i = & \partial_i\left( \beta^j\Psi_j - \frac{\alpha \Pi}{\sqrt{\gamma}} \right)\\
+  \partial_t\Phi   = & \left( \beta^i\Psi_i - \frac{\alpha \Pi}{\sqrt{\gamma}} \right)
+\end{align}
+%
+where $\alpha$ is the spacetime lapse, $\beta^i$ the contravariant shift vector and $F^i$ the flux vector, given by
+%
+\begin{equation}
+  F^i = \alpha \sqrt{\gamma}\, \gamma^{ij}\Psi_j - \beta^i \Pi
+\end{equation}
+
+\section{Numerical Implementation}
+
+\section{Using This Thorn}
+
+\subsection{Obtaining This Thorn}
+
+\subsection{Basic Usage}
+
+\subsection{Special Behaviour}
+
+\subsection{Interaction With Other Thorns}
+
+\subsection{Examples}
+
+\subsection{Support and Feedback}
+
+\section{History}
+
+\subsection{Thorn Source Code}
+
+\subsection{Thorn Documentation}
+
+\subsection{Acknowledgements}
+
+
+\begin{thebibliography}{9}
+
+\bibitem{wald1984}
+  Wald, Robert M,
+  \textit{General Relativity},
+  University of Chicago Press,
+  1984.
+
+\bibitem{baumgarte2010}
+  Baumgarte, Thomas W and Shapiro, Stuart L,
+  \textit{Numerical relativity},
+  Cambridge University Press,
+  2010.
+
+\end{thebibliography}
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}

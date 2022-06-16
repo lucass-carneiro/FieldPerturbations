@@ -1,0 +1,71 @@
+# Interface definition for thorn FCKleinGordon
+
+IMPLEMENTS: FCKleinGordon
+INHERITS: ADMBase SummationByParts Grid Coordinates Interpolate
+
+public:
+
+CCTK_REAL evolved_group type=gf timelevels=3 tags='tensortypealias="Scalar"'
+{
+  Pi, Psi_x, Psi_y, Psi_z, Phi
+} "Evoled part of the KG field"
+
+CCTK_REAL rhs_group type=gf tags='tensortypealias="Scalar" prolongation="None" checkpoint="no"'
+{
+  Pi_rhs, Psi_x_rhs, Psi_y_rhs, Psi_z_rhs, Phi_rhs
+} "Right hand side of the evolution equations"
+
+CCTK_REAL error_group type=gf tags='tensortypealias="Scalar" prolongation="None" checkpoint="no"'
+{
+  Pi_error, Psi_x_error, Psi_y_error, Psi_z_error, Phi_error
+} "Error measure of the wave equation"
+
+CCTK_REAL multipatch_error_group type=gf tags='tensortypealias="Scalar" prolongation="None" checkpoint="no"'
+{
+  Pi_multipatch_error, Psi_x_multipatch_error, Psi_y_multipatch_error, Psi_z_multipatch_error, Phi_multipatch_error
+} "Multipatch error measure of the wave equation"
+
+################################
+#  ALIASED FUNCTIONS FROM MoL  #
+################################
+
+CCTK_INT FUNCTION MoLRegisterEvolvedGroup(CCTK_INT IN EvolvedIndex, CCTK_INT IN RHSIndex)
+CCTK_INT FUNCTION MoLRegisterSaveAndRestoreGroup(CCTK_INT IN SandRIndex)
+CCTK_INT FUNCTION MoLRegisterConstrainedGroup(CCTK_INT IN ConstrainedIndex)
+
+REQUIRES FUNCTION MoLRegisterEvolvedGroup
+REQUIRES FUNCTION MoLRegisterSaveAndRestoreGroup
+REQUIRES FUNCTION MoLRegisterConstrainedGroup
+
+#####################################
+#  ALIASED FUNCTIONS FROM Boundary  #
+#####################################
+CCTK_INT FUNCTION Boundary_SelectGroupForBC(CCTK_POINTER_TO_CONST IN GH,    \
+                                            CCTK_INT IN faces,              \
+                                            CCTK_INT IN boundary_width,     \
+                                            CCTK_INT IN table_handle,       \
+                                            CCTK_STRING IN group_name,      \
+                                            CCTK_STRING IN bc_name)
+REQUIRES FUNCTION Boundary_SelectGroupForBC
+
+CCTK_INT FUNCTION GetBoundarySizesAndTypes (CCTK_POINTER_TO_CONST IN cctkGH, \
+                                            CCTK_INT IN size,                \
+                                            CCTK_INT OUT ARRAY bndsize,      \
+                                            CCTK_INT OUT ARRAY is_ghostbnd,  \
+                                            CCTK_INT OUT ARRAY is_symbnd,    \
+                                            CCTK_INT OUT ARRAY is_physbnd)   \
+
+REQUIRES FUNCTION GetBoundarySizesAndTypes
+
+#############################################
+#  ALIASED FUNCTIONS FROM SummationByParts  #
+#############################################
+SUBROUTINE Diff_coeff(CCTK_POINTER_TO_CONST IN cctkGH, \
+                      CCTK_INT IN dir,                 \
+                      CCTK_INT IN nsize,               \
+                      CCTK_INT OUT ARRAY imin,         \
+                      CCTK_INT OUT ARRAY imax,         \
+                      CCTK_REAL OUT ARRAY q,           \
+                      CCTK_INT IN table_handle)
+
+REQUIRES FUNCTION Diff_coeff

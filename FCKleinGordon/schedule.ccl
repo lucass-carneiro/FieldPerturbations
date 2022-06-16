@@ -1,0 +1,224 @@
+# Schedule definitions for thorn KleinGordon
+
+################################################################################
+# Storage allocations
+
+STORAGE: evolved_group[3]
+STORAGE: rhs_group
+
+if (compute_error)
+{
+  STORAGE: error_group
+}
+
+if (test_multipatch)
+{
+  STORAGE: multipatch_error_group
+}
+
+################################################################################
+# Define some schedule groups to organize the schedule
+
+SCHEDULE GROUP FCKleinGordon_StartupGroup AT STARTUP
+{
+} "Startup functions, such as banner registration and other startup information"
+
+SCHEDULE GROUP FCKleinGordon_ParamCheckGroup AT CCTK_PARAMCHECK
+{
+} "Check parameters"
+
+
+
+SCHEDULE GROUP FCKleinGordon_InitialGroup AT initial
+{
+} "Set up initial conditions"
+
+SCHEDULE GROUP FCKleinGordon_BaseGridGroup AT BASEGRID
+{
+} "Initialized grid variables with default values."
+
+
+
+SCHEDULE GROUP FCKleinGordon_PostStepGroup AT postinitial
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP FCKleinGordon_PostStepGroup AT postrestrict
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP FCKleinGordon_PostStepGroup AT postregrid
+{
+} "Post-process state variables"
+
+
+
+SCHEDULE GROUP FCKleinGordon_RegisterGroup IN MoL_Register
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP FCKleinGordon_PostStepGroup IN MoL_PostStep
+{
+} "Post-process state variables"
+
+SCHEDULE GROUP FCKleinGordon_RHSGroup IN MoL_CalcRHS
+{
+} "Calculate RHS"
+
+SCHEDULE GROUP FCKleinGordon_RHSBoundaries IN MoL_RHSBoundaries
+{
+} "Calculate RHS"
+
+
+SCHEDULE GROUP FCKleinGordon_AnalysisGroup AT analysis
+{
+} "Analyse state"
+
+################################################################################
+# Startup
+
+SCHEDULE FCKleinGordon_startup IN FCKleinGordon_StartupGroup
+{
+  LANG: C
+} "Register banner"
+
+SCHEDULE FCKleinGordon_check_parameters IN FCKleinGordon_ParamCheckGroup
+{
+  LANG: C
+} "Check parameters"
+
+
+################################################################################
+# Load initial conditions
+
+SCHEDULE FCKleinGordon_initialize IN FCKleinGordon_InitialGroup
+{
+  LANG: C
+  READS: Grid::coordinates(everywhere) ADMBase::lapse(everywhere) ADMBase::shift(everywhere) ADMBase::metric(everywhere)
+  WRITES: FCKleinGordon::evolved_group(everywhere)
+  SYNC: FCKleinGordon::evolved_group
+} "Initialize evolved variables and set the RHS to zero"
+
+
+################################################################################
+# Registering
+
+SCHEDULE FCKleinGordon_MoL_register IN FCKleinGordon_RegisterGroup
+{
+  LANG: C
+  OPTIONS: META
+} "Register variables"
+
+
+################################################################################
+# Zero-filling grid functions
+
+SCHEDULE FCKleinGordon_zero_rhs IN FCKleinGordon_BaseGridGroup
+{
+  LANG: C
+  WRITES: FCKleinGordon::rhs_group(everywhere)
+} "Set all right hand side functions to zero to prevent spurious nans"
+
+if(compute_error)
+{
+  SCHEDULE FCKleinGordon_zero_error IN FCKleinGordon_BaseGridGroup
+  {
+    LANG: C
+    WRITES: FCKleinGordon::error_group(everywhere)
+  } "Set the error functions to zero to prevent spurious nans"
+}
+
+
+if(test_multipatch)
+{
+  SCHEDULE FCKleinGordon_zero_multipatch_error IN FCKleinGordon_BaseGridGroup
+  {
+    LANG: C
+    WRITES: FCKleinGordon::multipatch_error_group(everywhere)
+  } "Set the multipatch error functions to zero to prevent spurious nans"
+}
+
+################################################################################
+# Compute RHS
+
+SCHEDULE FCKleinGordon_calc_rhs AS FCKleinGordon_RHS IN FCKleinGordon_RHSGroup
+{
+  LANG: C
+  READS: Coordinates::jacobian(interior) FCKleinGordon::evolved_group(interior) ADMBase::lapse(interior) ADMBase::shift(interior) ADMBase::metric(interior)
+  WRITES: FCKleinGordon::rhs_group(interior)
+} "Compute the RHS of the field equations"
+
+SCHEDULE FCKleinGordon_sync AS FCKleinGordon_RHSSync IN FCKleinGordon_RHSGroup AFTER FCKleinGordon_RHS
+{
+  LANG: C
+  SYNC: FCKleinGordon::rhs_group
+} "Synchronize the RHS group"
+
+
+################################################################################
+# Apply boundary conditions
+
+SCHEDULE FCKleinGordon_outer_boundaries IN FCKleinGordon_PostStepGroup
+{
+  LANG: C
+  WRITES: FCKleinGordon::evolved_group(boundary)
+} "Apply outer boundary conditions"
+
+SCHEDULE FCKleinGordon_rhs_outer_boundaries IN FCKleinGordon_RHSBoundaries
+{
+  LANG: C
+  WRITES: FCKleinGordon::rhs_group(boundary)
+} "Apply outer boundary conditions to the RHS grid functions"
+
+SCHEDULE FCKleinGordon_boundaries IN FCKleinGordon_PostStepGroup AFTER FCKleinGordon_outer_boundaries
+{
+  LANG: C
+  OPTIONS: LEVEL
+  SYNC: FCKleinGordon::evolved_group
+} "Select the boundary condition"
+
+
+################################################################################
+# Compute non-evolved quantities
+
+if(compute_error)
+{
+  SCHEDULE FCKleinGordon_zero_error IN FCKleinGordon_AnalysisGroup
+  {
+    LANG: C
+    WRITES: FCKleinGordon::error_group(everywhere)
+  } "Set the error functions to zero to prevent spurious nans"
+  
+  SCHEDULE FCKleinGordon_error IN FCKleinGordon_AnalysisGroup AFTER FCKleinGordon_ZeroError
+  {
+    LANG: C
+    READS: FCKleinGordon::evolved_group(interior) Grid::coordinates(interior) ADMBase::lapse(interior) ADMBase::shift(interior) ADMBase::metric(interior)
+    WRITES: FCKleinGordon::error_group(interior)
+  } "Compute the error of the evolution of an exact gaussian"
+}
+
+################################################################################
+# Multipatch testing
+
+if(test_multipatch)
+{
+  SCHEDULE FCKleinGordon_calc_rhs AS FCKleinGordon_RHS AT poststep
+  {
+    LANG: C
+    READS: Coordinates::jacobian(interior) FCKleinGordon::evolved_group(interior) ADMBase::lapse(interior) ADMBase::shift(interior) ADMBase::metric(interior)
+    WRITES: FCKleinGordon::rhs_group(interior)
+  } "Compute the RHS of the field equations"
+
+  SCHEDULE FCKleinGordon_sync AS FCKleinGordon_RHSSync AT poststep AFTER FCKleinGordon_calc_rhs
+  {
+    LANG: C
+    SYNC: FCKleinGordon::rhs_group
+  } "Synchronize the RHS group"
+
+  SCHEDULE FCKleinGordon_multipatch_error AT poststep AFTER FCKleinGordon_sync
+  {
+    LANG: C
+    READS: FCKleinGordon::rhs_group(interior) Grid::coordinates(interior)
+    WRITES: FCKleinGordon::multipatch_error_group(interior)
+  } "Compute the error of the evolution of an exact gaussian"
+}
