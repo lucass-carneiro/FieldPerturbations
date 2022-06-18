@@ -29,6 +29,8 @@
 #  define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS
 #endif
 
+#include <cassert>
+
 extern "C" void FCKleinGordon_check_parameters(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_CHECKED(FCKleinGordon_check_parameters);
   DECLARE_CCTK_PARAMETERS;
@@ -41,5 +43,19 @@ extern "C" void FCKleinGordon_check_parameters(CCTK_ARGUMENTS) {
     CCTK_PARAMWARN("Error computing was requested with an initial condition other than "
                    "\"exact_gaussian\". The error estimate is only significant when "
                    "evolving \"exact_gaussian\" data on top of a Minkowski background.");
+  }
+
+  int type = 0;
+  void const *ptr = CCTK_ParameterGet("cctk_itlast", "Cactus", &type);
+  assert(ptr != nullptr);
+  assert(type == PARAMETER_INTEGER);
+  CCTK_INT const cctk_itlast = *static_cast<CCTK_INT const *>(ptr);
+
+  if (test_multipatch && (!CCTK_Equals(initial_data, "plane_wave") || cctk_itlast != 0)) {
+    CCTK_PARAMWARN("To perform a multipatch test, use plane wave data and make sure the last "
+                   "cactus iteration is 0 by adding\n\n"
+                   "Cactus::terminate   = \"iteration\"\n"
+                   "Cactus::cctk_itlast = 0\n\n"
+                   "to the parameter file.");
   }
 }

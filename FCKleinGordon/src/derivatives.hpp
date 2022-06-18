@@ -15,8 +15,8 @@ enum class derivative_direction : CCTK_INT { x = 0, y = 1, z = 2 };
 
 template <derivative_direction dir> class sbp_coefficients {
 public:
-  sbp_coefficients(const cGH *restrict const cctkGH, CCTK_INT n)
-      : nsize(n), imin(nsize), imax(nsize), q(nsize * nsize) {
+  sbp_coefficients(const cGH *restrict const cctkGH, CCTK_INT n, CCTK_REAL hval)
+      : nsize(n), h(hval), imin(nsize), imax(nsize), q(nsize * nsize) {
     compute(cctkGH);
   }
 
@@ -25,9 +25,9 @@ public:
   auto get_imax() const -> const std::vector<CCTK_INT> & { return imax; }
   auto get_q() const -> const std::vector<CCTK_REAL> & { return q; }
 
-  template <typename grid_function> auto local_d(const grid_function &f, const CCTK_INT i,
-                                                 const CCTK_INT j, const CCTK_INT k,
-                                                 const CCTK_REAL h) const -> CCTK_REAL {
+  template <typename grid_function>
+  auto local_d(const grid_function &f, const CCTK_INT i, const CCTK_INT j, const CCTK_INT k) const
+      -> CCTK_REAL {
 
     CCTK_REAL dval = 0.0;
 
@@ -50,6 +50,7 @@ public:
 
 private:
   const CCTK_INT nsize;
+  const CCTK_REAL h;
   std::vector<CCTK_INT> imin;
   std::vector<CCTK_INT> imax;
   std::vector<CCTK_REAL> q;
@@ -73,17 +74,17 @@ auto global_d(const sbp_coefficients<derivative_direction::x> &cx,
               const sbp_coefficients<derivative_direction::y> &cy,
               const sbp_coefficients<derivative_direction::z> &cz, const grid_function &f,
               const std::array<std::array<CCTK_REAL, 3>, 3> &J, const CCTK_INT i, const CCTK_INT j,
-              const CCTK_INT k, const CCTK_REAL hx, const CCTK_REAL hy, const CCTK_REAL hz) {
+              const CCTK_INT k) {
 
   if constexpr (dir == derivative_direction::x) {
-    return J[0][0] * cx.local_d(f, i, j, k, hx) + J[1][0] * cy.local_d(f, i, j, k, hy)
-           + J[2][0] * cz.local_d(f, i, j, k, hz);
+    return J[0][0] * cx.local_d(f, i, j, k) + J[1][0] * cy.local_d(f, i, j, k)
+           + J[2][0] * cz.local_d(f, i, j, k);
   } else if constexpr (dir == derivative_direction::y) {
-    return J[0][1] * cx.local_d(f, i, j, k, hx) + J[1][1] * cy.local_d(f, i, j, k, hy)
-           + J[2][1] * cz.local_d(f, i, j, k, hz);
+    return J[0][1] * cx.local_d(f, i, j, k) + J[1][1] * cy.local_d(f, i, j, k)
+           + J[2][1] * cz.local_d(f, i, j, k);
   } else if constexpr (dir == derivative_direction::z) {
-    return J[0][2] * cx.local_d(f, i, j, k, hx) + J[1][2] * cy.local_d(f, i, j, k, hy)
-           + J[2][2] * cz.local_d(f, i, j, k, hz);
+    return J[0][2] * cx.local_d(f, i, j, k) + J[1][2] * cy.local_d(f, i, j, k)
+           + J[2][2] * cz.local_d(f, i, j, k);
   }
 }
 

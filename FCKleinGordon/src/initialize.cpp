@@ -122,21 +122,19 @@ extern "C" void FCKleinGordon_initialize(CCTK_ARGUMENTS) {
                            - gxx[ijk] * gyz[ijk] * gyz[ijk] - gxy[ijk] * gxy[ijk] * gzz[ijk]
                            + gxx[ijk] * gyy[ijk] * gzz[ijk];
 
-      Pi[ijk] = (sqrt(detgamma)
-                 * (betay[ijk]
-                    + 2 * M_PI
-                          * sin(2 * M_PI
-                                * ((x[ijk] - space_offset[0]) * wave_number[0]
-                                   + (y[ijk] - space_offset[1]) * wave_number[1]
-                                   + (z[ijk] - space_offset[2]) * wave_number[2]
-                                   + (t - time_offset)
-                                         * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
-                                                + pow(wave_number[2], 2))))
-                          * (-(betax[ijk] * wave_number[0]) - wave_number[1]
-                             - betaz[ijk] * wave_number[2]
-                             + sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
-                                    + pow(wave_number[2], 2)))))
-                / alp[ijk];
+      Pi[ijk]
+          = (2 * sqrt(detgamma) * M_PI
+             * sin(2 * M_PI
+                   * ((x[ijk] - space_offset[0]) * wave_number[0]
+                      + (y[ijk] - space_offset[1]) * wave_number[1]
+                      + (z[ijk] - space_offset[2]) * wave_number[2]
+                      + (t - time_offset)
+                            * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
+                                   + pow(wave_number[2], 2))))
+             * (-(betax[ijk] * wave_number[0]) - betay[ijk] * wave_number[1]
+                - betaz[ijk] * wave_number[2]
+                + sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2) + pow(wave_number[2], 2))))
+            / alp[ijk];
 
       Psi_x[ijk] = -2 * M_PI
                    * sin(2 * M_PI

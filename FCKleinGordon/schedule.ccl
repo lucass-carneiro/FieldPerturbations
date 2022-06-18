@@ -220,5 +220,5 @@ if(test_multipatch)
     LANG: C
     READS: FCKleinGordon::rhs_group(interior) Grid::coordinates(interior)
     WRITES: FCKleinGordon::multipatch_error_group(interior)
-  } "Compute the error of the evolution of an exact gaussian"
+  } "Compute the error the RHS computation"
 }

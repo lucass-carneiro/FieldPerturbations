@@ -112,20 +112,77 @@ extern "C" void FCKleinGordon_multipatch_error(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   // Time values
-  const CCTK_REAL t = cctk_time;
+  const CCTK_REAL t = 0;
 
 #pragma omp parallel
   CCTK_LOOP3_INT(loop_multipatch_error, cctkGH, i, j, k) {
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-    // Minkowski backgreound is assumed for the following computations
-    // clang-format off
-    Pi_multipatch_error[ijk] = abs(Pi_rhs[ijk] - (-(cos(2*M_PI*((x[ijk] - space_offset[0])*wave_number[0] + (y[ijk] - space_offset[1])*wave_number[1] + (z[ijk] - space_offset[2])*wave_number[2] + (t - time_offset)*sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2))))*(pow(field_mass,2) + 4*pow(M_PI,2)*(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2))))));
-    Psi_x_multipatch_error[ijk] = abs(Psi_x_rhs[ijk] - (-4*pow(M_PI,2)*cos(2*M_PI*((x[ijk] - space_offset[0])*wave_number[0] + (y[ijk] - space_offset[1])*wave_number[1] + (z[ijk] - space_offset[2])*wave_number[2] + (t - time_offset)*sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2))))*wave_number[0]*(-wave_number[1] + sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2)))));
-    Psi_y_multipatch_error[ijk] = abs(Psi_y_rhs[ijk] - (-4*pow(M_PI,2)*cos(2*M_PI*((x[ijk] - space_offset[0])*wave_number[0] + (y[ijk] - space_offset[1])*wave_number[1] + (z[ijk] - space_offset[2])*wave_number[2] + (t - time_offset)*sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2))))*wave_number[1]*(-wave_number[1] + sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2)))));
-    Psi_z_multipatch_error[ijk] = abs(Psi_z_rhs[ijk] - (-4*pow(M_PI,2)*cos(2*M_PI*((x[ijk] - space_offset[0])*wave_number[0] + (y[ijk] - space_offset[1])*wave_number[1] + (z[ijk] - space_offset[2])*wave_number[2] + (t - time_offset)*sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2))))*wave_number[2]*(-wave_number[1] + sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2)))));
-    Phi_multipatch_error[ijk] = abs(Phi_rhs[ijk] - (-2*M_PI*sin(2*M_PI*((x[ijk] - space_offset[0])*wave_number[0] + (y[ijk] - space_offset[1])*wave_number[1] + (z[ijk] - space_offset[2])*wave_number[2] + (t - time_offset)*sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2))))*(-wave_number[1] + sqrt(pow(wave_number[0],2) + pow(wave_number[1],2) + pow(wave_number[2],2)))));
-    // clang-format on
+    // Minkowski backgreound is assumed for the following computations and enforced during parameter
+    // checking
+    Pi_multipatch_error[ijk] = abs(
+        Pi_rhs[ijk]
+        - (cos(2 * M_PI
+               * ((x[ijk] - space_offset[0]) * wave_number[0]
+                  + (y[ijk] - space_offset[1]) * wave_number[1]
+                  + (z[ijk] - space_offset[2]) * wave_number[2]
+                  + (t - time_offset)
+                        * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
+                               + pow(wave_number[2], 2))))
+           * (pow(field_mass, 2)
+              + 4 * pow(M_PI, 2)
+                    * (pow(wave_number[0], 2) + pow(wave_number[1], 2) + pow(wave_number[2], 2)))));
+
+    Psi_x_multipatch_error[ijk]
+        = abs(Psi_x_rhs[ijk]
+              - (4 * pow(M_PI, 2)
+                 * cos(2 * M_PI
+                       * ((x[ijk] - space_offset[0]) * wave_number[0]
+                          + (y[ijk] - space_offset[1]) * wave_number[1]
+                          + (z[ijk] - space_offset[2]) * wave_number[2]
+                          + (t - time_offset)
+                                * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
+                                       + pow(wave_number[2], 2))))
+                 * wave_number[0]
+                 * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2) + pow(wave_number[2], 2))));
+
+    Psi_y_multipatch_error[ijk]
+        = abs(Psi_y_rhs[ijk]
+              - (4 * pow(M_PI, 2)
+                 * cos(2 * M_PI
+                       * ((x[ijk] - space_offset[0]) * wave_number[0]
+                          + (y[ijk] - space_offset[1]) * wave_number[1]
+                          + (z[ijk] - space_offset[2]) * wave_number[2]
+                          + (t - time_offset)
+                                * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
+                                       + pow(wave_number[2], 2))))
+                 * wave_number[1]
+                 * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2) + pow(wave_number[2], 2))));
+
+    Psi_z_multipatch_error[ijk]
+        = abs(Psi_z_rhs[ijk]
+              - (4 * pow(M_PI, 2)
+                 * cos(2 * M_PI
+                       * ((x[ijk] - space_offset[0]) * wave_number[0]
+                          + (y[ijk] - space_offset[1]) * wave_number[1]
+                          + (z[ijk] - space_offset[2]) * wave_number[2]
+                          + (t - time_offset)
+                                * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
+                                       + pow(wave_number[2], 2))))
+                 * wave_number[2]
+                 * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2) + pow(wave_number[2], 2))));
+
+    Phi_multipatch_error[ijk]
+        = abs(Phi_rhs[ijk]
+              - (2 * M_PI
+                 * sin(2 * M_PI
+                       * ((x[ijk] - space_offset[0]) * wave_number[0]
+                          + (y[ijk] - space_offset[1]) * wave_number[1]
+                          + (z[ijk] - space_offset[2]) * wave_number[2]
+                          + (t - time_offset)
+                                * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2)
+                                       + pow(wave_number[2], 2))))
+                 * sqrt(pow(wave_number[0], 2) + pow(wave_number[1], 2) + pow(wave_number[2], 2))));
   }
   CCTK_ENDLOOP3_INT(loop_multipatch_error);
 }
