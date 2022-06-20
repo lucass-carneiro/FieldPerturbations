@@ -31,6 +31,26 @@ CCTK_REAL R0 "The position of the peak of the gaussian"
   0:* :: "Positive"
 } 0.0
 
+CCTK_REAL x0 "The x posititon of the center of the gaussian"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_REAL y0 "The y posititon of the center of the gaussian"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_REAL z0 "The z posititon of the center of the gaussian"
+{
+  *:* :: "No restriction"
+} 0.0
+
+CCTK_REAL multipoles[3] "The coefficients in the multipole series. (monopole, dipole, quadrupole"
+{
+  *:* :: "No restriction"
+} 0.0
+
 
 
 REAL wave_number[3] "Wave number"

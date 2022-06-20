@@ -15,23 +15,21 @@ $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coord
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 40
+$n_angular   = 160
 
 $sphere_inner_radius = 1.0
-$sphere_outer_radius = 2.1
+$sphere_outer_radius = 5.0
 
 $fd_order = 2
 $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 200
+$final_iteration = 160
 
 $nan_check_every = 1
 $info_every = 1
 $out_every = 1
-
-$compute_field_error  = yes
 
 $output_vars    = "
   FCKleinGordon::evolved_group
@@ -174,7 +172,8 @@ FCKleinGordon::initial_data   = "exact_gaussian"
 FCKleinGordon::sigma = 0.25
 FCKleinGordon::R0    = 0.0
 
-FCKleinGordon::compute_error          = $compute_field_error
+FCKleinGordon::compute_error   = yes
+FCKleinGordon::test_multipatch = no
 
 #######################################################################
 # Spatial Derivatives                                                 #

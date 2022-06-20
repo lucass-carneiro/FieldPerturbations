@@ -23,9 +23,9 @@
 
 $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
 
-$h_radial    = 0.1
-$h_cartesian = 0.1
-$n_angular   = 40
+$h_radial    = 0.025
+$h_cartesian = 0.025
+$n_angular   = 160
 
 $sphere_inner_radius = 1.0
 $sphere_outer_radius = 5.0
@@ -35,7 +35,7 @@ $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 1
+$final_iteration = 0
 
 $nan_check_every = 1
 $info_every = 1
