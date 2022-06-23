@@ -167,6 +167,7 @@ SCHEDULE FCKleinGordon_outer_boundaries IN FCKleinGordon_PostStepGroup
 SCHEDULE FCKleinGordon_rhs_outer_boundaries IN FCKleinGordon_RHSBoundaries
 {
   LANG: C
+  READS: FCKleinGordon::evolved_group(boundary)
   WRITES: FCKleinGordon::rhs_group(boundary)
 } "Apply outer boundary conditions to the RHS grid functions"
 

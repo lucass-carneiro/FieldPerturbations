@@ -2,8 +2,9 @@
 
 CCTK_KEYWORD bc_type "Type of boundary condition to apply"
 {
-  "zero" :: "Set all evolved variables to zero at the boundary"
-} "zero"
+  "zero"   :: "Set all evolved variables to zero at the boundary"
+  "NewRad" :: "Radiating boundary condition implemented in thorn NewRad"
+} "NewRad"
 
 
 CCTK_REAL field_mass "The mass of the scalar field"

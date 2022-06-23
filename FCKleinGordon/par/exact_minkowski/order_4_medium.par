@@ -191,7 +191,7 @@ SummationByParts::sbp_2nd_deriv                  = yes
 # Outer Boundaries                                                    #
 #######################################################################
 
-FCKleinGordon::bc_type = "zero"
+FCKleinGordon::bc_type = "NewRad"
 
 Coordinates::outer_boundary_size = $ghosts
 

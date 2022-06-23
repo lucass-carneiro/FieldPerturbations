@@ -52,8 +52,17 @@ extern "C" void FCKleinGordon_rhs_outer_boundaries(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_CHECKED(FCKleinGordon_rhs_outer_boundaries);
   DECLARE_CCTK_PARAMETERS;
 
-  if (CCTK_EQUALS(bc_type, "radiative")) {
-    // TODO: Implement radiative BCs
+  if (CCTK_EQUALS(bc_type, "NewRad")) {
+    CCTK_INT ierr = 0;
+
+    ierr += NewRad_Apply(cctkGH, Pi, Pi_rhs, 0.0, 1.0, 2.0);
+    ierr += NewRad_Apply(cctkGH, Psi_x, Psi_x_rhs, 0.0, 1.0, 2.0);
+    ierr += NewRad_Apply(cctkGH, Psi_y, Psi_y_rhs, 0.0, 1.0, 2.0);
+    ierr += NewRad_Apply(cctkGH, Psi_z, Psi_z_rhs, 0.0, 1.0, 2.0);
+    ierr += NewRad_Apply(cctkGH, Phi, Phi_rhs, 0.0, 1.0, 2.0);
+
+    if (ierr < 0)
+      CCTK_ERROR("Failed to register NewRad boundary conditions");
   }
 }
 

@@ -72,6 +72,7 @@ ActiveThorns = "
   Minkowski
   MoL
   NaNChecker
+  NewRad
   SummationByParts
   Slab
   SpaceMask
@@ -192,7 +193,8 @@ SummationByParts::sbp_2nd_deriv                  = yes
 # Outer Boundaries                                                    #
 #######################################################################
 
-FCKleinGordon::bc_type = "zero"
+FCKleinGordon::bc_type = "NewRad"
+NewRad::z_is_radial    = yes
 
 Coordinates::outer_boundary_size = $ghosts
 
