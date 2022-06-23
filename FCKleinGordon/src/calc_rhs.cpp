@@ -23,10 +23,13 @@
 
 #include "derivatives.hpp"
 
-#include <array>
+//clang-format off
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
+//clang-format on
+
+#include <array>
 
 #ifndef DECLARE_CCTK_ARGUMENTS_CHECKED
 #  define DECLARE_CCTK_ARGUMENTS_CHECKED(func) DECLARE_CCTK_ARGUMENTS

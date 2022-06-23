@@ -15,12 +15,12 @@ $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coord
 
 $h_radial    = 0.1
 $h_cartesian = 0.1
-$n_angular   = 160
+$n_angular   = 40
 
 $sphere_inner_radius = 1.0
 $sphere_outer_radius = 5.0
 
-$fd_order = 2
+$fd_order = 4
 $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
@@ -180,8 +180,9 @@ FCKleinGordon::test_multipatch = no
 #######################################################################
 
 SummationByParts::order                          = $fd_order
+SummationByParts::operator_type                  = "Minimal Bandwidth"
 SummationByParts::use_dissipation                = no
-SummationByParts::onesided_interpatch_boundaries = no
+SummationByParts::onesided_interpatch_boundaries = yes
 SummationByParts::onesided_outer_boundaries      = yes
 SummationByParts::sbp_upwind_deriv               = yes
 SummationByParts::sbp_1st_deriv                  = yes

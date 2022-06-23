@@ -15,9 +15,10 @@ CCTK_REAL field_mass "The mass of the scalar field"
 
 CCTK_KEYWORD initial_data "Types of initial data to evolve"
 {
-  "exact_gaussian" :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
-  "plane_wave"     :: "A plane wave solution with customizable wave numbers and offsets"
-} "exact_gaussian"
+  "multipolar_gaussian"  :: "A multipolar gaussian with customizable multipole moments"
+  "exact_gaussian"       :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
+  "plane_wave"           :: "A plane wave solution with customizable wave numbers and offsets"
+} "multipolar_gaussian"
 
 
 
@@ -46,7 +47,7 @@ CCTK_REAL z0 "The z posititon of the center of the gaussian"
   *:* :: "No restriction"
 } 0.0
 
-CCTK_REAL multipoles[3] "The coefficients in the multipole series. (monopole, dipole, quadrupole"
+CCTK_REAL multipoles[9] "The coefficients in the multipole series."
 {
   *:* :: "No restriction"
 } 0.0

@@ -1,5 +1,5 @@
-#ifndef FC_KLEIN_GORDON_DERIVATIVES
-#define FC_KLEIN_GORDON_DERIVATIVES
+#ifndef FC_KLEIN_GORDON_DERIVATIVES_HPP
+#define FC_KLEIN_GORDON_DERIVATIVES_HPP
 
 //clang-format off
 #include <cctk.h>
@@ -90,4 +90,4 @@ auto global_d(const sbp_coefficients<derivative_direction::x> &cx,
 
 } // namespace fckg
 
-#endif // FC_KLEIN_GORDON_DERIVATIVES
+#endif // FC_KLEIN_GORDON_DERIVATIVES_HPP

@@ -97,7 +97,7 @@ SCHEDULE FCKleinGordon_initialize IN FCKleinGordon_InitialGroup
   READS: Grid::coordinates(everywhere) ADMBase::lapse(everywhere) ADMBase::shift(everywhere) ADMBase::metric(everywhere)
   WRITES: FCKleinGordon::evolved_group(everywhere)
   SYNC: FCKleinGordon::evolved_group
-} "Initialize evolved variables and set the RHS to zero"
+} "Initialize evolved variables"
 
 
 ################################################################################

@@ -20,7 +20,7 @@ $n_angular   = 160
 $sphere_inner_radius = 1.0
 $sphere_outer_radius = 5.0
 
-$fd_order = 2
+$fd_order = 4
 $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
