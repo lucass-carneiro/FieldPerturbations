@@ -56,15 +56,19 @@ extern "C" void FCKleinGordon_initialize(CCTK_ARGUMENTS) {
       Pi[ijk] = (sqrt(detgamma)
                  * (-d_exact_gaussian_solution_dt(t, r[ijk], sigma)
                     + d_exact_gaussian_solution_dr(t, r[ijk], sigma)
-                          * (betaz[ijk] * z[ijk] / r[ijk] + betay[ijk] * y[ijk] / r[ijk]
-                             + betax[ijk] * x[ijk] / r[ijk])))
+                          * (betaz[ijk] * (isapprox(r[ijk], 0.0) ? 0.0 : z[ijk] / r[ijk])
+                             + betay[ijk] * (isapprox(r[ijk], 0.0) ? 0.0 : y[ijk] / r[ijk])
+                             + betax[ijk] * (isapprox(r[ijk], 0.0) ? 0.0 : x[ijk] / r[ijk]))))
                 / alp[ijk];
 
-      Psi_x[ijk] = d_exact_gaussian_solution_dr(t, r[ijk], sigma) * x[ijk] / r[ijk];
+      Psi_x[ijk] = d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                   * (isapprox(r[ijk], 0.0) ? 0.0 : x[ijk] / r[ijk]);
 
-      Psi_y[ijk] = d_exact_gaussian_solution_dr(t, r[ijk], sigma) * y[ijk] / r[ijk];
+      Psi_y[ijk] = d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                   * (isapprox(r[ijk], 0.0) ? 0.0 : y[ijk] / r[ijk]);
 
-      Psi_z[ijk] = d_exact_gaussian_solution_dr(t, r[ijk], sigma) * z[ijk] / r[ijk];
+      Psi_z[ijk] = d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                   * (isapprox(r[ijk], 0.0) ? 0.0 : z[ijk] / r[ijk]);
 
       Phi[ijk] = exact_gaussian_solution(t, r[ijk], sigma);
     }
@@ -150,32 +154,31 @@ extern "C" void FCKleinGordon_initialize(CCTK_ARGUMENTS) {
                                  - gxx[ijk] * gyz[ijk] * gyz[ijk] - gxy[ijk] * gxy[ijk] * gzz[ijk]
                                  + gxx[ijk] * gyy[ijk] * gzz[ijk];
 
-      Phi[ijk] = multipole_sum(multipoles, xL, yL, zL) * base_gaussian(rL - R0, sigma);
+      Phi[ijk] = multipole_sum(multipoles, sigma, xL, yL, zL) * base_gaussian(rL - R0, sigma);
 
       const CCTK_REAL Psi_xL
-          = d_multipole_sum_dx(multipoles, xL, yL, zL) * base_gaussian(rL - R0, sigma)
-            + multipole_sum(multipoles, xL, yL, zL) * d_base_gaussian_dr(rL - R0, sigma)
-                  * (isapprox(rL, 0.0) ? 0.0 : xL / rL);
+          = d_multipole_sum_dx(multipoles, sigma, xL, yL, zL) * base_gaussian(rL - R0, sigma)
+            + multipole_sum(multipoles, sigma, xL, yL, zL) * d_base_gaussian_dr(rL - R0, sigma)
+                  * (xL / rL);
 
       const CCTK_REAL Psi_yL
-          = d_multipole_sum_dy(multipoles, xL, yL, zL) * base_gaussian(rL - R0, sigma)
-            + multipole_sum(multipoles, xL, yL, zL) * d_base_gaussian_dr(rL - R0, sigma)
-                  * (isapprox(rL, 0.0) ? 0.0 : yL / rL);
+          = d_multipole_sum_dy(multipoles, sigma, xL, yL, zL) * base_gaussian(rL - R0, sigma)
+            + multipole_sum(multipoles, sigma, xL, yL, zL) * d_base_gaussian_dr(rL - R0, sigma)
+                  * (yL / rL);
 
       const CCTK_REAL Psi_zL
-          = d_multipole_sum_dz(multipoles, xL, yL, zL) * base_gaussian(rL - R0, sigma)
-            + multipole_sum(multipoles, xL, yL, zL) * d_base_gaussian_dr(rL - R0, sigma)
-                  * (isapprox(rL, 0.0) ? 0.0 : zL / rL);
+          = d_multipole_sum_dz(multipoles, sigma, xL, yL, zL) * base_gaussian(rL - R0, sigma)
+            + multipole_sum(multipoles, sigma, xL, yL, zL) * d_base_gaussian_dr(rL - R0, sigma)
+                  * (zL / rL);
 
       Psi_x[ijk] = Psi_xL;
       Psi_y[ijk] = Psi_yL;
       Psi_z[ijk] = Psi_zL;
 
-      // This choice of Pi makes the gaussian be infalling
+      // This choice of Pi makes the gaussian infalling
       Pi[ijk] = sqrt(detgamma) / alp[ijk]
-                * ((betax[ijk] - (isapprox(rL, 0.0) ? 0.0 : xL / rL)) * Psi_xL
-                   + (betay[ijk] - (isapprox(rL, 0.0) ? 0.0 : yL / rL)) * Psi_yL
-                   + (betaz[ijk] - (isapprox(rL, 0.0) ? 0.0 : zL / rL)) * Psi_zL);
+                * ((betax[ijk] - xL / rL) * Psi_xL + (betay[ijk] - yL / rL) * Psi_yL
+                   + (betaz[ijk] - zL / rL) * Psi_zL);
     }
     CCTK_ENDLOOP3_ALL(loop_multipolar_gaussian);
   }

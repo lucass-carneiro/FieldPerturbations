@@ -13,19 +13,19 @@
 
 $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
 
-$h_radial    = 0.1
-$h_cartesian = 0.1
+$h_radial    = 0.2
+$h_cartesian = 0.2
 $n_angular   = 40
 
-$sphere_inner_radius = 1.0
-$sphere_outer_radius = 10.0
+$sphere_inner_radius = 8.0
+$sphere_outer_radius = 20.0
 
 $fd_order = 4
 $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 40
+$final_iteration = 320
 
 $nan_check_every = 1
 $info_every = 1
@@ -33,6 +33,7 @@ $out_every = 1
 
 $output_vars    = "
   FCKleinGordon::evolved_group
+  FCKleinGordon::error_group
   Grid::coordinates{out_every=100000}
 "
 
@@ -70,6 +71,7 @@ ActiveThorns = "
   Minkowski
   MoL
   NaNChecker
+  NewRad
   SummationByParts
   Slab
   SpaceMask
@@ -165,26 +167,12 @@ Carpet::init_3_timelevels           = no
 
 FCKleinGordon::field_mass     = 0.0
 
-FCKleinGordon::initial_data   = "multipolar_gaussian"
+FCKleinGordon::initial_data   = "exact_gaussian"
 
-FCKleinGordon::x0 = 0.0
-FCKleinGordon::y0 = 0.0
-FCKleinGordon::z0 = 0.0
+FCKleinGordon::sigma = 4.0
+FCKleinGordon::R0    = 0.0
 
-FCKleinGordon::multipoles[0] = 0.0 # c_{00} term
-FCKleinGordon::multipoles[1] = 0.0 # c_{1-1} term
-FCKleinGordon::multipoles[2] = 0.0 # c_{10} term
-FCKleinGordon::multipoles[3] = 0.0 # c_{11} term
-FCKleinGordon::multipoles[4] = 0.0 # c_{2-2} term
-FCKleinGordon::multipoles[5] = 0.0 # c_{2-1} term
-FCKleinGordon::multipoles[6] = 0.0 # c_{20} term (not normalized to 1)
-FCKleinGordon::multipoles[7] = 0.0 # c_{21} term
-FCKleinGordon::multipoles[8] = 1.0 # c_{22} term
-
-FCKleinGordon::sigma = 0.25
-FCKleinGordon::R0    = 8.0
-
-FCKleinGordon::compute_error   = no
+FCKleinGordon::compute_error   = yes
 FCKleinGordon::test_multipatch = no
 
 #######################################################################
@@ -192,8 +180,9 @@ FCKleinGordon::test_multipatch = no
 #######################################################################
 
 SummationByParts::order                          = $fd_order
+SummationByParts::operator_type                  = "Optimized"
 SummationByParts::use_dissipation                = no
-SummationByParts::onesided_interpatch_boundaries = yes
+SummationByParts::onesided_interpatch_boundaries = no
 SummationByParts::onesided_outer_boundaries      = yes
 SummationByParts::sbp_upwind_deriv               = yes
 SummationByParts::sbp_1st_deriv                  = yes
@@ -204,6 +193,7 @@ SummationByParts::sbp_2nd_deriv                  = yes
 #######################################################################
 
 FCKleinGordon::bc_type = "NewRad"
+NewRad::z_is_radial    = yes
 
 Coordinates::outer_boundary_size = $ghosts
 
@@ -249,7 +239,7 @@ NaNChecker::verbose         = "all"
 IO::out_dir                     = $parfile
 
 CarpetIOBasic::outInfo_every    = $info_every
-CarpetIOBasic::outInfo_vars     = "FCKleinGordon::Phi"
+CarpetIOBasic::outInfo_vars     = "FCKleinGordon::Phi FCKleinGordon::Phi_error"
 
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9

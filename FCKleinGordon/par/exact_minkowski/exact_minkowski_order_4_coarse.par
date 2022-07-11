@@ -13,19 +13,19 @@
 
 $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
 
-$h_radial    = 0.025
-$h_cartesian = 0.025
-$n_angular   = 160
+$h_radial    = 0.4
+$h_cartesian = 0.4
+$n_angular   = 40
 
-$sphere_inner_radius = 1.0
-$sphere_outer_radius = 5.0
+$sphere_inner_radius = 8.0
+$sphere_outer_radius = 20.0
 
 $fd_order = 4
 $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 160
+$final_iteration = 320
 
 $nan_check_every = 1
 $info_every = 1
@@ -39,7 +39,6 @@ $output_vars    = "
 
 $nan_check_vars = "
   FCKleinGordon::evolved_group
-  FCKleinGordon::error_group
 "
 
 #######################################################################
@@ -72,6 +71,7 @@ ActiveThorns = "
   Minkowski
   MoL
   NaNChecker
+  NewRad
   SummationByParts
   Slab
   SpaceMask
@@ -169,7 +169,7 @@ FCKleinGordon::field_mass     = 0.0
 
 FCKleinGordon::initial_data   = "exact_gaussian"
 
-FCKleinGordon::sigma = 0.25
+FCKleinGordon::sigma = 4.0
 FCKleinGordon::R0    = 0.0
 
 FCKleinGordon::compute_error   = yes
@@ -180,6 +180,7 @@ FCKleinGordon::test_multipatch = no
 #######################################################################
 
 SummationByParts::order                          = $fd_order
+SummationByParts::operator_type                  = "Optimized"
 SummationByParts::use_dissipation                = no
 SummationByParts::onesided_interpatch_boundaries = no
 SummationByParts::onesided_outer_boundaries      = yes
@@ -192,6 +193,7 @@ SummationByParts::sbp_2nd_deriv                  = yes
 #######################################################################
 
 FCKleinGordon::bc_type = "NewRad"
+NewRad::z_is_radial    = yes
 
 Coordinates::outer_boundary_size = $ghosts
 
@@ -237,7 +239,7 @@ NaNChecker::verbose         = "all"
 IO::out_dir                     = $parfile
 
 CarpetIOBasic::outInfo_every    = $info_every
-CarpetIOBasic::outInfo_vars     = "FCKleinGordon::Phi"
+CarpetIOBasic::outInfo_vars     = "FCKleinGordon::Phi FCKleinGordon::Phi_error"
 
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9

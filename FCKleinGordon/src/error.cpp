@@ -21,6 +21,8 @@
  *  Compare the current solution to the exact gaussian solution.
  */
 
+#include "initial_conditions.hpp"
+
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
@@ -35,6 +37,7 @@ extern "C" void FCKleinGordon_error(CCTK_ARGUMENTS) {
   using std::fabs;
   using std::pow;
   using std::sqrt;
+  using namespace fckg;
 
   DECLARE_CCTK_ARGUMENTS_CHECKED(FCKleinGordon_error);
   DECLARE_CCTK_PARAMETERS;
@@ -47,52 +50,29 @@ extern "C" void FCKleinGordon_error(CCTK_ARGUMENTS) {
 
     const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-    CCTK_REAL detgamma = -(gxz[ijk] * gxz[ijk] * gyy[ijk]) + 2 * gxy[ijk] * gxz[ijk] * gyz[ijk]
-                         - gxx[ijk] * gyz[ijk] * gyz[ijk] - gxy[ijk] * gxy[ijk] * gzz[ijk]
-                         + gxx[ijk] * gyy[ijk] * gzz[ijk];
+    const CCTK_REAL detgamma = -(gxz[ijk] * gxz[ijk] * gyy[ijk])
+                               + 2 * gxy[ijk] * gxz[ijk] * gyz[ijk] - gxx[ijk] * gyz[ijk] * gyz[ijk]
+                               - gxy[ijk] * gxy[ijk] * gzz[ijk] + gxx[ijk] * gyy[ijk] * gzz[ijk];
 
     const CCTK_REAL exact_Pi
         = (sqrt(detgamma)
-           * (-((-1 + exp((2 * t * r[ijk]) / pow(sigma, 2))) * pow(sigma, 2)
-                * (betaz[ijk] * z[ijk] / r[ijk] + y[ijk] / r[ijk] + betax[ijk] * x[ijk] / r[ijk]))
-              + pow(r[ijk], 2)
-                    * (-1 - exp((2 * t * r[ijk]) / pow(sigma, 2))
-                       + betay[ijk] * exp(pow(t + r[ijk], 2) / (2. * pow(sigma, 2))) * pow(sigma, 2)
-                       + betaz[ijk] * z[ijk] / r[ijk] + y[ijk] / r[ijk]
-                       + betax[ijk] * x[ijk] / r[ijk]
-                       - exp((2 * t * r[ijk]) / pow(sigma, 2))
-                             * (betaz[ijk] * z[ijk] / r[ijk] + y[ijk] / r[ijk]
-                                + betax[ijk] * x[ijk] / r[ijk]))
-              + t * r[ijk]
-                    * (-1 + betaz[ijk] * z[ijk] / r[ijk] + y[ijk] / r[ijk]
-                       + betax[ijk] * x[ijk] / r[ijk]
-                       + exp((2 * t * r[ijk]) / pow(sigma, 2))
-                             * (1 + betaz[ijk] * z[ijk] / r[ijk] + y[ijk] / r[ijk]
-                                + betax[ijk] * x[ijk] / r[ijk]))))
-          / (alp[ijk] * exp(pow(t + r[ijk], 2) / (2. * pow(sigma, 2))) * pow(sigma, 2)
-             * pow(r[ijk], 2));
+           * (-d_exact_gaussian_solution_dt(t, r[ijk], sigma)
+              + d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                    * (betaz[ijk] * (isapprox(r[ijk], 0.0) ? 0.0 : z[ijk] / r[ijk])
+                       + betay[ijk] * (isapprox(r[ijk], 0.0) ? 0.0 : y[ijk] / r[ijk])
+                       + betax[ijk] * (isapprox(r[ijk], 0.0) ? 0.0 : x[ijk] / r[ijk]))))
+          / alp[ijk];
 
-    const CCTK_REAL exact_Psi_x
-        = ((pow(sigma, 2) + t * r[ijk] + pow(r[ijk], 2)
-            - exp((2 * t * r[ijk]) / pow(sigma, 2)) * (pow(sigma, 2) - t * r[ijk] + pow(r[ijk], 2)))
-           * x[ijk] / r[ijk])
-          / (exp(pow(t + r[ijk], 2) / (2. * pow(sigma, 2))) * pow(sigma, 2) * pow(r[ijk], 2));
+    const CCTK_REAL exact_Psi_x = d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                                  * (isapprox(r[ijk], 0.0) ? 0.0 : x[ijk] / r[ijk]);
 
-    const CCTK_REAL exact_Psi_y
-        = ((pow(sigma, 2) + t * r[ijk] + pow(r[ijk], 2)
-            - exp((2 * t * r[ijk]) / pow(sigma, 2)) * (pow(sigma, 2) - t * r[ijk] + pow(r[ijk], 2)))
-           * y[ijk] / r[ijk])
-          / (exp(pow(t + r[ijk], 2) / (2. * pow(sigma, 2))) * pow(sigma, 2) * pow(r[ijk], 2));
+    const CCTK_REAL exact_Psi_y = d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                                  * (isapprox(r[ijk], 0.0) ? 0.0 : y[ijk] / r[ijk]);
 
-    const CCTK_REAL exact_Psi_z
-        = ((pow(sigma, 2) + t * r[ijk] + pow(r[ijk], 2)
-            - exp((2 * t * r[ijk]) / pow(sigma, 2)) * (pow(sigma, 2) - t * r[ijk] + pow(r[ijk], 2)))
-           * z[ijk] / r[ijk])
-          / (exp(pow(t + r[ijk], 2) / (2. * pow(sigma, 2))) * pow(sigma, 2) * pow(r[ijk], 2));
+    const CCTK_REAL exact_Psi_z = d_exact_gaussian_solution_dr(t, r[ijk], sigma)
+                                  * (isapprox(r[ijk], 0.0) ? 0.0 : z[ijk] / r[ijk]);
 
-    const CCTK_REAL exact_Phi = (exp(-pow(t - r[ijk], 2) / (2. * pow(sigma, 2)))
-                                 - exp(-pow(t + r[ijk], 2) / (2. * pow(sigma, 2))))
-                                / r[ijk];
+    const CCTK_REAL exact_Phi = exact_gaussian_solution(t, r[ijk], sigma);
 
     Pi_error[ijk] = fabs(exact_Pi - Pi[ijk]);
     Psi_x_error[ijk] = fabs(exact_Psi_x - Psi_x[ijk]);
