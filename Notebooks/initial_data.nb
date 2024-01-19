@@ -2077,11 +2077,11 @@ r,2)*pow(r,3))\"\>"], "Output",
   3.866558970162472*^9, {3.866559090646624*^9, 3.866559110138504*^9}},
  CellLabel->"Out[74]=",ExpressionUUID->"f5b4137b-7c75-4971-9bcd-1ec5d327e513"]
 }, Open  ]]
-}, Open  ]]
+}, Closed]]
 },
-WindowSize->{1502.608695652174, 788.0869565217392},
+WindowSize->{1502.608695652174, 788.8695652173914},
 WindowMargins->{{1502.608695652174, Automatic}, {
-  Automatic, 22.945054945054945`}},
+  Automatic, 22.153846153846153`}},
 PrintingCopies->1,
 PrintingPageRange->{1, Automatic},
 ShowSelection->True,
@@ -2168,7 +2168,7 @@ Cell[81383, 2058, 331, 5, 41, "Output",ExpressionUUID->"a02e9d7b-4ede-4840-9316-
 Cell[81717, 2065, 330, 5, 41, "Output",ExpressionUUID->"f92923e5-fbc3-4611-bb87-f9d6865f2dbd"],
 Cell[82050, 2072, 331, 5, 41, "Output",ExpressionUUID->"f5b4137b-7c75-4971-9bcd-1ec5d327e513"]
 }, Open  ]]
-}, Open  ]]
+}, Closed]]
 }
 ]
 *)

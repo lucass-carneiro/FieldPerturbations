@@ -1,7 +1,0 @@
-# Main make.code.defn file for thorn WaveToyCPU
-
-# Source files in this directory
-SRCS = Boundaries.cpp CalcTmunu_2.cpp CalcTmunu_4.cpp CalcTmunu_6.cpp CalcTmunu_8.cpp CheckParameters.cpp Error.cpp EstimateError.cpp Initialize.cpp RHS_2.cpp RHS_4.cpp RHS_6.cpp RHS_8.cpp Startup.cpp Sync.cpp
-
-# Subdirectories containing source files
-SUBDIRS = 
