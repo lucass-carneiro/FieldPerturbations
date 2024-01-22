@@ -1,7 +1,15 @@
-#Main make.code.defn file for thorn ADMScalarWave
+#Main make.code.defn file for thorn FCKleinGordon
 
 #Source files in this directory
-SRCS = boundary.cpp calc_rhs.cpp check_parameters.cpp error.cpp initialize.cpp register.cpp startup.cpp sync.cpp zero_fill.cpp
+SRCS = boundary.cpp         \
+       calc_flux.cpp        \
+       calc_rhs.cpp         \
+       check_parameters.cpp \
+       initialize.cpp       \
+       register.cpp         \
+       startup.cpp          \
+       sync.cpp             \
+       zero_fill.cpp
 
 #Subdirectories containing source files
 SUBDIRS =
