@@ -1,10 +1,11 @@
-#include "derivatives.hpp"
 
 //clang-format off
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
 //clang-format on
+
+#include "derivatives.hpp"
 
 #include <cmath>
 
@@ -13,38 +14,35 @@
 #endif
 
 extern "C" void FCKleinGordon_calc_rhs(CCTK_ARGUMENTS) {
+  using namespace fckg;
+  using std::sqrt;
+
   DECLARE_CCTK_ARGUMENTS_CHECKED(FCKleinGordon_calc_rhs);
   DECLARE_CCTK_PARAMETERS;
-  DECLARE_DERIVATIVE_FACTORS_4;
 
 #pragma omp parallel
   CCTK_LOOP3_INT(loop_rhs, cctkGH, i, j, k) {
-    const CCTK_INT ijk = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
-    const auto det_gamma = -(gxz[ijk] * gxz[ijk] * gyy[ijk]) + 2 * gxy[ijk] * gxz[ijk] * gyz[ijk]
-                           - gxx[ijk] * gyz[ijk] * gyz[ijk] - gxy[ijk] * gxy[ijk] * gzz[ijk]
-                           + gxx[ijk] * gyy[ijk] * gzz[ijk];
+    const auto ijk{I(cctkGH, i, j, k)};
+    const deriv_data dd{i, j, k, CCTK_DELTA_SPACE(0), CCTK_DELTA_SPACE(1), CCTK_DELTA_SPACE(2)};
 
-    const auto igxx = (-gyz[ijk] * gyz[ijk] + gyy[ijk] * gzz[ijk]) / det_gamma;
-    const auto igxy = (gxz[ijk] * gyz[ijk] - gxy[ijk] * gzz[ijk]) / det_gamma;
-    const auto igxz = (gxy[ijk] * gyz[ijk] - (gxz[ijk] * gyy[ijk])) / det_gamma;
-    const auto igyy = (-gxz[ijk] * gxz[ijk] + gxx[ijk] * gzz[ijk]) / det_gamma;
-    const auto igyz = (gxy[ijk] * gxz[ijk] - gxx[ijk] * gyz[ijk]) / det_gamma;
-    const auto igzz = (-gxy[ijk] * gxy[ijk] + gxx[ijk] * gyy[ijk]) / det_gamma;
+    const auto det_gamma{-(gxz[ijk] * gxz[ijk] * gyy[ijk]) + 2 * gxy[ijk] * gxz[ijk] * gyz[ijk]
+                         - gxx[ijk] * gyz[ijk] * gyz[ijk] - gxy[ijk] * gxy[ijk] * gzz[ijk]
+                         + gxx[ijk] * gyy[ijk] * gzz[ijk]};
 
-    const auto sqrtg = std::sqrt(det_gamma);
+    const auto sqrtg{sqrt(det_gamma)};
 
-    const auto S_Pi = alp[ijk] * sqrtg * field_mass * field_mass * Phi[ijk];
-    const auto S_Phi = betax[ijk] * Psi_x[ijk] + betay[ijk] * Psi_y[ijk] + betaz[ijk] * Psi_z[ijk]
-                       - alp[ijk] * Pi[ijk] / sqrtg;
+    const auto S_Pi{alp[ijk] * sqrtg * field_mass * field_mass * Phi[ijk]};
+    const auto S_Phi{(betax[ijk] * Psi_x[ijk] + betay[ijk] * Psi_y[ijk] + betaz[ijk] * Psi_z[ijk])
+                     - alp[ijk] * Pi[ijk] / sqrtg};
 
-    const auto dF_Pi_x_dx = global_Dx(4, F_Pi_x);
-    const auto dF_Pi_y_dy = global_Dy(4, F_Pi_y);
-    const auto dF_Pi_z_dz = global_Dz(4, F_Pi_z);
+    const auto dF_Pi_x_dx{global_Dx(cctkGH, dd, F_Pi_x, J11[ijk], J21[ijk], J31[ijk])};
+    const auto dF_Pi_y_dy{global_Dy(cctkGH, dd, F_Pi_y, J12[ijk], J22[ijk], J32[ijk])};
+    const auto dF_Pi_z_dz{global_Dz(cctkGH, dd, F_Pi_z, J13[ijk], J23[ijk], J33[ijk])};
 
-    const auto dF_Psi_dx = global_Dz(4, F_Psi);
-    const auto dF_Psi_dy = global_Dz(4, F_Psi);
-    const auto dF_Psi_dz = global_Dz(4, F_Psi);
+    const auto dF_Psi_dx{global_Dx(cctkGH, dd, F_Psi, J11[ijk], J21[ijk], J31[ijk])};
+    const auto dF_Psi_dy{global_Dy(cctkGH, dd, F_Psi, J12[ijk], J22[ijk], J32[ijk])};
+    const auto dF_Psi_dz{global_Dz(cctkGH, dd, F_Psi, J13[ijk], J23[ijk], J33[ijk])};
 
     Pi_rhs[ijk] = S_Pi - (dF_Pi_x_dx + dF_Pi_y_dy + dF_Pi_z_dz);
 

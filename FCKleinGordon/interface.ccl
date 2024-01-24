@@ -1,10 +1,9 @@
 # Interface definition for thorn FCKleinGordon
 
 implements: FCKleinGordon
-inherits: ADMBase Boundary Coordinates GlobalDerivative Grid NewRad SummationByParts 
+inherits: ADMBase Boundary Coordinates Grid NewRad
 
 uses include header: derivatives.hpp
-uses include header: GlobalDerivative.h
 
 ################################
 #  ALIASED FUNCTIONS FROM MoL  #
@@ -38,19 +37,6 @@ CCTK_INT FUNCTION GetBoundarySizesAndTypes (CCTK_POINTER_TO_CONST IN cctkGH, \
 
 REQUIRES FUNCTION Boundary_SelectGroupForBC
 REQUIRES FUNCTION GetBoundarySizesAndTypes
-
-#############################################
-#  ALIASED FUNCTIONS FROM SummationByParts  #
-#############################################
-SUBROUTINE Diff_coeff(CCTK_POINTER_TO_CONST IN cctkGH, \
-                      CCTK_INT IN dir,                 \
-                      CCTK_INT IN nsize,               \
-                      CCTK_INT OUT ARRAY imin,         \
-                      CCTK_INT OUT ARRAY imax,         \
-                      CCTK_REAL OUT ARRAY q,           \
-                      CCTK_INT IN table_handle)
-
-REQUIRES FUNCTION Diff_coeff
 
 ###################################
 #  ALIASED FUNCTIONS FROM NewRad  #
