@@ -1,9 +1,9 @@
  #######################################################################
- # Minkowski_exact.par                                                 #
+ # gaussian_minkowski.par                                              #
  #                                                                     #
  # Evolve the Klein-Gordon equation on top of a Minkowski background   #
  # using Llama with 7 patches Thornburg04 coordinates                  #
- # Exact gaussian initial data.                                        #
+ # Multipolar gaussian initial data.                                   #
  # 4-th order finite differences.                                      #
  #######################################################################
 
@@ -13,11 +13,11 @@
 
 $title = "Minkowski unigrid evolution with Llama on 7 patches (Thornburg04 coordinates)"
 
-$h_radial    = 0.4
-$h_cartesian = 0.4
-$n_angular   = 40
+$h_radial    = 0.5
+$h_cartesian = 0.5
+$n_angular   = 80
 
-$sphere_inner_radius = 8.0
+$sphere_inner_radius = 5.0
 $sphere_outer_radius = 20.0
 
 $fd_order = 4
@@ -25,20 +25,19 @@ $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 320
+$final_iteration = 1
 
 $nan_check_every = 1
 $info_every = 1
 $out_every = 1
 
 $output_vars    = "
-  FCKleinGordon::evolved_group
-  FCKleinGordon::error_group
+  FCKleinGordon::state
   Grid::coordinates{out_every=100000}
 "
 
 $nan_check_vars = "
-  FCKleinGordon::evolved_group
+  FCKleinGordon::state
 "
 
 #######################################################################
@@ -167,26 +166,15 @@ Carpet::init_3_timelevels           = no
 
 FCKleinGordon::field_mass     = 0.0
 
-FCKleinGordon::initial_data   = "exact_gaussian"
+FCKleinGordon::initial_data   = "gaussian"
 
-FCKleinGordon::sigma = 4.0
-FCKleinGordon::R0    = 0.0
+FCKleinGordon::x0 = 0.0
+FCKleinGordon::y0 = 0.0
+FCKleinGordon::z0 = 0.0
 
-FCKleinGordon::compute_error   = yes
-FCKleinGordon::test_multipatch = no
-
-#######################################################################
-# Spatial Derivatives                                                 #
-#######################################################################
-
-SummationByParts::order                          = $fd_order
-SummationByParts::operator_type                  = "Optimized"
-SummationByParts::use_dissipation                = no
-SummationByParts::onesided_interpatch_boundaries = no
-SummationByParts::onesided_outer_boundaries      = yes
-SummationByParts::sbp_upwind_deriv               = yes
-SummationByParts::sbp_1st_deriv                  = yes
-SummationByParts::sbp_2nd_deriv                  = yes
+FCKleinGordon::A     = 1.0
+FCKleinGordon::sigma = 2.0
+FCKleinGordon::R0    = 13.0
 
 #######################################################################
 # Outer Boundaries                                                    #
@@ -239,7 +227,7 @@ NaNChecker::verbose         = "all"
 IO::out_dir                     = $parfile
 
 CarpetIOBasic::outInfo_every    = $info_every
-CarpetIOBasic::outInfo_vars     = "FCKleinGordon::Phi FCKleinGordon::Phi_error"
+CarpetIOBasic::outInfo_vars     = "FCKleinGordon::Phi"
 
 CarpetIOHDF5::out_every         = $out_every
 CarpetIOHDF5::compression_level = 9

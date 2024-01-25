@@ -26,7 +26,7 @@ static inline auto local_Dx(cctkgh_t cctkGH, const deriv_data &d, const cctk_gf_
     const auto den{1.0 / (12.0 * d.dx)};
     const auto num{-f[I(cctkGH, d.i + 2, d.j, d.k)] + 8 * f[I(cctkGH, d.i + 1, d.j, d.k)]
                    - 8 * f[I(cctkGH, d.i - 1, d.j, d.k)] + f[I(cctkGH, d.i - 2, d.j, d.k)]};
-    return den * num;
+    return num * den;
   }
 }
 
@@ -36,7 +36,7 @@ static inline auto local_Dy(cctkgh_t cctkGH, const deriv_data &d, const cctk_gf_
     const auto den{1.0 / (12.0 * d.dy)};
     const auto num{-f[I(cctkGH, d.i, d.j + 2, d.k)] + 8 * f[I(cctkGH, d.i, d.j + 1, d.k)]
                    - 8 * f[I(cctkGH, d.i, d.j - 1, d.k)] + f[I(cctkGH, d.i, d.j - 2, d.k)]};
-    return den * num;
+    return num * den;
   }
 }
 
@@ -46,7 +46,7 @@ static inline auto local_Dz(cctkgh_t cctkGH, const deriv_data &d, const cctk_gf_
     const auto den{1.0 / (12.0 * d.dz)};
     const auto num{-f[I(cctkGH, d.i, d.j, d.k + 2)] + 8 * f[I(cctkGH, d.i, d.j, d.k + 1)]
                    - 8 * f[I(cctkGH, d.i, d.j, d.k - 1)] + f[I(cctkGH, d.i, d.j, d.k - 2)]};
-    return den * num;
+    return num * den;
   }
 }
 
