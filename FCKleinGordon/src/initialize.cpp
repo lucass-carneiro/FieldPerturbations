@@ -25,19 +25,30 @@ extern "C" void FCKleinGordon_initialize(CCTK_ARGUMENTS) {
 
       const auto ijk{CCTK_GFINDEX3D(cctkGH, i, j, k)};
 
-      Pi[ijk] = 0.0;
+      const auto detgamma{-(gxz[ijk] * gxz[ijk] * gyy[ijk]) + 2 * gxy[ijk] * gxz[ijk] * gyz[ijk]
+                          - gxx[ijk] * gyz[ijk] * gyz[ijk] - gxy[ijk] * gxy[ijk] * gzz[ijk]
+                          + gxx[ijk] * gyy[ijk] * gzz[ijk]};
 
-      Psi_x[ijk] = -2 * A * kx * M_PI * cos(2 * M_PI * ky * y[ijk]) * cos(2 * M_PI * kz * z[ijk])
-                   * sin(2 * M_PI * kx * x[ijk]);
+      const auto sqrtg{sqrt(detgamma)};
 
-      Psi_y[ijk] = -2 * A * ky * M_PI * cos(2 * M_PI * kx * y[ijk]) * cos(2 * M_PI * kz * z[ijk])
-                   * sin(2 * M_PI * ky * x[ijk]);
+      const auto Psi_xL{-2 * A * kx * M_PI * cos(2 * M_PI * ky * y[ijk])
+                        * cos(2 * M_PI * kz * z[ijk]) * sin(2 * M_PI * kx * x[ijk])};
 
-      Psi_z[ijk] = -2 * A * kz * M_PI * cos(2 * M_PI * kx * y[ijk]) * cos(2 * M_PI * ky * z[ijk])
-                   * sin(2 * M_PI * kz * x[ijk]);
+      const auto Psi_yL{-2 * A * ky * M_PI * cos(2 * M_PI * kx * x[ijk])
+                        * cos(2 * M_PI * kz * z[ijk]) * sin(2 * M_PI * ky * y[ijk])};
+
+      const auto Psi_zL{-2 * A * kz * M_PI * cos(2 * M_PI * kx * x[ijk])
+                        * cos(2 * M_PI * ky * y[ijk]) * sin(2 * M_PI * kz * z[ijk])};
 
       Phi[ijk] = A * cos(2 * M_PI * kx * x[ijk]) * cos(2 * M_PI * ky * y[ijk])
                  * cos(2 * M_PI * kz * z[ijk]);
+
+      Psi_x[ijk] = Psi_xL;
+      Psi_y[ijk] = Psi_yL;
+      Psi_z[ijk] = Psi_zL;
+
+      Pi[ijk]
+          = sqrtg / alp[ijk] * (betax[ijk] * Psi_xL + betay[ijk] * Psi_yL + betaz[ijk] * Psi_zL);
     }
     CCTK_ENDLOOP3_ALL(loop_stnading_wave);
 
