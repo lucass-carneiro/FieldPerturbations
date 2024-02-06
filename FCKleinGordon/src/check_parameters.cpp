@@ -10,8 +10,8 @@ extern "C" void FCKleinGordon_check_parameters(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_CHECKED(FCKleinGordon_check_parameters);
   DECLARE_CCTK_PARAMETERS;
 
-  if (sigma * sigma < 1.0e-3) {
-    CCTK_PARAMWARN("The gaussian parameter sigma is too small. Increase it in "
+  if (W * W < 1.0e-3) {
+    CCTK_PARAMWARN("The gaussian width parameter (W) is too small. Increase it in "
                    "order to avoid singularities.");
   }
 }

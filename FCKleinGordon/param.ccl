@@ -17,25 +17,19 @@ CCTK_REAL field_mass "The mass of the scalar field"
 CCTK_KEYWORD initial_data "Types of initial data to evolve"
 {
   "gaussian"       :: "A gaussian with customizable center and width"
-  "exact_gaussian" :: "A time dependant gaussian pulse that solves the wave equation in the Minkowski background exactly"
-  "plane_wave"     :: "A plane wave solution with customizable wave numbers and offsets"
+  "standing_wave"     :: "A plane wave solution with customizable wave numbers and offsets"
 } "gaussian"
 
 
-CCTK_REAL A "The amplitude of the gaussian"
+CCTK_REAL A "The amplitude of the gaussian/standing wave"
 {
   0:* :: "Positive"
 } 1.0
 
-CCTK_REAL sigma "The width of the gaussian"
+CCTK_REAL W "The width of the gaussian"
 {
   0:* :: "Positive"
 } 1.0
-
-CCTK_REAL R0 "The position of the peak of the gaussian"
-{
-  0:* :: "Positive"
-} 0.0
 
 CCTK_REAL x0 "The x posititon of the center of the gaussian"
 {
@@ -54,17 +48,17 @@ CCTK_REAL z0 "The z posititon of the center of the gaussian"
 
 
 
-REAL wave_number[3] "Wave number"
+CCTK_REAL kx "The kx value of the standing wave"
 {
-  *:* :: ""
-} 0.0
+  *:* :: "No restriction"
+} 0.5
 
-REAL space_offset[3] "Space offset"
+CCTK_REAL ky "The ky value of the standing wave"
 {
-  *:* :: ""
-} 0.0
+  *:* :: "No restriction"
+} 0.5
 
-REAL time_offset "Time offset"
+CCTK_REAL kz "The kz value of the standing wave"
 {
-  *:* :: ""
-} 0.0
+  *:* :: "No restriction"
+} 0.5

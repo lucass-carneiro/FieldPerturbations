@@ -25,7 +25,7 @@ $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 1
+$final_iteration = 10
 
 $nan_check_every = 1
 $info_every = 1
@@ -173,8 +173,7 @@ FCKleinGordon::y0 = 0.0
 FCKleinGordon::z0 = 0.0
 
 FCKleinGordon::A     = 1.0
-FCKleinGordon::sigma = 2.0
-FCKleinGordon::R0    = 13.0
+FCKleinGordon::W     = 2.0
 
 #######################################################################
 # Outer Boundaries                                                    #

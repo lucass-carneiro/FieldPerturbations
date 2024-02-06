@@ -25,7 +25,7 @@ $ghosts = $fd_order/2
 
 $courant_factor  = 0.25
 $time_step       = $courant_factor * $h_cartesian
-$final_iteration = 1
+$final_iteration = 10
 
 $nan_check_every = 1
 $info_every = 1
@@ -166,11 +166,7 @@ Carpet::init_3_timelevels           = no
 
 FCKleinGordon::field_mass     = 0.0
 
-FCKleinGordon::initial_data   = "plane_wave"
-
-FCKleinGordon::wave_number[0] = 0.5
-FCKleinGordon::wave_number[1] = 0.5
-FCKleinGordon::wave_number[2] = 0.5
+FCKleinGordon::initial_data   = "standing_wave"
 
 #######################################################################
 # Outer Boundaries                                                    #
